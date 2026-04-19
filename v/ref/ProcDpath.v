@@ -25,10 +25,7 @@ module ProcDpath
   output logic [31:0] idmem_wdata,
   input  logic [31:0] idmem_rdata,
 
-  // Trace Interface
-  output logic [31:0] trace_addr,
-  output logic [4:0]  trace_wreg,
-  output logic [31:0] trace_wdata,
+
 
   // Control Signals (Control Unit -> Datapath)
   input  logic        pc_en,
@@ -253,10 +250,6 @@ module ProcDpath
     .q   (rf_wdata)
   );
 
-  // Trace Output
-  assign trace_addr  = oldpc;
-  assign trace_wreg  = rd;
-  assign trace_wdata = rf_wdata;
 
 endmodule
 

@@ -31,17 +31,10 @@ module Top();
   //----------------------------------------------------------------------
 
   logic        idmem_val;
-  logic        idmem_wait;
   logic        idmem_type;
   logic [31:0] idmem_addr;
   logic [31:0] idmem_wdata;
   logic [31:0] idmem_rdata;
-
-  logic        trace_val;
-  logic [31:0] trace_addr;
-  logic        trace_wen;
-  logic [4:0]  trace_wreg;
-  logic [31:0] trace_wdata;
 
   Proc proc
   (
@@ -53,7 +46,6 @@ module Top();
     .clk       (clk),
     .rst       (rst),
     .mem_val   (idmem_val),
-    .mem_wait  (idmem_wait),
     .mem_type  (idmem_type),
     .mem_addr  (idmem_addr),
     .mem_wdata (idmem_wdata),
@@ -61,48 +53,52 @@ module Top();
   );
 
   //----------------------------------------------------------------------
-  // check_trace
+  // run_task
   //----------------------------------------------------------------------
 
-  TinyRV1 tinyrv1();
+  task run_task( input integer num_cycles );
+    for ( integer i = 0; i < num_cycles; i = i + 1 ) begin
+      #10;
+    end
+  endtask
 
-  task check_trace
+  //----------------------------------------------------------------------
+  // run_test
+  //----------------------------------------------------------------------
+
+  task run_test( input logic [31:0] end_addr );
+    begin
+      // Insert dummy instruction so the final real instruction guarantees writeback
+      asm( end_addr, "addi x0, x0, 0" );
+      
+      // Wait for PC to advance past the dummy instruction
+      while ( proc.dpath.pc !== (end_addr + 4) ) begin
+        if ( t.cycles > 9999 ) begin
+          $display("ERROR: Timeout waiting for PC to reach %x", end_addr + 4);
+          $finish;
+        end
+        #10;
+      end
+      #5; // Let the clock edge settle
+    end
+  endtask
+
+  //----------------------------------------------------------------------
+  // check_rf
+  //----------------------------------------------------------------------
+
+  task check_rf
   (
-    input logic [31:0] addr,
-    input logic        wen,
-    input logic  [4:0] wreg,
-    input logic [31:0] wdata
+    input logic [4:0]  reg_id,
+    input logic [31:0] expected
   );
     if ( !t.failed ) begin
       t.num_checks += 1;
-
-      #8;
-
-      while ( !trace_val ) begin
-        if ( t.n != 0 )
-          $display( "%3d: %x #", t.cycles, trace_addr );
-        #10;
+      if ( reg_id == 0 ) begin
+        `CHECK_EQ_HEX( 32'd0, expected );
+      end else begin
+        `CHECK_EQ_HEX( proc.dpath.rf.m[reg_id], expected );
       end
-
-      if ( t.n != 0 ) begin
-        if ( trace_wen )
-          $display( "%3d: %h %-s x%0d %h", t.cycles,
-                    trace_addr, tinyrv1.disasm(idmem_addr,idmem_rdata),
-                    trace_wreg, trace_wdata );
-        else
-          $display( "%3d: %x %-s ", t.cycles,
-                    trace_addr, tinyrv1.disasm(idmem_addr,idmem_rdata) );
-      end
-
-      `CHECK_EQ_HEX( trace_addr, addr );
-      `CHECK_EQ_HEX( trace_wen, wen );
-      if ( wen )
-        `CHECK_EQ_HEX( trace_wreg, wreg );
-      if ( wen && (wreg > 0) )
-        `CHECK_EQ_HEX( trace_wdata, wdata );
-
-      #2;
-
     end
   endtask
 

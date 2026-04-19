@@ -11,10 +11,11 @@
 module TestMemory
 (
   input  logic        clk,
+  /* verilator lint_off UNUSEDSIGNAL */
   input  logic        rst,
+  /* verilator lint_on UNUSEDSIGNAL */
 
   input  logic        mem_val,
-  output logic        mem_wait,
   input  logic        mem_type,
   /* verilator lint_off UNUSEDSIGNAL */
   input  logic [31:0] mem_addr,
@@ -43,15 +44,6 @@ module TestMemory
   always_ff @( posedge clk ) begin
     if ( mem_val && (mem_type == 1) && (mem_addr[31:9] == 0) )
       m[mem_addr_idx] <= mem_wdata;
-  end
-
-  //----------------------------------------------------------------------
-  // Wait (always ready)
-  //----------------------------------------------------------------------
-
-  always_ff @( posedge clk ) begin
-    if ( rst )
-      mem_wait <= 1'b0;
   end
 
   //----------------------------------------------------------------------

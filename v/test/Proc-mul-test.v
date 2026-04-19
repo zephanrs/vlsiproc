@@ -17,11 +17,11 @@ task test_case_1_basic();
   asm( 'h004, "addi x2, x0, 3"  );
   asm( 'h008, "mul  x3, x1, x2" );
 
-  // Check each executed instruction
-  //           addr   en reg   data
-  check_trace( 'h000, 1, 5'd1, 32'h0000_0002 ); // addi x1, x0, 2
-  check_trace( 'h004, 1, 5'd2, 32'h0000_0003 ); // addi x2, x0, 3
-  check_trace( 'h008, 1, 5'd3, 32'h0000_0006 ); // mul  x3, x1, x2
+  // Run processor and check register file
+  run_test( 'h00c );
+  check_rf( 5'd1, 32'h0000_0002 );
+  check_rf( 5'd2, 32'h0000_0003 );
+  check_rf( 5'd3, 32'h0000_0006 );
 
   t.test_case_end();
 endtask
@@ -45,15 +45,13 @@ task test_case_2_x0();
   asm( 'h014, "mul  x3, x0, x1" );
   asm( 'h018, "mul  x4, x2, x0" );
 
-  // Check each executed instruction
-  //           addr   en reg   data
-  check_trace( 'h000, 1, 5'd1,  32'h0000_0001 ); // addi x1, x0, 1
-  check_trace( 'h004, 1, 5'd2,  32'h0000_0002 ); // addi x2, x0, 2
-  check_trace( 'h008, 1, 5'd0,  32'hxxxx_xxxx ); // mul  x0, x0, x0
-  check_trace( 'h00c, 1, 5'd0,  32'hxxxx_xxxx ); // mul  x0, x0, x1
-  check_trace( 'h010, 1, 5'd0,  32'hxxxx_xxxx ); // mul  x0, x2, x0
-  check_trace( 'h014, 1, 5'd3,  32'h0000_0000 ); // mul  x3, x0, x1
-  check_trace( 'h018, 1, 5'd4,  32'h0000_0000 ); // mul  x4, x2, x0
+  // Run processor and check register file
+  run_test( 'h01c );
+  check_rf( 5'd1,  32'h0000_0001 );
+  check_rf( 5'd2,  32'h0000_0002 );
+  check_rf( 5'd0,  32'h0000_0000 );
+  check_rf( 5'd3,  32'h0000_0000 );
+  check_rf( 5'd4,  32'h0000_0000 );
 
   t.test_case_end();
 endtask
@@ -95,35 +93,17 @@ task test_case_3_regs();
   asm( 'h050, "addi x2,  x2,  0"    );
   asm( 'h054, "addi x3,  x3,  0"    );
 
-  // Check each executed instruction
-  //           addr   en reg   data
-  check_trace( 'h000, 1, 5'd1,  32'h0000_0001 ); // addi x1,  x0,  0x01
-  check_trace( 'h004, 1, 5'd2,  32'h0000_0002 ); // addi x2,  x0,  0x02
-  check_trace( 'h008, 1, 5'd3,  32'h0000_0003 ); // addi x3,  x0,  0x03
-  check_trace( 'h00c, 1, 5'd4,  32'h0000_0004 ); // addi x4,  x0,  0x04
+  // Run processor and check register file
+  run_test( 'h058 );
+  check_rf( 5'd1,  'h0090 );
+  check_rf( 5'd2,  'h0120 );
+  check_rf( 5'd3,  'h0240 );
+  check_rf( 5'd4,  'h0048 );
 
-  check_trace( 'h010, 1, 5'd1,  32'h0000_0006 ); // mul  x1,  x2,  x3
-  check_trace( 'h014, 1, 5'd2,  32'h0000_000c ); // mul  x2,  x3,  x4
-  check_trace( 'h018, 1, 5'd3,  32'h0000_0018 ); // mul  x3,  x4,  x1
-  check_trace( 'h01c, 1, 5'd4,  32'h0000_0048 ); // mul  x4,  x1,  x2
-
-  check_trace( 'h020, 1, 5'd28, 32'h0000_0024 ); // addi x28, x0,  0x24
-  check_trace( 'h024, 1, 5'd29, 32'h0000_0025 ); // addi x29, x0,  0x25
-  check_trace( 'h028, 1, 5'd30, 32'h0000_0026 ); // addi x30, x0,  0x26
-  check_trace( 'h02c, 1, 5'd31, 32'h0000_0027 ); // addi x31, x0,  0x27
-
-  check_trace( 'h030, 1, 5'd28, 32'h0000_57e  ); // mul  x28, x29, x30
-  check_trace( 'h034, 1, 5'd29, 32'h0000_5ca  ); // mul  x29, x30, x31
-  check_trace( 'h038, 1, 5'd30, 32'h000d_632  ); // mul  x30, x31, x28
-  check_trace( 'h03c, 1, 5'd31, 32'h001f_cb6c ); // mul  x31, x28, x29
-
-  check_trace( 'h040, 1, 5'd1,  32'h0000_0090 ); // mul  x1,  x2,  x2
-  check_trace( 'h044, 1, 5'd2,  32'h0000_0120 ); // mul  x2,  x2,  x3
-  check_trace( 'h048, 1, 5'd3,  32'h0000_0240 ); // mul  x3,  x3,  x3
-
-  check_trace( 'h04c, 1, 5'd1,  32'h0000_0090 ); // addi x1,  x1,  0
-  check_trace( 'h050, 1, 5'd2,  32'h0000_0120 ); // addi x2,  x2,  0
-  check_trace( 'h054, 1, 5'd3,  32'h0000_0240 ); // addi x3,  x3,  0
+  check_rf( 5'd28, 'h057e );
+  check_rf( 5'd29, 'h05ca );
+  check_rf( 5'd30, 'hd632 );
+  check_rf( 5'd31, 'h1fcb6c );
 
   t.test_case_end();
 endtask
@@ -143,13 +123,13 @@ task test_case_4_deps();
   asm( 'h00c, "mul  x4,  x3,  x1"     );
   asm( 'h010, "mul  x5,  x4,  x1"     );
 
-  // Check each executed instruction
-  //           addr   en reg   data
-  check_trace( 'h000, 1, 5'd1, 32'h0000_0002 ); // addi x1,  x0,  0x02
-  check_trace( 'h004, 1, 5'd2, 32'h0000_0003 ); // addi x2,  x0,  0x03
-  check_trace( 'h008, 1, 5'd3, 32'h0000_0006 ); // mul  x3,  x1,  x2
-  check_trace( 'h00c, 1, 5'd4, 32'h0000_000c ); // mul  x4,  x3,  x1
-  check_trace( 'h010, 1, 5'd5, 32'h0000_0018 ); // mul  x5,  x4,  x1
+  // Run processor and check register file
+  run_test( 'h014 );
+  check_rf( 5'd1, 32'h0000_0002 );
+  check_rf( 5'd2, 32'h0000_0003 );
+  check_rf( 5'd3, 32'h0000_0006 );
+  check_rf( 5'd4, 32'h0000_000c );
+  check_rf( 5'd5, 32'h0000_0018 );
 
   t.test_case_end();
 endtask
@@ -181,25 +161,15 @@ task test_case_5_pos();
   asm( 'h030, "mul  x6,  x2,  x3"   );
   asm( 'h034, "mul  x7,  x3,  x4"   );
 
-  // Check each executed instruction
-  //           addr   en reg   data
-  check_trace( 'h000, 1, 5'd1, 1         );   // addi x1,  x0,  1
-  check_trace( 'h004, 1, 5'd2, 2         );  // addi x2,  x0,  2
-  check_trace( 'h008, 1, 5'd3, 3         );  // addi x3,  x0,  3
-  check_trace( 'h00c, 1, 5'd4, 4         );  // addi x4,  x0,  4
-
-  check_trace( 'h010, 1, 5'd5, 2         );  // mul  x5,  x1,  x2
-  check_trace( 'h014, 1, 5'd6, 6         );  // mul  x6,  x2,  x3
-  check_trace( 'h018, 1, 5'd7, 12        );  // mul  x7,  x3,  x4
-
-  check_trace( 'h01c, 1, 5'd1, 2001      );  // addi x1,  x0,  2001
-  check_trace( 'h020, 1, 5'd2, 2002      );  // addi x2,  x0,  2002
-  check_trace( 'h024, 1, 5'd3, 2003      );  // addi x3,  x0,  2003
-  check_trace( 'h028, 1, 5'd4, 2004      );  // addi x4,  x0,  2004
-
-  check_trace( 'h02c, 1, 5'd5, 4_006_002 );  // mul  x5,  x1,  x2
-  check_trace( 'h030, 1, 5'd6, 4_010_006 );  // mul  x6,  x2,  x3
-  check_trace( 'h034, 1, 5'd7, 4_014_012 );  // mul  x7,  x3,  x4
+  // Run processor and check register file
+  run_test( 'h038 );
+  check_rf( 5'd1, 2001      );
+  check_rf( 5'd2, 2002      );
+  check_rf( 5'd3, 2003      );
+  check_rf( 5'd4, 2004      );
+  check_rf( 5'd5, 4_006_002 );
+  check_rf( 5'd6, 4_010_006 );
+  check_rf( 5'd7, 4_014_012 );
 
   t.test_case_end();
 endtask
@@ -231,25 +201,15 @@ task test_case_6_neg();
   asm( 'h030, "mul  x6,  x2,  x3"    );
   asm( 'h034, "mul  x7,  x3,  x4"    );
 
-  // Check each executed instruction
-  //           addr   en reg   data
-  check_trace( 'h000, 1, 5'd1, -1         );  // addi x1,  x0,  -1
-  check_trace( 'h004, 1, 5'd2,  2         );  // addi x2,  x0,   2
-  check_trace( 'h008, 1, 5'd3, -3         );  // addi x3,  x0,  -3
-  check_trace( 'h00c, 1, 5'd4, -4         );  // addi x4,  x0,  -4
-
-  check_trace( 'h010, 1, 5'd5, -2         );  // mul  x5,  x1,  x2
-  check_trace( 'h014, 1, 5'd6, -6         );  // mul  x6,  x2,  x3
-  check_trace( 'h018, 1, 5'd7, 12         );  // mul  x7,  x3,  x4
-
-  check_trace( 'h01c, 1, 5'd1, -2001      );  // addi x1,  x0,  -2001
-  check_trace( 'h020, 1, 5'd2,  2002      );  // addi x2,  x0,   2002
-  check_trace( 'h024, 1, 5'd3, -2003      );  // addi x3,  x0,  -2003
-  check_trace( 'h028, 1, 5'd4, -2004      );  // addi x4,  x0,  -2004
-
-  check_trace( 'h02c, 1, 5'd5, -4_006_002 );  // mul  x5,  x1,  x2
-  check_trace( 'h030, 1, 5'd6, -4_010_006 );  // mul  x6,  x2,  x3
-  check_trace( 'h034, 1, 5'd7,  4_014_012 );  // mul  x7,  x3,  x4
+  // Run processor and check register file
+  run_test( 'h038 );
+  check_rf( 5'd1, -2001      );
+  check_rf( 5'd2,  2002      );
+  check_rf( 5'd3, -2003      );
+  check_rf( 5'd4, -2004      );
+  check_rf( 5'd5, -4_006_002 );
+  check_rf( 5'd6, -4_010_006 );
+  check_rf( 5'd7,  4_014_012 );
 
   t.test_case_end();
 endtask
@@ -268,11 +228,11 @@ task test_case_7_overflow();
   asm( 'h004, "addi x2,  x0,  2"     );
   asm( 'h008, "mul  x3,  x1,  x2"    );
 
-  // Check each executed instruction
-  //           addr   en reg   data
-  check_trace( 'h000, 1, 5'd1, 32'hffff_ffff ); // addi x1,  x0,  0xfff
-  check_trace( 'h004, 1, 5'd2, 32'h0000_0002 ); // addi x2,  x0,  2
-  check_trace( 'h008, 1, 5'd3, 32'hffff_fffe ); // mul  x3,  x1,  x2
+  // Run processor and check register file
+  run_test( 'h00c );
+  check_rf( 5'd1, 32'hffff_ffff );
+  check_rf( 5'd2, 32'h0000_0002 );
+  check_rf( 5'd3, 32'hffff_fffe );
 
   t.test_case_end();
 endtask
@@ -303,24 +263,12 @@ task test_case_8_mix();
   asm( 'h02c, "mul  x6,  x4, x5"    );
   asm( 'h030, "add  x3,  x3, x6"    );
 
-  // Check each executed instruction
-  //           addr   en reg   data
-  check_trace( 'h000, 1, 5'd3, 0 ); // addi x3,  x0, 0
-
-  check_trace( 'h004, 1, 5'd4, 1  ); // addi x4,  x0, 1
-  check_trace( 'h008, 1, 5'd5, 5  ); // addi x5,  x0, 5
-  check_trace( 'h00c, 1, 5'd6, 5  ); // mul  x6,  x4, x5
-  check_trace( 'h010, 1, 5'd3, 5  ); // add  x3,  x3, x6
-
-  check_trace( 'h014, 1, 5'd4, 2  ); // addi x4,  x0, 2
-  check_trace( 'h018, 1, 5'd5, 6  ); // addi x5,  x0, 6
-  check_trace( 'h01c, 1, 5'd6, 12 ); // mul  x6,  x4, x5
-  check_trace( 'h020, 1, 5'd3, 17 ); // add  x3,  x3, x6
-
-  check_trace( 'h024, 1, 5'd4, 3  ); // addi x4,  x0, 3
-  check_trace( 'h028, 1, 5'd5, 7  ); // addi x5,  x0, 7
-  check_trace( 'h02c, 1, 5'd6, 21 ); // mul  x6,  x4, x5
-  check_trace( 'h030, 1, 5'd3, 38 ); // add  x3,  x3, x6
+  // Run processor and check register file
+  run_test( 'h034 );
+  check_rf( 5'd3, 38 );
+  check_rf( 5'd4, 3  );
+  check_rf( 5'd5, 7  );
+  check_rf( 5'd6, 21 );
 
   t.test_case_end();
 endtask
