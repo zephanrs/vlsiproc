@@ -15,18 +15,10 @@ module Proc
 
   // Memory Interface
   output logic        idmem_val,
-  input  logic        idmem_wait,
   output logic        idmem_type,
   output logic [31:0] idmem_addr,
   output logic [31:0] idmem_wdata,
-  input  logic [31:0] idmem_rdata,
-
-  // Trace Interface
-  output logic        trace_val,
-  output logic [31:0] trace_addr,
-  output logic        trace_wen,
-  output logic [4:0]  trace_wreg,
-  output logic [31:0] trace_wdata
+  input  logic [31:0] idmem_rdata
 );
 
   // Control Signals (Control Unit -> Datapath)

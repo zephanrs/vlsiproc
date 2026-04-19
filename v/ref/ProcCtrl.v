@@ -14,12 +14,8 @@ module ProcCtrl
 
   // Memory Interface
   output logic        idmem_val,
-  input  logic        idmem_wait,
   output logic        idmem_type,
 
-  // Trace Interface
-  output logic        trace_val,
-  output logic        trace_wen,
 
   // Control Signals (Control Unit -> Datapath)
   output logic        pc_en,
@@ -81,14 +77,9 @@ module ProcCtrl
   localparam wr    = 1'd1;
 
   // Task for setting control signals
-  logic rf_wen_pre;
-  logic pc_en_pre;
-  logic idmem_val_pre;
-  logic trace_val_pre;
-
   task automatic cs
   (
-    input logic       pc_en_pre_,
+    input logic       pc_en_,
     input logic       oldpc_en_,
     input logic       ir_en_,
     input logic       a_en_,
@@ -100,14 +91,13 @@ module ProcCtrl
     input logic [1:0] imm_type_,
     input logic       alu_func_,
     input logic       addr_en_,
-    input logic       idmem_val_pre_,
+    input logic       idmem_val_,
     input logic       idmem_type_,
     input logic [1:0] wb_sel_,
     input logic       wd_en_,
-    input logic       rf_wen_pre_,
-    input logic       trace_val_pre_
+    input logic       rf_wen_
   );
-    pc_en_pre     = pc_en_pre_;
+    pc_en         = pc_en_;
     oldpc_en      = oldpc_en_;
     ir_en         = ir_en_;
     a_en          = a_en_;
@@ -119,12 +109,11 @@ module ProcCtrl
     imm_type      = imm_type_;
     alu_func      = alu_func_;
     addr_en       = addr_en_;
-    idmem_val_pre = idmem_val_pre_;
+    idmem_val     = idmem_val_;
     idmem_type    = idmem_type_;
     wb_sel        = wb_sel_;
     wd_en         = wd_en_;
-    rf_wen_pre    = rf_wen_pre_;
-    trace_val_pre = trace_val_pre_;
+    rf_wen        = rf_wen_;
   endtask
 
   // State Encoding
@@ -150,7 +139,7 @@ module ProcCtrl
   always_ff @( posedge clk ) begin
     if (rst)
       state <= 4'b0;
-    else if (!idmem_wait)
+    else
       state <= next_state;
   end
 
@@ -189,34 +178,27 @@ module ProcCtrl
   // Control signal table
   always_comb begin
     casez ( state )
-          //   pc   oldpc ir   a    b    addr  pc    op1    op2    imm     alu   addr  mem   mem   wb     wd   rf   trace
-          //   en   en    en   en   en   sel   sel   sel    sel    type    func  en    val   type  sel    en   wen  val
-      F:   cs( 1,   1,    1,   0,   0,   pc,   curr,  op1_p, op2_4, 'x,    add,  0,    1,    rd,   wb_al, 0,   0,   0   );
-      D:   cs( 0,   0,    0,   1,   1,   'x,   'x,    'x,    'x,    'x,    'x,   0,    0,    'x,   'x,    0,   0,   0   );
-      AI:  cs( 0,   0,    0,   0,   0,   'x,   'x,    op1_a, op2_i, imm_i, add,  0,    0,    'x,   wb_al, 1,   0,   0   );
-      WB:  cs( 0,   0,    0,   0,   0,   'x,   'x,    'x,    'x,    'x,    'x,   0,    0,    'x,   wb_mu, 0,   1,   1   );
-      A:   cs( 0,   0,    0,   0,   0,   'x,   'x,    op1_a, op2_b, 'x,    add,  0,    0,    'x,   wb_al, 1,   0,   0   );
-      M:   cs( 0,   0,    0,   0,   0,   'x,   'x,    'x,    'x,    'x,    'x,   0,    0,    'x,   wb_mu, 1,   0,   0   );
-      L0:  cs( 0,   0,    0,   0,   0,   'x,   'x,    op1_a, op2_i, imm_i, add,  1,    0,    'x,   'x,    0,   0,   0   );
-      L1:  cs( 0,   0,    0,   0,   0,   addr, 'x,    'x,    'x,    'x,    'x,   0,    1,    rd,   wb_in, 1,   0,   0   );
-      S0:  cs( 0,   0,    0,   0,   0,   'x,   'x,    op1_a, op2_i, imm_s, add,  1,    0,    'x,   'x,    0,   0,   0   );
-      S1:  cs( 0,   0,    0,   0,   0,   addr, 'x,    'x,    'x,    'x,    'x,   0,    1,    wr,   'x,    0,   0,   1   );
-      JR:  cs( 1,   0,    0,   0,   0,   'x,   'x,    op1_a, op2_0, 'x,    add,  0,    0,    rd,   wb_al, 0,   0,   1   );
-      JA0: cs( 0,   0,    0,   0,   0,   'x,   old,   op1_p, op2_4, 'x,    add,  0,    0,    rd,   wb_al, 1,   0,   0   );
-      JA1: cs( 1,   0,    0,   0,   0,   'x,   old,   op1_p, op2_i, imm_j, add,  0,    0,    rd,   wb_al, 0,   1,   0   );
-      B0:  cs( 0,   0,    0,   0,   0,   'x,   'x,    op1_a, op2_b, 'x,    cmp,  0,    0,    rd,   'x,    0,   0,   eq  );
-      B1:  cs( 1,   0,    0,   0,   0,   'x,   old,   op1_p, op2_i, imm_b, add,  0,    0,    rd,   wb_al, 0,   0,   1   );
+          //   pc   oldpc ir   a    b    addr  pc    op1    op2    imm     alu   addr  mem   mem   wb     wd   rf 
+          //   en   en    en   en   en   sel   sel   sel    sel    type    func  en    val   type  sel    en   wen
+      F:   cs( 1,   1,    1,   0,   0,   pc,   curr,  op1_p, op2_4, 'x,    add,  0,    1,    rd,   wb_al, 0,   0   );
+      D:   cs( 0,   0,    0,   1,   1,   'x,   'x,    'x,    'x,    'x,    'x,   0,    0,    'x,   'x,    0,   0   );
+      AI:  cs( 0,   0,    0,   0,   0,   'x,   'x,    op1_a, op2_i, imm_i, add,  0,    0,    'x,   wb_al, 1,   0   );
+      WB:  cs( 0,   0,    0,   0,   0,   'x,   'x,    'x,    'x,    'x,    'x,   0,    0,    'x,   wb_mu, 0,   1   );
+      A:   cs( 0,   0,    0,   0,   0,   'x,   'x,    op1_a, op2_b, 'x,    add,  0,    0,    'x,   wb_al, 1,   0   );
+      M:   cs( 0,   0,    0,   0,   0,   'x,   'x,    'x,    'x,    'x,    'x,   0,    0,    'x,   wb_mu, 1,   0   );
+      L0:  cs( 0,   0,    0,   0,   0,   'x,   'x,    op1_a, op2_i, imm_i, add,  1,    0,    'x,   'x,    0,   0   );
+      L1:  cs( 0,   0,    0,   0,   0,   addr, 'x,    'x,    'x,    'x,    'x,   0,    1,    rd,   wb_in, 1,   0   );
+      S0:  cs( 0,   0,    0,   0,   0,   'x,   'x,    op1_a, op2_i, imm_s, add,  1,    0,    'x,   'x,    0,   0   );
+      S1:  cs( 0,   0,    0,   0,   0,   addr, 'x,    'x,    'x,    'x,    'x,   0,    1,    wr,   'x,    0,   0   );
+      JR:  cs( 1,   0,    0,   0,   0,   'x,   'x,    op1_a, op2_0, 'x,    add,  0,    0,    rd,   wb_al, 0,   0   );
+      JA0: cs( 0,   0,    0,   0,   0,   'x,   old,   op1_p, op2_4, 'x,    add,  0,    0,    rd,   wb_al, 1,   0   );
+      JA1: cs( 1,   0,    0,   0,   0,   'x,   old,   op1_p, op2_i, imm_j, add,  0,    0,    rd,   wb_al, 0,   1   );
+      B0:  cs( 0,   0,    0,   0,   0,   'x,   'x,    op1_a, op2_b, 'x,    cmp,  0,    0,    rd,   'x,    0,   0   );
+      B1:  cs( 1,   0,    0,   0,   0,   'x,   old,   op1_p, op2_i, imm_b, add,  0,    0,    rd,   wb_al, 0,   0   );
       default:
-           cs( 'x, 'x,   'x,  'x,  'x,   'x,   'x,   'x,    'x,    'x,     'x,  'x,   'x,    'x,   'x,   'x,  'x,  'x   );
+           cs( 'x, 'x,   'x,  'x,  'x,   'x,   'x,   'x,    'x,    'x,     'x,  'x,   'x,    'x,   'x,   'x,  'x  );
     endcase
   end
-
-  // additional combinational logic
-  assign pc_en     = !rst && !idmem_wait && pc_en_pre;
-  assign rf_wen    = !rst && !idmem_wait && rf_wen_pre;
-  assign idmem_val = !rst && !idmem_wait && idmem_val_pre;
-  assign trace_val = !rst && !idmem_wait && trace_val_pre;
-  assign trace_wen = rf_wen;
 
 endmodule
 
