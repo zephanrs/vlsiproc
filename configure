@@ -1,0 +1,70 @@
+#!/bin/bash
+#=========================================================================
+# configure
+#=========================================================================
+# Simple configure script for the processor project.
+# Checks for required tools and generates Makefile from Makefile.in.
+
+set -e
+
+#-------------------------------------------------------------------------
+# Check we are in a build directory
+#-------------------------------------------------------------------------
+
+build_dir_basename=$(basename "${PWD}")
+case "${build_dir_basename}" in
+  build*)
+    ;;
+  *)
+    echo "ERROR: Must run configure from a build directory!"
+    echo "  mkdir build && cd build && ../configure"
+    exit 1
+    ;;
+esac
+
+#-------------------------------------------------------------------------
+# Find source directory
+#-------------------------------------------------------------------------
+
+srcdir=$(dirname "$0")
+srcdir=$(cd "$srcdir" && pwd)
+
+echo "Source directory: ${srcdir}"
+
+#-------------------------------------------------------------------------
+# Check for required tools
+#-------------------------------------------------------------------------
+
+# Check for verilator
+VERILATOR=$(command -v verilator 2>/dev/null || true)
+if [ -z "$VERILATOR" ]; then
+  echo "ERROR: verilator not found!"
+  echo "Did you forget to source the setup script?"
+  echo "  source scripts/setup-project.sh"
+  exit 1
+fi
+echo "Found verilator: ${VERILATOR}"
+
+# Check for iverilog
+IVERILOG=$(command -v iverilog 2>/dev/null || true)
+if [ -z "$IVERILOG" ]; then
+  echo "ERROR: iverilog not found!"
+  echo "Did you forget to source the setup script?"
+  echo "  source scripts/setup-project.sh"
+  exit 1
+fi
+echo "Found iverilog: ${IVERILOG}"
+
+#-------------------------------------------------------------------------
+# Generate Makefile
+#-------------------------------------------------------------------------
+
+echo "Generating Makefile..."
+
+sed \
+  -e "s|@srcdir@|${srcdir}|g" \
+  -e "s|@VERILATOR@|${VERILATOR}|g" \
+  -e "s|@IVERILOG@|${IVERILOG}|g" \
+  "${srcdir}/Makefile.in" > Makefile
+
+echo "Configuration complete. You can now run 'make check-ref'."

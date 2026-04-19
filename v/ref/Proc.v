@@ -1,0 +1,67 @@
+//========================================================================
+// Proc
+//========================================================================
+
+`ifndef PROC_V
+`define PROC_V
+
+`include "ref/ProcDpath.v"
+`include "ref/ProcCtrl.v"
+
+module Proc
+(
+  input  logic        clk,
+  input  logic        rst,
+
+  // Memory Interface
+  output logic        idmem_val,
+  input  logic        idmem_wait,
+  output logic        idmem_type,
+  output logic [31:0] idmem_addr,
+  output logic [31:0] idmem_wdata,
+  input  logic [31:0] idmem_rdata,
+
+  // Trace Interface
+  output logic        trace_val,
+  output logic [31:0] trace_addr,
+  output logic        trace_wen,
+  output logic [4:0]  trace_wreg,
+  output logic [31:0] trace_wdata
+);
+
+  // Control Signals (Control Unit -> Datapath)
+  logic       pc_en;
+  logic       addr_sel;
+  logic       ir_en;
+  logic [1:0] imm_type;
+  logic       a_en;
+  logic       b_en;
+  logic       oldpc_en;
+  logic       pc_sel;
+  logic       op1_sel;
+  logic [1:0] op2_sel;
+  logic       alu_func;
+  logic       addr_en;
+  logic [1:0] wb_sel;
+  logic       wd_en;
+  logic       rf_wen;
+
+  // Status Signals (Datapath -> Control Unit)
+  logic [31:0] inst;
+  logic        eq;
+
+  // Instantiate/Connect Datapath and Control Unit
+
+  ProcDpath dpath
+  (
+    .*
+  );
+
+  ProcCtrl ctrl
+  (
+    .*
+  );
+
+endmodule
+
+`endif /* PROC_V */
