@@ -1,0 +1,133 @@
+#=========================================================================
+# Makefile for Processor Project
+#=========================================================================
+
+#-------------------------------------------------------------------------
+# Basic setup
+#-------------------------------------------------------------------------
+
+.SUFFIXES:
+% : %,v
+% : RCS/%,v
+% : RCS/%
+% : s.%
+% : SCCS/s.%
+
+default : all
+.PHONY : default
+
+#-------------------------------------------------------------------------
+# Directories
+#-------------------------------------------------------------------------
+
+top_dir     := @srcdir@
+scripts_dir := $(top_dir)/scripts
+
+#-------------------------------------------------------------------------
+# Programs
+#-------------------------------------------------------------------------
+
+VMKDEPS          := $(scripts_dir)/mk-verilog-deps
+WARN2ERR         := $(scripts_dir)/warnings2errors
+SUMMARIZE_TESTS  := $(scripts_dir)/summarize-tests
+
+VERILATOR_FLAGS  := --quiet --timing -Wall \
+                      -Wno-DECLFILENAME -Wno-UNOPTFLAT -Wno-VARHIDDEN
+VERILATOR_LINT   := @VERILATOR@ --lint-only $(VERILATOR_FLAGS)
+
+IVERILOG_FLAGS   := -Wall -Winfloop -Wno-timescale -g2012
+IVERILOG_COMPILE := $(WARN2ERR) @IVERILOG@ $(IVERILOG_FLAGS)
+
+#-------------------------------------------------------------------------
+# check_part Helper Template
+#-------------------------------------------------------------------------
+
+define check_part
+$(1)_test_logs = $$(patsubst %.v, %.log, $$($(1)_tests))
+
+check-$(subst _,-,$(1)) : $$($(1)_test_logs)
+	$(scripts_dir)/summarize-tests $$($(1)_test_logs)
+
+check-$(subst _,-,$(1))-verbose : $$($(1)_test_logs)
+	$(scripts_dir)/summarize-tests --verbose $$($(1)_test_logs)
+
+.PHONY : check-$(subst _,-,$(1))
+
+endef
+
+#-------------------------------------------------------------------------
+# Setup Subproject
+#-------------------------------------------------------------------------
+
+include $(top_dir)/v/ref/ref.mk
+
+srcs  := $(ref_srcs)
+tests := $(ref_tests)
+
+VPATH := $(top_dir)/v/ref
+VPATH += $(top_dir)/v/test
+
+#-------------------------------------------------------------------------
+# Tests
+#-------------------------------------------------------------------------
+
+test_deps := $(patsubst %.v, %.d,   $(tests))
+test_exes := $(patsubst %.v, %,     $(tests))
+test_logs := $(patsubst %.v, %.log, $(tests))
+
+$(test_deps) : %.d : %.v
+	$(VMKDEPS) -I $(top_dir)/v $* $<
+
+$(test_exes) : % : %.v
+	$(VERILATOR_LINT) -I$(top_dir)/v --top-module Top $<
+	$(IVERILOG_COMPILE) -I $(top_dir)/v -s Top -o $@ $<
+
+$(test_logs) : %.log : %
+	./$< > $@
+
+check : $(test_logs)
+	$(SUMMARIZE_TESTS) $(test_logs)
+
+check-verbose : $(test_logs)
+	$(SUMMARIZE_TESTS) --verbose $(test_logs)
+
+.PHONY: check
+
+deps += $(test_deps)
+exes += $(test_exes)
+logs += $(test_logs)
+junk += $(test_deps) $(test_exes) $(test_logs)
+
+#-------------------------------------------------------------------------
+# Autodependency files
+#-------------------------------------------------------------------------
+
+-include $(deps)
+
+deps : $(deps)
+
+.PHONY : deps
+
+#-------------------------------------------------------------------------
+# Default
+#-------------------------------------------------------------------------
+
+all : $(test_exes)
+
+.PHONY : all
+
+#-------------------------------------------------------------------------
+# Makefile debugging
+#-------------------------------------------------------------------------
+
+debug-% :
+	@echo $* = $($*)
+
+#-------------------------------------------------------------------------
+# Clean up junk
+#-------------------------------------------------------------------------
+
+clean :
+	rm -rf *~ \#* *.vcd $(junk)
+
+.PHONY : clean

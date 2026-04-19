@@ -1,0 +1,49 @@
+name: Reference Tests
+
+on: [push]
+
+jobs:
+  run_tests:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Install verilator
+        run: |
+          tar -C ${HOME} -xzf "$GITHUB_WORKSPACE/prebuilt/github-actions-verilator-5.026.tar.gz"
+          echo "${HOME}/verilator/bin" >> $GITHUB_PATH
+          echo "PKG_CONFIG_PATH=${HOME}/verilator/share/pkgconfig:${PKG_CONFIG_PATH}" >> $GITHUB_ENV
+
+      - name: Check verilator
+        run: |
+          which verilator
+          verilator --version
+          pkg-config --modversion verilator
+          pkg-config --cflags verilator
+
+      - name: Install iverilog
+        run: |
+          tar -C ${HOME} -xzf "$GITHUB_WORKSPACE/prebuilt/github-actions-iverilog-12.0.tar.gz"
+          echo "${HOME}/iverilog/bin" >> $GITHUB_PATH
+
+      - name: Check iverilog
+        run: |
+          which iverilog
+          iverilog -V
+
+      - name: Install python packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install git+https://github.com/yaml/pyyaml
+
+      - name: Run sim tests
+        timeout-minutes: 10
+        run: |
+          mkdir -p build
+          cd build
+          ../configure
+          make check-ref-verbose SUMMARIZE_TESTS_FLAGS="-e"

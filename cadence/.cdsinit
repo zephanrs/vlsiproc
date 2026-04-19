@@ -1,0 +1,118 @@
+;=========================================================================
+; Virtuoso initialization file
+; Simplified (pruned comments, etc) by Ivan Bukreyev, modified by Olalekan Afuye
+; See opt/cadence/ICxxx/tools/dfII/samples/local for default version
+; Last modified on 6/13/2018
+;=========================================================================
+
+printf("Loading .cdsinit customizations\n")
+
+;=========================================================================
+; SETTINGS FOR SKILL PATH and SKILL PROGRAMMING
+;=========================================================================
+
+sstatus(writeProtect nil)
+
+let((skillPath)
+   skillPath= strcat(
+    ". ~ "                                          ; Current & home directory
+    prependInstallPath("samples/techfile ")         ; sample source technology files
+   )
+   setSkillPath(skillPath)
+)
+
+;=========================================================================
+; Load Calibre Skill Interface
+;=========================================================================
+
+mgc_home=getShellEnvVar("MGC_HOME")
+if( mgc_home!=nil && isDir(mgc_home) && isReadable(mgc_home) then
+    ; Load calibre.skl for Cadence versions 4.4 and greater
+    load(strcat(mgc_home "/shared/pkgs/icv/tools/queryskl/calibre.skl"))
+else
+    ; MGC_HOME is not set
+    printf("Calibre Skill Interface not loaded.\n")
+)
+
+CWD = getWorkingDir()
+HOMEDIR = getShellEnvVar("HOME")
+
+
+envSetVal("asimenv" "saveDir" 'string strcat(CWD "/.artist_states"))
+
+FOLDER = buildString(last(parseString(CWD "/"))) 
+
+printf("Simulation Directory is %s\n", envGetVal("asimenv.startup", "projectDir"))
+printf("SaveDir is %s\n", envGetVal("asimenv", "saveDir"))
+
+; set DRD to notify
+envSetVal("layout" "drdEditMode" 'cyclic "notify")
+
+; Set default DRC/LVS files and switches
+envSetVal("Diva.DRC", "rules", 'string, "/opt/cadence-designkits/gpdk045/diva/divaDRC.rul")
+envSetVal("Diva.DRC", "useLib", 'boolean, nil)
+envSetVal("Diva.DRC", "switches", 'string, "SUGGESTED_CHECK")
+
+envSetVal("Diva.LVS", "rules", 'string,
+        "/opt/cadence-designkits/gpdk045/diva/divaLVS.rul")
+envSetVal("Diva.LVS", "useLib", 'boolean, nil)
+;envSetVal("Diva.LVS", "switches", 'string, "SUGGESTED_CHECK")
+
+envSetVal("Diva.Extract", "rules", 'string,
+        "/opt/cadence-designkits/gpdk045/diva/divaEXT.rul")
+envSetVal("Diva.Extract", "useLib", 'boolean, nil)
+;envSetVal("Diva.Extract", "switches", 'string, "SUGGESTED_CHECK")
+
+; Set window title default is "%a %m: %l %c %v  %x"
+envSetVal("designEditor.window", "windowNameFormat", 'string, "%c %v %l %x %a")
+envSetVal("designEditor.window", "useShortProductName", 'boolean, 't)
+
+
+envSetVal("asimenv.plotting" "artistPlottingMode" 'string "Append")
+envSetVal("wavescan.trace" "lineStyle" 'string "Solid")
+envSetVal("viva.trace" "lineStyle" 'string "solid")
+envSetVal("viva.trace" "lineThickness" 'string "medium")
+envSetVal("viva.rectGraph" "background" 'string "black")
+envSetVal("spectre.outputs" "save" 'string "all")
+envSetVal("spectre.outputs" "currents" 'string "all")
+envSetVal("spectre.outputs" "pwr" 'string "none")
+
+leSetEnv("modalCommands" t)
+leSetEnv("displayRefPoint" t)
+leSetEnv("autoSetRefPoint" nil)
+leSetEnv("gravityOn" nil)
+leSetEnv("gravityType" list("centerline" "edge" "vertex" "end"))
+leSetEnv("gravityAperture" 3.0)
+leSetEnv("gravityDepth" 20)
+leSetEnv("flattenMode" "one level")
+leSetEnv("flattenPCells" t)
+
+envSetVal( "schematic" "srcSolderOnCrossover" 'cyclic "ignored")
+
+; use ssh for remote simulations help: cdsremote for more info
+envSetVal("asimenv.distributed" "remoteShell" 'string "ssh")
+
+;=========================================================================
+; Miscellaneous Settings for Ivan
+;=========================================================================
+
+schSetEnv( "tsgTemplateType" "artist" )    /* Analog Artist symbol gen */
+hiSetFilterOptions(t t t t t t t)          /* Log filter options       */
+hiGetCIWindow()->displayMouseBinding = t
+hiGetCIWindow()->scrollBars = t            /* Turn on scroll bars      */
+hiGetCIWindow()->infix = nil               /* Turn off infix           */
+hiGetCIWindow()->displayMouseBinding = t
+hiSetUndoLimit(100)                        /* Allow 100 undos          */
+hiSetMultiClickTime(500)                   /* Set double click         */
+hiFormApply( hiSysProps )
+
+;=========================================================================
+; Waveform default plot options
+;=========================================================================
+;envSetVal("viva.axis", "font", 'string, "Default,12,-1,5,50,0,0,0,0,0")
+;envSetVal("viva.axis", "font", 'string, "DejaVu Sans Mono,11,-1,5,50,0,0,0,0,0")
+envSetVal("viva.trace", "lineThickness", 'string, "thick")
+;envSetVal("viva.traceLegend", "font", 'string, "DejaVu Sans Mono,11,-1,5,50,0,0,0,0,0")
+;envSetVal("viva.traceLegend", "printSaveImageFont", 'string, "Default,16,-1,5,50,0,0,0,0,0")
+
+printf("End of .cdsinit customizations\n")
