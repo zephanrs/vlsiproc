@@ -27,13 +27,6 @@ import tempfile
 # -----------------------------------------------------------------------
 # SKILL: extract netlist to a tab-separated file.
 # No string manipulation, regex, or formatting -- just data extraction.
-#
-# Output format (one record per line, tab-separated):
-#   cell     <cellName>
-#   port     <name>  <direction>  <bits>
-#   net      <name>
-#   noconn   <netName>
-#   inst     <instName>  <cellName>  <pin1>  <net1>  <pin2>  <net2>  ...
 # -----------------------------------------------------------------------
 SKILL_EXTRACT = r"""
 procedure( s2v_extract( libName cellName outFile )
@@ -92,13 +85,13 @@ PRIMITIVES = {
     "nmos4", "pmos4", "nmos", "pmos",
     "nmos1v", "pmos1v",
     "ipin", "opin", "iopin",
-    "vdd!", "gnd!",
+    "vdd!", "gnd!", "vdd", "gnd",
     "noConn",
 }
 
-MOS_CELLS = {"nmos4", "pmos4", "nmos1v", "pmos1v"}
+MOS_CELLS = {"nmos4", "pmos4", "nmos1v", "pmos1v", "nmos", "pmos"}
 
-SUPPLY_NETS = {"vdd!", "gnd!"}
+SUPPLY_NETS = {"vdd!", "gnd!", "vdd", "gnd"}
 
 def supply_name(n):
     if n == "vdd!":
@@ -218,7 +211,7 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
     dir_map = {"input": "input ", "output": "output", "inputOutput": "inout "}
 
     # --- port net names (for exclusion from internal net declarations) ---
-    port_net_names = {vlog_name(p[0]) for p in ports}
+    port_bases = {p[0] for p in ports}
 
     # --- includes: one per unique sub-cell, ref preferred ---
     seen_incs = set()
@@ -245,50 +238,71 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
     max_type_len   = max((len(s) for s in port_type_strs), default=0)
 
     # --- internal nets ---
-    # Group individual bus bits (e.g. data[0], data[1]) into bus declarations.
-    # Skip port nets, supply nets, and no-connect nets.
-    scalar_nets = []
-    bus_max     = {}   # base_name -> max_index
-    seen_nets   = set()
+    def _parse_net_decl(name):
+        """Parse arbitrary sub-bus combinations and bits for declarations."""
+        m_range = re.match(r'^(.+)<(\d+):(\d+)>$', name)
+        if m_range:
+            hi = int(m_range.group(2))
+            lo = int(m_range.group(3))
+            return m_range.group(1), max(hi, lo), min(hi, lo)
+        m_bit = re.match(r'^(.+)<(\d+)>$', name)
+        if m_bit:
+            return m_bit.group(1), int(m_bit.group(2)), int(m_bit.group(2))
+        return name, None, None
 
-    for raw in nets:
-        n = vlog_name(raw)
-        if n in port_net_names:
+    # Merge all raw nets referenced either in SKILL nets array or in instance connections
+    all_raw_nets = set(nets)
+    for _, _, conns in insts:
+        for _, net in conns:
+            if net: all_raw_nets.add(net)
+
+    bus_max = {}
+    scalar_nets_set = set()
+    has_vdd = False
+    has_gnd = False
+
+    for raw in all_raw_nets:
+        # Check supply dependencies 
+        vn = supply_name(vlog_name(raw))
+        if vn == "vdd": has_vdd = True
+        if vn == "gnd": has_gnd = True
+
+        base, hi, lo = _parse_net_decl(raw)
+        vbase = vlog_name(base)
+        vnet  = vlog_name(raw)
+
+        # Ignore Ports, Supplies, and pure noConnect elements
+        if base in port_bases or vbase in port_bases:
             continue
-        if n in SUPPLY_NETS:
+        if base in SUPPLY_NETS or vbase in SUPPLY_NETS:
             continue
-        if n in noconn_vlog:
+        if vnet in noconn_vlog:
             continue
-        m = re.match(r"^(.+)\[(\d+)\]$", n)
-        if m:
-            base, idx = m.group(1), int(m.group(2))
-            if base not in port_net_names:
-                bus_max[base] = max(bus_max.get(base, 0), idx)
+
+        # Keep track of the highest bit for every bus 
+        if hi is not None:
+            bus_max[vbase] = max(bus_max.get(vbase, -1), hi, lo)
         else:
-            if n not in seen_nets:
-                seen_nets.add(n)
-                scalar_nets.append(n)
+            scalar_nets_set.add(vbase)
 
     # Remove scalars that are just base names of detected buses
-    scalar_nets = [n for n in scalar_nets if n not in bus_max]
+    scalar_nets = [n for n in scalar_nets_set if n not in bus_max]
 
-    int_net_decls = [f"logic {n};" for n in scalar_nets]
+    int_net_decls = [f"logic {n};" for n in sorted(scalar_nets)]
     for base, hi in sorted(bus_max.items()):
         int_net_decls.append(f"logic [{hi}:0] {base};")
 
     # --- sub-cell instances ---
     sub_insts  = []
     mos_lines  = []
-    has_supply = False
 
     for inst_name, cell, conns in insts:
         if cell in MOS_CELLS:
-            has_supply = True
             pins = {p: supply_name(vlog_name(n)) for p, n in conns}
             d = pins.get("D", "")
             g = pins.get("G", "")
             s = pins.get("S", "")
-            prim = "nmos" if cell in {"nmos4", "nmos1v"} else "pmos"
+            prim = "nmos" if cell in {"nmos4", "nmos1v", "nmos"} else "pmos"
             mos_lines.append(f"  {prim} {inst_name:<10} ( {d}, {s}, {g} );")
         elif cell in PRIMITIVES:
             continue
@@ -309,7 +323,7 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
         lines.append(s)
 
     h("//" + "=" * 72)
-    h(f"// {cell_name}")
+    h(f"// {cell_name} (generated by schematic2verilog)")
     h("//" + "=" * 72)
     h()
     h(f"`ifndef {guard}")
@@ -328,10 +342,17 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
         h(f"  {pad(ts, max_type_len)} {vlog_name(name)}{comma}")
     h(");")
 
-    if has_supply:
+    # Dynamic Supply Injection
+    supply_lines = []
+    if has_vdd and "vdd" not in port_bases:
+        supply_lines.append("  supply1 vdd;")
+    if has_gnd and "gnd" not in port_bases:
+        supply_lines.append("  supply0 gnd;")
+
+    if supply_lines:
         h()
-        h("  supply1 vdd;")
-        h("  supply0 gnd;")
+        for line in supply_lines:
+            h(line)
 
     if int_net_decls:
         h()

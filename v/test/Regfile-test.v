@@ -6,9 +6,11 @@
 `include "ref/Regfile.v"
 
 module Top();
-
+  /* verilator lint_off UNUSEDSIGNAL */
   logic clk, rst;
   TestUtilsClkRst t ( .clk(clk), .rst(rst) );
+  /* verilator lint_on UNUSEDSIGNAL */
+
 
   logic       wen;
   logic [2:0] waddr, raddr0, raddr1;
