@@ -1,9 +1,10 @@
-name: Reference Tests
+name: Ref Tests (Cell)
 
 on: [push]
 
 jobs:
-  run_tests:
+  run_ref_cell:
+    name: check-ref-cell
     runs-on: ubuntu-22.04
 
     steps:
@@ -23,7 +24,6 @@ jobs:
           which verilator
           verilator --version
           pkg-config --modversion verilator
-          pkg-config --cflags verilator
 
       - name: Install iverilog
         run: |
@@ -40,10 +40,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install git+https://github.com/yaml/pyyaml
 
-      - name: Run sim tests
+      - name: Run cell tests
         timeout-minutes: 10
         run: |
           mkdir -p build
           cd build
           ../configure
-          make check-ref-verbose SUMMARIZE_TESTS_FLAGS="-e"
+          make check-ref-cell-verbose SUMMARIZE_TESTS_FLAGS="-e"

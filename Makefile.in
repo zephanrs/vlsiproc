@@ -66,6 +66,7 @@ srcs  := $(ref_srcs)
 tests := $(ref_tests)
 
 VPATH := $(top_dir)/v/ref
+VPATH += $(top_dir)/v/schematic
 VPATH += $(top_dir)/v/test
 VPATH += $(top_dir)/v/eval
 
@@ -93,7 +94,7 @@ check : $(test_logs)
 check-verbose : $(test_logs)
 	$(SUMMARIZE_TESTS) --verbose $(test_logs)
 
-.PHONY: check
+.PHONY: check check-ref check-ref-cell check-ref-blocks check-ref-proc
 
 deps += $(test_deps)
 exes += $(test_exes)
