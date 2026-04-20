@@ -1,1 +1,17 @@
 build/
+
+# Cadence user preferences, history, and session state
+cadence/.cadence/
+cadence/perf/
+
+# Cadence log files
+cadence/libManager.log
+cadence/*.log
+
+# Cadence generated thumbnails (auto-regenerated on open)
+**/thumbnail_*.png
+
+# Cadence lock files (created during active sessions)
+**/*.lck
+**/*.cdslck
+**/cdslck/
