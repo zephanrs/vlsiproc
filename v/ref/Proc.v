@@ -16,16 +16,15 @@ module Proc
   // Memory Interface
   output logic        idmem_val,
   output logic        idmem_type,
-  output logic [31:0] idmem_addr,
-  output logic [31:0] idmem_wdata,
-  input  logic [31:0] idmem_rdata
+  output logic [7:0]  idmem_addr,
+  output logic [7:0]  idmem_wdata,
+  input  logic [15:0] idmem_rdata
 );
 
   // Control Signals (Control Unit -> Datapath)
   logic       pc_en;
   logic       addr_sel;
   logic       ir_en;
-  logic [1:0] imm_type;
   logic       a_en;
   logic       b_en;
   logic       oldpc_en;
@@ -39,7 +38,7 @@ module Proc
   logic       rf_wen;
 
   // Status Signals (Datapath -> Control Unit)
-  logic [31:0] inst;
+  logic [15:0] inst;
   logic        eq;
 
   // Instantiate/Connect Datapath and Control Unit

@@ -3,12 +3,13 @@
 #=========================================================================
 
 ref_srcs = \
-  Adder_32b.v \
-  EqComparator_32b.v \
-  Mux2_32b.v \
-  Mux4_32b.v \
-  Register_32b.v \
-  ALU_32b.v \
+  Adder_8b.v \
+  EqComparator_8b.v \
+  Mux2_8b.v \
+  Mux4_8b.v \
+  Register_8b.v \
+  Register_16b.v \
+  ALU_8b.v \
   ImmGen.v \
   Regfile.v \
   ProcDpath.v \

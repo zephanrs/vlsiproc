@@ -1,7 +1,7 @@
 //========================================================================
 // Regfile
 //========================================================================
-// Register file with 32 32-bit entries, two read ports, and one write
+// Register file with 8 8-bit entries, two read ports, and one write
 // port. Reading register zero should always return zero.
 
 `ifndef REGFILE_V
@@ -9,20 +9,20 @@
 
 module Regfile
 (
-  input  logic        clk,
+  input  logic       clk,
 
-  input  logic        wen,
-  input  logic  [4:0] waddr,
-  input  logic [31:0] wdata,
+  input  logic       wen,
+  input  logic [2:0] waddr,
+  input  logic [7:0] wdata,
 
-  input  logic  [4:0] raddr0,
-  output logic [31:0] rdata0,
+  input  logic [2:0] raddr0,
+  output logic [7:0] rdata0,
 
-  input  logic  [4:0] raddr1,
-  output logic [31:0] rdata1
+  input  logic [2:0] raddr1,
+  output logic [7:0] rdata1
 );
 
-  logic [31:0] m [32];
+  logic [7:0] m [8];
 
   // Write port
 

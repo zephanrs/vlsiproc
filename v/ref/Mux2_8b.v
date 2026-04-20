@@ -1,16 +1,16 @@
 //========================================================================
-// Mux2_32b
+// Mux2_8b
 //========================================================================
 
-`ifndef MUX2_32B_V
-`define MUX2_32B_V
+`ifndef MUX2_8B_V
+`define MUX2_8B_V
 
-module Mux2_32b
+module Mux2_8b
 (
-  input  logic [31:0] in0,
-  input  logic [31:0] in1,
-  input  logic        sel,
-  output logic [31:0] out
+  input  logic [7:0] in0,
+  input  logic [7:0] in1,
+  input  logic       sel,
+  output logic [7:0] out
 );
 
   always_comb begin
@@ -23,4 +23,4 @@ module Mux2_32b
 
 endmodule
 
-`endif /* MUX2_32B_V */
+`endif /* MUX2_8B_V */
