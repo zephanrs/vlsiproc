@@ -109,7 +109,7 @@ initial begin
       $display("CPI          : %.2f", real'(eval_cycles) / real'(num_insts));
     else
       $display("CPI          : --");
-    $display("Correct      : %s", correct ? "yes" : "no");
+    $display("Correct      : %s", (correct != 0) ? "yes" : "no");
   end
 
   $finish;
