@@ -1,10 +1,10 @@
-name: Ref Tests (Cell)
+name: Ref Tests (Blocks)
 
 on: [push]
 
 jobs:
-  run_ref_cell:
-    name: check-ref-cell
+  run_ref_blocks:
+    name: check-ref-blocks
     runs-on: ubuntu-22.04
 
     steps:
@@ -40,10 +40,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install git+https://github.com/yaml/pyyaml
 
-      - name: Run cell tests
+      - name: Run block tests
         timeout-minutes: 10
         run: |
           mkdir -p build
           cd build
           ../configure
-          make check-ref-cell-verbose SUMMARIZE_TESTS_FLAGS="-e"
+          make check-ref-blocks-verbose SUMMARIZE_TESTS_FLAGS="-e"

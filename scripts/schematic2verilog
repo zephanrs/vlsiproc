@@ -1,0 +1,446 @@
+#!/usr/bin/env python3
+"""
+schematic2verilog -- export a Cadence schematic cell to project-style Verilog
+
+Usage:
+    schematic2verilog -lib LIBRARY -cell CELL [-cell CELL ...] [-out DIR] [-ref DIR]
+
+Options:
+    -lib  LIBRARY   Cadence library name
+    -cell CELL      Cell(s) to convert (may be repeated for a batch)
+    -out  DIR       Output directory for generated .v files  [default: ../v/schematic]
+    -ref  DIR       Directory with pre-built reference .v files [default: ../v/ref]
+    -cds  DIR       Directory containing cds.lib              [default: ../cadence]
+
+Must be run from the build directory (where ../cadence/cds.lib exists).
+SKILL extracts raw netlist data; Python generates the Verilog.
+"""
+
+import argparse
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+
+# -----------------------------------------------------------------------
+# SKILL: extract netlist to a tab-separated file.
+# No string manipulation, regex, or formatting -- just data extraction.
+#
+# Output format (one record per line, tab-separated):
+#   cell     <cellName>
+#   port     <name>  <direction>  <bits>
+#   net      <name>
+#   noconn   <netName>
+#   inst     <instName>  <cellName>  <pin1>  <net1>  <pin2>  <net2>  ...
+# -----------------------------------------------------------------------
+SKILL_EXTRACT = r"""
+procedure( s2v_extract( libName cellName outFile )
+  let( (cv fp bits)
+    cv = dbOpenCellViewByType( libName cellName "schematic" "" "r" )
+    unless( cv
+      fprintf( errport "s2v: ERROR cannot open schematic %s/%s\n" libName cellName )
+      return( nil )
+    )
+    fp = outfile( outFile "w" )
+    unless( fp
+      fprintf( errport "s2v: ERROR cannot write %s\n" outFile )
+      dbClose( cv )  return( nil )
+    )
+
+    fprintf( fp "cell\t%s\n" cellName )
+
+    foreach( term cv~>terminals
+      bits = if( term~>termType == "singleBit" then 1 else length( term~>nets ) )
+      fprintf( fp "port\t%s\t%s\t%d\n" term~>name term~>direction bits )
+    )
+
+    foreach( net cv~>nets
+      fprintf( fp "net\t%s\n" net~>name )
+    )
+
+    foreach( inst cv~>instances
+      when( inst~>cellName == "noConn"
+        foreach( it inst~>instTerms
+          when( it~>net
+            fprintf( fp "noconn\t%s\n" it~>net~>name )
+          )
+        )
+      )
+      unless( inst~>cellName == "noConn"
+        fprintf( fp "inst\t%s\t%s" inst~>name inst~>cellName )
+        foreach( it inst~>instTerms
+          fprintf( fp "\t%s\t%s" it~>name
+            if( it~>net then it~>net~>name else "" ) )
+        )
+        fprintf( fp "\n" )
+      )
+    )
+
+    close( fp )
+    dbClose( cv )
+    printf( "s2v: extracted %s -> %s\n" cellName outFile )
+  )
+)
+"""
+
+# -----------------------------------------------------------------------
+# Primitives that are not rendered as module instances
+# -----------------------------------------------------------------------
+PRIMITIVES = {
+    "nmos4", "pmos4", "nmos", "pmos",
+    "nmos1v", "pmos1v",
+    "ipin", "opin", "iopin",
+    "vdd!", "gnd!",
+    "noConn",
+}
+
+MOS_CELLS = {"nmos4", "pmos4", "nmos1v", "pmos1v"}
+
+SUPPLY_NETS = {"vdd!", "gnd!"}
+
+def supply_name(n):
+    if n == "vdd!":
+        return "vdd"
+    if n == "gnd!":
+        return "gnd"
+    return n
+
+def vlog_name(n):
+    """Convert Cadence <> bus notation to Verilog []."""
+    return n.replace("<", "[").replace(">", "]")
+
+def guard_name(cell):
+    """MyCell_8b -> MY_CELL_8B_V"""
+    s = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", cell)
+    s = re.sub(r"[^A-Za-z0-9]+", "_", s)
+    s = s.strip("_").upper()
+    return s + "_V"
+
+def pad(s, width):
+    return s.ljust(width)
+
+# -----------------------------------------------------------------------
+# Parse the tab-separated netlist file written by SKILL
+# -----------------------------------------------------------------------
+def parse_netlist(path):
+    cell_name   = None
+    ports       = []        # list of (name, direction, bits)
+    nets        = []        # list of raw net names
+    insts       = []        # list of (instName, cellName, [(pin, net), ...])
+    noconn_nets = set()     # raw net names that terminate at a noConn marker
+
+    with open(path) as f:
+        for line in f:
+            line = line.rstrip("\n")
+            if not line:
+                continue
+            parts = line.split("\t")
+            tag = parts[0]
+            if tag == "cell":
+                cell_name = parts[1]
+            elif tag == "port":
+                _, name, direction, bits = parts
+                ports.append((name, direction, int(bits)))
+            elif tag == "net":
+                nets.append(parts[1])
+            elif tag == "noconn":
+                noconn_nets.add(parts[1])
+            elif tag == "inst":
+                inst_name = parts[1]
+                cell      = parts[2]
+                conns = []
+                for i in range(3, len(parts) - 1, 2):
+                    conns.append((parts[i], parts[i+1]))
+                insts.append((inst_name, cell, conns))
+
+    return cell_name, ports, nets, insts, noconn_nets
+
+# -----------------------------------------------------------------------
+# Array-instance unrolling
+# -----------------------------------------------------------------------
+def _parse_cadence_range(name):
+    """'foo<6:1>' -> ('foo', 6, 1).  Anything else -> ('foo', None, None)."""
+    m = re.match(r'^(.+)<(\d+):(\d+)>$', name)
+    if m:
+        return m.group(1), int(m.group(2)), int(m.group(3))
+    return name, None, None
+
+def _expand_insts(insts):
+    """
+    Unroll array instances.  'I1<6:1>' expands to I1_6, I1_5, ..., I1_1.
+    Bus connections are sliced per element; scalar connections are shared.
+    """
+    result = []
+    for inst_name, cell, conns in insts:
+        base, hi, lo = _parse_cadence_range(inst_name)
+        if hi is None:
+            result.append((inst_name, cell, conns))
+            continue
+
+        # Index ordering: Cadence arrays go hi-to-lo (left-to-right in schematic)
+        if hi >= lo:
+            indices = list(range(hi, lo - 1, -1))
+        else:
+            indices = list(range(hi, lo + 1))
+
+        for offset, idx in enumerate(indices):
+            new_conns = []
+            for pin, net in conns:
+                net_base, net_hi, net_lo = _parse_cadence_range(net)
+                if net_hi is not None:
+                    if net_hi >= net_lo:
+                        net_bits = list(range(net_hi, net_lo - 1, -1))
+                    else:
+                        net_bits = list(range(net_hi, net_lo + 1))
+                    bit = net_bits[offset]
+                    new_conns.append((pin, f"{net_base}<{bit}>"))
+                else:
+                    new_conns.append((pin, net))
+            result.append((f"{base}_{idx}", cell, new_conns))
+
+    return result
+
+# -----------------------------------------------------------------------
+# Generate Verilog from parsed netlist
+# -----------------------------------------------------------------------
+def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_dir):
+    guard = guard_name(cell_name)
+
+    # Verilog-notation set of no-connect nets
+    noconn_vlog = {vlog_name(n) for n in noconn_nets}
+
+    # Unroll any array instances before further processing
+    insts = _expand_insts(insts)
+
+    # --- direction map ---
+    dir_map = {"input": "input ", "output": "output", "inputOutput": "inout "}
+
+    # --- port net names (for exclusion from internal net declarations) ---
+    port_net_names = {vlog_name(p[0]) for p in ports}
+
+    # --- includes: one per unique sub-cell, ref preferred ---
+    seen_incs = set()
+    includes  = []
+    for _, cell, _ in insts:
+        if cell in PRIMITIVES:
+            continue
+        ref_file = os.path.join(ref_dir, cell + ".v")
+        inc = f"ref/{cell}.v" if os.path.isfile(ref_file) else f"schematic/{cell}.v"
+        if inc not in seen_incs:
+            seen_incs.add(inc)
+            includes.append(inc)
+
+    # --- port list ---
+    def width_str(bits):
+        return f"[{bits-1}:0]" if bits > 1 else ""
+
+    def type_str(direction, bits):
+        d = dir_map.get(direction, "inout ")
+        w = width_str(bits)
+        return f"{d} logic {w}" if w else f"{d} logic"
+
+    port_type_strs = [type_str(d, b) for _, d, b in ports]
+    max_type_len   = max((len(s) for s in port_type_strs), default=0)
+
+    # --- internal nets ---
+    # Group individual bus bits (e.g. data[0], data[1]) into bus declarations.
+    # Skip port nets, supply nets, and no-connect nets.
+    scalar_nets = []
+    bus_max     = {}   # base_name -> max_index
+    seen_nets   = set()
+
+    for raw in nets:
+        n = vlog_name(raw)
+        if n in port_net_names:
+            continue
+        if n in SUPPLY_NETS:
+            continue
+        if n in noconn_vlog:
+            continue
+        m = re.match(r"^(.+)\[(\d+)\]$", n)
+        if m:
+            base, idx = m.group(1), int(m.group(2))
+            if base not in port_net_names:
+                bus_max[base] = max(bus_max.get(base, 0), idx)
+        else:
+            if n not in seen_nets:
+                seen_nets.add(n)
+                scalar_nets.append(n)
+
+    # Remove scalars that are just base names of detected buses
+    scalar_nets = [n for n in scalar_nets if n not in bus_max]
+
+    int_net_decls = [f"logic {n};" for n in scalar_nets]
+    for base, hi in sorted(bus_max.items()):
+        int_net_decls.append(f"logic [{hi}:0] {base};")
+
+    # --- sub-cell instances ---
+    sub_insts  = []
+    mos_lines  = []
+    has_supply = False
+
+    for inst_name, cell, conns in insts:
+        if cell in MOS_CELLS:
+            has_supply = True
+            pins = {p: supply_name(vlog_name(n)) for p, n in conns}
+            d = pins.get("D", "")
+            g = pins.get("G", "")
+            s = pins.get("S", "")
+            prim = "nmos" if cell in {"nmos4", "nmos1v"} else "pmos"
+            mos_lines.append(f"  {prim} {inst_name:<10} ( {d}, {s}, {g} );")
+        elif cell in PRIMITIVES:
+            continue
+        else:
+            vconns = []
+            for p, n in conns:
+                vn = supply_name(vlog_name(n))
+                vconns.append((p, vn))
+            sub_insts.append((cell, inst_name, vconns))
+
+    # ----------------------------------------------------------------
+    # Write the file
+    # ----------------------------------------------------------------
+    out_path = os.path.join(out_dir, cell_name + ".v")
+    lines = []
+
+    def h(s=""):
+        lines.append(s)
+
+    h("//" + "=" * 72)
+    h(f"// {cell_name}")
+    h("//" + "=" * 72)
+    h()
+    h(f"`ifndef {guard}")
+    h(f"`define {guard}")
+
+    if includes:
+        h()
+        for inc in includes:
+            h(f'`include "{inc}"')
+
+    h()
+    h(f"module {cell_name}")
+    h("(")
+    for i, ((name, direction, bits), ts) in enumerate(zip(ports, port_type_strs)):
+        comma = "," if i < len(ports) - 1 else ""
+        h(f"  {pad(ts, max_type_len)} {vlog_name(name)}{comma}")
+    h(");")
+
+    if has_supply:
+        h()
+        h("  supply1 vdd;")
+        h("  supply0 gnd;")
+
+    if int_net_decls:
+        h()
+        for d in int_net_decls:
+            h(f"  {d}")
+
+    for cell, inst_name, vconns in sub_insts:
+        max_pin = max((len(p) for p, _ in vconns), default=0)
+        h()
+        h(f"  {cell} {inst_name}")
+        h("  (")
+        for j, (pin, net) in enumerate(vconns):
+            comma = "," if j < len(vconns) - 1 else ""
+            if net in noconn_vlog or net == "":
+                h(f"    .{pad(pin, max_pin)} (){comma}")
+            else:
+                h(f"    .{pad(pin, max_pin)} ({net}){comma}")
+        h("  );")
+
+    if mos_lines:
+        h()
+        for ml in mos_lines:
+            h(ml)
+
+    h()
+    h("endmodule")
+    h()
+    h(f"`endif /* {guard} */")
+
+    with open(out_path, "w") as f:
+        f.write("\n".join(lines) + "\n")
+
+    print(f"s2v: wrote {out_path}")
+
+# -----------------------------------------------------------------------
+# Find virtuoso
+# -----------------------------------------------------------------------
+def find_virtuoso():
+    v = shutil.which("virtuoso")
+    if v:
+        return v
+    for p in [
+        "/cadence/installs/IC618/bin/virtuoso",
+        "/cadence/installs/IC617/bin/virtuoso",
+        "/opt/cadence/IC618/bin/virtuoso",
+        "/opt/cadence/IC617/bin/virtuoso",
+    ]:
+        if os.path.isfile(p):
+            return p
+    return None
+
+# -----------------------------------------------------------------------
+# Main
+# -----------------------------------------------------------------------
+def main():
+    parser = argparse.ArgumentParser(
+        description="Export Cadence schematic cell(s) to project-style Verilog."
+    )
+    parser.add_argument("-lib",  required=True,  metavar="LIBRARY")
+    parser.add_argument("-cell", required=True,  metavar="CELL",
+                        action="append", dest="cells")
+    parser.add_argument("-out",  default="../v/schematic", metavar="DIR")
+    parser.add_argument("-ref",  default="../v/ref",       metavar="DIR")
+    parser.add_argument("-cds",  default="../cadence",     metavar="DIR")
+    args = parser.parse_args()
+
+    cds_dir = os.path.realpath(args.cds)
+    out_dir = os.path.realpath(args.out)
+    ref_dir = os.path.realpath(args.ref)
+
+    if not os.path.isfile(os.path.join(cds_dir, "cds.lib")):
+        sys.exit(f"error: no cds.lib in {cds_dir}")
+
+    os.makedirs(out_dir, exist_ok=True)
+
+    virtuoso = find_virtuoso()
+    if not virtuoso:
+        sys.exit("error: cannot find 'virtuoso' -- add it to PATH")
+
+    with tempfile.TemporaryDirectory() as tmp:
+        # Build SKILL: define extractor + one call per cell
+        calls = []
+        netlist_files = {}
+        for cell in args.cells:
+            nl = os.path.join(tmp, cell + ".netlist")
+            netlist_files[cell] = nl
+            calls.append(f's2v_extract( "{args.lib}" "{cell}" "{nl}" )')
+
+        skill_input = SKILL_EXTRACT + "\n" + "\n".join(calls) + "\nexit()\n"
+
+        print(f"Running virtuoso -nograph  (cds: {cds_dir})")
+        result = subprocess.run(
+            [virtuoso, "-nograph"],
+            input=skill_input,
+            text=True,
+            capture_output=False,
+            cwd=cds_dir,
+        )
+        if result.returncode != 0:
+            sys.exit(f"virtuoso exited with code {result.returncode}")
+
+        # Generate Verilog from each extracted netlist
+        for cell in args.cells:
+            nl = netlist_files[cell]
+            if not os.path.isfile(nl):
+                print(f"warning: no netlist produced for {cell}", file=sys.stderr)
+                continue
+            cell_name, ports, nets, insts, noconn_nets = parse_netlist(nl)
+            generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_dir)
+
+if __name__ == "__main__":
+    main()
