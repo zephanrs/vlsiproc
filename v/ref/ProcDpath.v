@@ -13,7 +13,7 @@
 `include "ref/ImmGen.v"
 `include "ref/Mux2_32b.v"
 `include "ref/Mux4_32b.v"
-`include "ref/Multiplier_32x32b.v"
+
 
 module ProcDpath
 (
@@ -172,15 +172,7 @@ module ProcDpath
     .out (op_pc)
   );
 
-  // Multiplier
-  logic [31:0] mul_out;
 
-  Multiplier_32x32b mul
-  (
-    .in0  (a),
-    .in1  (b),
-    .prod (mul_out)
-  );
 
   // Op1 Mux
   logic [31:0] op1_data;
@@ -232,7 +224,7 @@ module ProcDpath
   // Writeback Mux
   Mux4_32b wb_mux
   (
-    .in0 (mul_out),
+    .in0 (32'b0),
     .in1 (alu_out),
     .in2 (idmem_rdata),
     .in3 (32'b0),

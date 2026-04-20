@@ -48,7 +48,7 @@
 
 `define TINYRV1_INST_ADD   32'b0000000_?????_?????_000_?????_0110011
 `define TINYRV1_INST_ADDI  32'b???????_?????_?????_000_?????_0010011
-`define TINYRV1_INST_MUL   32'b0000001_?????_?????_000_?????_0110011
+
 `define TINYRV1_INST_LW    32'b???????_?????_?????_010_?????_0000011
 `define TINYRV1_INST_SW    32'b???????_?????_?????_010_?????_0100011
 `define TINYRV1_INST_JAL   32'b???????_?????_?????_???_?????_1101111
@@ -166,25 +166,6 @@ module TinyRV1();
 
   endfunction
 
-  //----------------------------------------------------------------------
-  // asm_mul
-  //----------------------------------------------------------------------
-
-  function [`TINYRV1_INST_NBITS-1:0] asm_mul
-  (
-    input logic [`TINYRV1_INST_RD_NBITS-1:0]  rd,
-    input logic [`TINYRV1_INST_RS1_NBITS-1:0] rs1,
-    input logic [`TINYRV1_INST_RS2_NBITS-1:0] rs2
-  );
-
-    asm_mul[`TINYRV1_INST_FUNCT7] = 7'b0000001;
-    asm_mul[`TINYRV1_INST_RS2]    = rs2;
-    asm_mul[`TINYRV1_INST_RS1]    = rs1;
-    asm_mul[`TINYRV1_INST_FUNCT3] = 3'b000;
-    asm_mul[`TINYRV1_INST_RD]     = rd;
-    asm_mul[`TINYRV1_INST_OPCODE] = 7'b0110011;
-
-  endfunction
 
   //----------------------------------------------------------------------
   // asm_lw
@@ -441,7 +422,7 @@ module TinyRV1();
 
       "add"  : begin e = $sscanf( str, "add  x%d, x%d, x%d", rd, rs1, rs2      ); asm = asm_add ( rd, rs1, rs2 );            end
       "addi" : begin e = $sscanf( str, "addi x%d, x%d, %s",  rd, rs1, imm_s    ); asm = asm_addi( rd, rs1, imm_s );          end
-      "mul"  : begin e = $sscanf( str, "mul  x%d, x%d, x%d", rd, rs1, rs2      ); asm = asm_mul ( rd, rs1, rs2 );            end
+
       "lw"   : begin e = $sscanf( str, "lw   x%d, %s",       rd, addr_s        ); asm = asm_lw  ( rd, addr_s );              end
       "sw"   : begin e = $sscanf( str, "sw   x%d, %s",       rs2, addr_s       ); asm = asm_sw  ( rs2, addr_s );             end
       "jal"  : begin e = $sscanf( str, "jal  x%d, %s",       rd, jtarg_s       ); asm = asm_jal ( addr, rd, jtarg_s );       end
@@ -562,7 +543,7 @@ module TinyRV1();
     casez ( inst )
       `TINYRV1_INST_ADD   : $sformat( disasm_, "add  x%-0d, x%-0d, x%-0d", rd, rs1, rs2 );
       `TINYRV1_INST_ADDI  : $sformat( disasm_, "addi x%-0d, x%-0d, 0x%x",  rd, rs1, disasm_imm_i(inst) );
-      `TINYRV1_INST_MUL   : $sformat( disasm_, "mul  x%-0d, x%-0d, x%-0d", rd, rs1, rs2 );
+
       `TINYRV1_INST_LW    : $sformat( disasm_, "lw   x%-0d, 0x%x(x%-0d)",  rd, disasm_imm_i(inst), rs1 );
       `TINYRV1_INST_SW    : $sformat( disasm_, "sw   x%-0d, 0x%x(x%-0d)",  rs2, disasm_imm_s(inst), rs1 );
       `TINYRV1_INST_JAL   : $sformat( disasm_, "jal  x%-0d, 0x%x",         rd, 20'(disasm_imm_j(addr,inst)) );
@@ -587,7 +568,7 @@ module TinyRV1();
     casez ( inst )
       `TINYRV1_INST_ADD  : disasm_tiny = "add ";
       `TINYRV1_INST_ADDI : disasm_tiny = "addi";
-      `TINYRV1_INST_MUL  : disasm_tiny = "mul ";
+
       `TINYRV1_INST_LW   : disasm_tiny = "lw  ";
       `TINYRV1_INST_SW   : disasm_tiny = "sw  ";
       `TINYRV1_INST_JAL  : disasm_tiny = "jal ";
