@@ -60,6 +60,7 @@ endef
 #-------------------------------------------------------------------------
 
 include $(top_dir)/v/ref/ref.mk
+include $(top_dir)/v/eval/eval.mk
 
 srcs  := $(ref_srcs)
 tests := $(ref_tests)
