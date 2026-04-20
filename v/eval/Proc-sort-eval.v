@@ -125,6 +125,11 @@ initial begin
   begin
     int correct;
     logic [7:0] actual;
+    $display("DBG mem[0x80..0x87]: %0d %0d %0d %0d %0d %0d %0d %0d",
+             mem.m[64][7:0], mem.m[64][15:8],
+             mem.m[65][7:0], mem.m[65][15:8],
+             mem.m[66][7:0], mem.m[66][15:8],
+             mem.m[67][7:0], mem.m[67][15:8]);
     correct = 1;
     for (int i = 0; i < 16; i++) begin
       if (i % 2 == 0)

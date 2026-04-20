@@ -88,6 +88,9 @@ initial begin
   begin
     int correct;
     logic [7:0] actual;
+    $display("DBG mem[0x80..0x83]: %0d %0d %0d %0d",
+             mem.m[64][7:0], mem.m[64][15:8],
+             mem.m[65][7:0], mem.m[65][15:8]);
     correct = 1;
     for (int i = 0; i < 64; i++) begin
       if (i % 2 == 0)
