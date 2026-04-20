@@ -1,2 +1,5 @@
 INCLUDE /opt/cadence-designkits/gpdk045_v_6_0/cds.lib
 
+DEFINE standard_cells /home/zrs29/processor/cadence/standard_cells
+DEFINE processor /home/zrs29/processor/cadence/processor
+DEFINE testbenchs /home/zrs29/processor/cadence/testbenchs
