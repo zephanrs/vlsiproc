@@ -127,14 +127,17 @@ initial begin
 
   begin
     correct = 1;
+    $write("DBG A[0..15]:");
     for (int i = 0; i < 16; i++) begin
       if (i % 2 == 0)
         actual = mem.m[7'(64 + i/2)][7:0];
       else
         actual = mem.m[7'(64 + i/2)][15:8];
+      $write(" %0d", actual);
       if (actual !== 8'(i+1))
         correct = 0;
     end
+    $display("");
 
     //------------------------------------------------------------------
     // Display results
