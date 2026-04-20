@@ -1,16 +1,14 @@
 //========================================================================
-// TinyRV1 Instruction Set Specification
+// TinyRV1 Instruction Set Specification (16-bit Custom ISA)
 //========================================================================
-// The 32-bit instruction has different fields depending on the format of
-// the instruction used. The following are the various instruction
-// encoding formats used in the TinyRV1 ISA.
 //
-//  31          25 24   20 19   15 14    12 11          7 6      0
-// | funct7       | rs2   | rs1   | funct3 | rd          | opcode |  R-type
-// | imm[11:0]            | rs1   | funct3 | rd          | opcode |  I-type,I-imm
-// | imm[11:5]    | rs2   | rs1   | funct3 | imm[4:0]    | opcode |  S-type,S-imm
-// | imm[12|10:5] | rs2   | rs1   | funct3 | imm[4:1|11] | opcode |  S-type,B-imm
-// | imm[20|10:1|11|19:12]                 | rd          | opcode |  U-type,J-imm
+//  15       12 11     9 8       6 5       3 2      0
+// | opcode    | rd     | rs1     | rs2     | imm    |
+//
+// Immediate types (6-bit, derived from inst[14:13]):
+// I-type (01): {inst[5:3], inst[2:0]} = {rs2, imm}
+// S-type (10): {inst[11:9], inst[2:0]} = {rd, imm}
+//
 
 `ifndef TINYRV1_ASM_V
 `define TINYRV1_ASM_V
@@ -19,45 +17,35 @@
 // Instruction fields
 //------------------------------------------------------------------------
 
-`define TINYRV1_INST_IMM_J   31:12
-`define TINYRV1_INST_IMM_I   31:20
-`define TINYRV1_INST_FUNCT7  31:25
-`define TINYRV1_INST_RS2     24:20
-`define TINYRV1_INST_RS1     19:15
-`define TINYRV1_INST_FUNCT3  14:12
-`define TINYRV1_INST_RD      11:7
-`define TINYRV1_INST_OPCODE  6:0
+`define TINYRV1_INST_OPCODE 15:12
+`define TINYRV1_INST_RD     11:9
+`define TINYRV1_INST_RS1    8:6
+`define TINYRV1_INST_RS2    5:3
+`define TINYRV1_INST_IMM    2:0
 
 //------------------------------------------------------------------------
 // Field sizes
 //------------------------------------------------------------------------
 
-`define TINYRV1_INST_NBITS          32
-`define TINYRV1_INST_IMM_J_NBITS    20
-`define TINYRV1_INST_IMM_I_NBITS    12
-`define TINYRV1_INST_FUNCT7_NBITS   7
-`define TINYRV1_INST_RS2_NBITS      5
-`define TINYRV1_INST_RS1_NBITS      5
-`define TINYRV1_INST_FUNCT3_NBITS   3
-`define TINYRV1_INST_RD_NBITS       5
-`define TINYRV1_INST_OPCODE_NBITS   7
+`define TINYRV1_INST_NBITS          16
+`define TINYRV1_INST_OPCODE_NBITS   4
+`define TINYRV1_INST_RD_NBITS       3
+`define TINYRV1_INST_RS1_NBITS      3
+`define TINYRV1_INST_RS2_NBITS      3
+`define TINYRV1_INST_IMM_NBITS      3
 
 //------------------------------------------------------------------------
 // Instruction opcodes
 //------------------------------------------------------------------------
 
-`define TINYRV1_INST_ADD   32'b0000000_?????_?????_000_?????_0110011
-`define TINYRV1_INST_ADDI  32'b???????_?????_?????_000_?????_0010011
+`define TINYRV1_INST_ADD   16'b1000_???_???_???_???
+`define TINYRV1_INST_ADDI  16'b0010_???_???_???_???
+`define TINYRV1_INST_LW    16'b0011_???_???_???_???
+`define TINYRV1_INST_BNE   16'b0100_???_???_???_???
+`define TINYRV1_INST_JR    16'b1001_???_???_???_???
+`define TINYRV1_INST_JAL   16'b1010_???_???_???_???
+`define TINYRV1_INST_SW    16'b1100_???_???_???_???
 
-`define TINYRV1_INST_LW    32'b???????_?????_?????_010_?????_0000011
-`define TINYRV1_INST_SW    32'b???????_?????_?????_010_?????_0100011
-`define TINYRV1_INST_JAL   32'b???????_?????_?????_???_?????_1101111
-`define TINYRV1_INST_JR    32'b???????_?????_?????_000_?????_1100111
-`define TINYRV1_INST_BNE   32'b???????_?????_?????_001_?????_1100011
-
-//------------------------------------------------------------------------
-// Coprocessor registers
-//------------------------------------------------------------------------
 
 `ifndef SYNTHESIS
 
@@ -72,8 +60,6 @@ module TinyRV1();
   //----------------------------------------------------------------------
   // check_imm
   //----------------------------------------------------------------------
-  // Verify immediate can be stored in nbits. Assume decimal immediates
-  // are signed and hexadecimal immediates are unsigned.
 
   function check_imm
   (
@@ -109,12 +95,11 @@ module TinyRV1();
     input logic [`TINYRV1_INST_RS2_NBITS-1:0] rs2
   );
 
-    asm_add[`TINYRV1_INST_FUNCT7] = 7'b0000000;
-    asm_add[`TINYRV1_INST_RS2]    = rs2;
-    asm_add[`TINYRV1_INST_RS1]    = rs1;
-    asm_add[`TINYRV1_INST_FUNCT3] = 3'b000;
+    asm_add[`TINYRV1_INST_OPCODE] = 4'b1000;
     asm_add[`TINYRV1_INST_RD]     = rd;
-    asm_add[`TINYRV1_INST_OPCODE] = 7'b0110011;
+    asm_add[`TINYRV1_INST_RS1]    = rs1;
+    asm_add[`TINYRV1_INST_RS2]    = rs2;
+    asm_add[`TINYRV1_INST_IMM]    = 3'b000;
 
   endfunction
 
@@ -125,7 +110,7 @@ module TinyRV1();
   integer asm_addi_e;
   integer asm_addi_imm_i;
   integer asm_addi_imm_is_dec;
-  logic [`TINYRV1_INST_IMM_I_NBITS-1:0] asm_addi_imm;
+  logic [5:0] asm_addi_imm;
 
   function [`TINYRV1_INST_NBITS-1:0] asm_addi
   (
@@ -133,8 +118,6 @@ module TinyRV1();
     input logic [`TINYRV1_INST_RS1_NBITS-1:0] rs1,
     input logic [20*8-1:0]                    imm_s
   );
-
-    // Parse immediate
 
     asm_addi_imm_is_dec = 0;
     asm_addi_e = $sscanf( imm_s, "0x%x", asm_addi_imm_i );
@@ -147,25 +130,20 @@ module TinyRV1();
     if ( asm_addi_e == 0 )
       e = 0;
 
-    // Check for valid immediate
-
-    e = 32'(check_imm( 12, asm_addi_imm_is_dec, asm_addi_imm_i ));
+    e = 32'(check_imm( 6, asm_addi_imm_is_dec, asm_addi_imm_i ));
 
     if ( e != 0 )
-      asm_addi_imm = `TINYRV1_INST_IMM_I_NBITS'(asm_addi_imm_i);
+      asm_addi_imm = 6'(asm_addi_imm_i);
     else
       asm_addi_imm = 'x;
 
-    // Assemble the instruction
-
-    asm_addi[`TINYRV1_INST_IMM_I]  = asm_addi_imm;
-    asm_addi[`TINYRV1_INST_RS1]    = rs1;
-    asm_addi[`TINYRV1_INST_FUNCT3] = 3'b000;
+    asm_addi[`TINYRV1_INST_OPCODE] = 4'b0010;
     asm_addi[`TINYRV1_INST_RD]     = rd;
-    asm_addi[`TINYRV1_INST_OPCODE] = 7'b0010011;
+    asm_addi[`TINYRV1_INST_RS1]    = rs1;
+    asm_addi[`TINYRV1_INST_RS2]    = asm_addi_imm[5:3];
+    asm_addi[`TINYRV1_INST_IMM]    = asm_addi_imm[2:0];
 
   endfunction
-
 
   //----------------------------------------------------------------------
   // asm_lw
@@ -174,7 +152,7 @@ module TinyRV1();
   integer asm_lw_e;
   integer asm_lw_imm_i;
   integer asm_lw_imm_is_dec;
-  logic [`TINYRV1_INST_IMM_I_NBITS-1:0] asm_lw_imm;
+  logic [5:0] asm_lw_imm;
   logic [`TINYRV1_INST_RS1_NBITS-1:0]   asm_lw_rs1;
 
   function [`TINYRV1_INST_NBITS-1:0] asm_lw
@@ -182,8 +160,6 @@ module TinyRV1();
     input logic [`TINYRV1_INST_RD_NBITS-1:0] rd,
     input logic [20*8-1:0]                   addr_s
   );
-
-    // Parse address
 
     asm_lw_imm_is_dec = 0;
     asm_lw_e = $sscanf( addr_s, "0x%x(x%d)", asm_lw_imm_i, asm_lw_rs1 );
@@ -194,22 +170,18 @@ module TinyRV1();
     if ( asm_lw_e == 0 )
       e = 0;
 
-    // Check for valid immediate
-
-    e = 32'(check_imm( 12, asm_lw_imm_is_dec, asm_lw_imm_i ));
+    e = 32'(check_imm( 6, asm_lw_imm_is_dec, asm_lw_imm_i ));
 
     if ( e != 0 )
-      asm_lw_imm = `TINYRV1_INST_IMM_I_NBITS'(asm_lw_imm_i);
+      asm_lw_imm = 6'(asm_lw_imm_i);
     else
       asm_lw_imm = 'x;
 
-    // Assemble the instruction
-
-    asm_lw[`TINYRV1_INST_IMM_I]  = asm_lw_imm;
-    asm_lw[`TINYRV1_INST_RS1]    = asm_lw_rs1;
-    asm_lw[`TINYRV1_INST_FUNCT3] = 3'b010;
+    asm_lw[`TINYRV1_INST_OPCODE] = 4'b0011;
     asm_lw[`TINYRV1_INST_RD]     = rd;
-    asm_lw[`TINYRV1_INST_OPCODE] = 7'b0000011;
+    asm_lw[`TINYRV1_INST_RS1]    = asm_lw_rs1;
+    asm_lw[`TINYRV1_INST_RS2]    = asm_lw_imm[5:3];
+    asm_lw[`TINYRV1_INST_IMM]    = asm_lw_imm[2:0];
 
   endfunction
 
@@ -220,7 +192,7 @@ module TinyRV1();
   integer asm_sw_e;
   integer asm_sw_imm_i;
   integer asm_sw_imm_is_dec;
-  logic [`TINYRV1_INST_IMM_I_NBITS-1:0] asm_sw_imm;
+  logic [5:0] asm_sw_imm;
   logic [`TINYRV1_INST_RS1_NBITS-1:0]   asm_sw_rs1;
 
   function [`TINYRV1_INST_NBITS-1:0] asm_sw
@@ -228,8 +200,6 @@ module TinyRV1();
     input logic [`TINYRV1_INST_RS2_NBITS-1:0] rs2,
     input logic [20*8-1:0]                    addr_s
   );
-
-    // Parse address
 
     asm_sw_imm_is_dec = 0;
     asm_sw_e = $sscanf( addr_s, "0x%x(x%d)", asm_sw_imm_i, asm_sw_rs1 );
@@ -240,23 +210,18 @@ module TinyRV1();
     if ( asm_sw_e == 0 )
       e = 0;
 
-    // Check for valid immediate
-
-    e = 32'(check_imm( 12, asm_sw_imm_is_dec, asm_sw_imm_i ));
+    e = 32'(check_imm( 6, asm_sw_imm_is_dec, asm_sw_imm_i ));
 
     if ( e != 0 )
-      asm_sw_imm = `TINYRV1_INST_IMM_I_NBITS'(asm_sw_imm_i);
+      asm_sw_imm = 6'(asm_sw_imm_i);
     else
       asm_sw_imm = 'x;
 
-    // Assemble the instruction
-
-    asm_sw[`TINYRV1_INST_FUNCT7] = asm_sw_imm[11:5];
-    asm_sw[`TINYRV1_INST_RS2]    = rs2;
+    asm_sw[`TINYRV1_INST_OPCODE] = 4'b1100;
+    asm_sw[`TINYRV1_INST_RD]     = asm_sw_imm[5:3];
     asm_sw[`TINYRV1_INST_RS1]    = asm_sw_rs1;
-    asm_sw[`TINYRV1_INST_FUNCT3] = 3'b010;
-    asm_sw[`TINYRV1_INST_RD]     = asm_sw_imm[4:0];
-    asm_sw[`TINYRV1_INST_OPCODE] = 7'b0100011;
+    asm_sw[`TINYRV1_INST_RS2]    = rs2;
+    asm_sw[`TINYRV1_INST_IMM]    = asm_sw_imm[2:0];
 
   endfunction
 
@@ -267,17 +232,14 @@ module TinyRV1();
   integer asm_jal_e;
   integer asm_jal_jtarg_i;
   integer asm_jal_imm_i;
-  logic [`TINYRV1_INST_IMM_J_NBITS:0] asm_jal_imm;
-  logic asm_jal_imm_unused;
+  logic [5:0] asm_jal_imm;
 
   function [`TINYRV1_INST_NBITS-1:0] asm_jal
   (
-    input logic [31:0]                       addr,
+    input logic [7:0]                        addr,
     input logic [`TINYRV1_INST_RD_NBITS-1:0] rd,
     input logic [20*8-1:0]                   jtarg_s
   );
-
-    // Parse jump target address
 
     asm_jal_e = $sscanf( jtarg_s, "0x%x", asm_jal_jtarg_i );
     if ( asm_jal_e == 0 )
@@ -285,34 +247,26 @@ module TinyRV1();
     if ( asm_jal_e == 0 )
       e = 0;
 
-    if ( (asm_jal_jtarg_i % 4 ) != 0 ) begin
-      $display( " ERROR: Jump target (%x) must be evenly divisible by four",
+    if ( (asm_jal_jtarg_i % 2 ) != 0 ) begin
+      $display( " ERROR: Jump target (%x) must be evenly divisible by two",
                 asm_jal_imm_i );
       e = 0;
     end
 
-    // Calculate immediate
+    asm_jal_imm_i = asm_jal_jtarg_i - 32'(addr);
 
-    asm_jal_imm_i = asm_jal_jtarg_i - addr;
-
-    // Check for valid immediate
-
-    e = 32'(check_imm( 21, 1, asm_jal_imm_i ));
+    e = 32'(check_imm( 6, 1, asm_jal_imm_i ));
 
     if ( e != 0 )
-      asm_jal_imm = 21'(asm_jal_imm_i);
+      asm_jal_imm = 6'(asm_jal_imm_i);
     else
       asm_jal_imm = 'x;
 
-    // Assemble the instruction
-
-    asm_jal[`TINYRV1_INST_IMM_J]  = { asm_jal_imm[20], asm_jal_imm[10:1], asm_jal_imm[11], asm_jal_imm[19:12] };
+    asm_jal[`TINYRV1_INST_OPCODE] = 4'b1010;
     asm_jal[`TINYRV1_INST_RD]     = rd;
-    asm_jal[`TINYRV1_INST_OPCODE] = 7'b1101111;
-
-    // Least signficant bit will always be zero in TinyRV1
-
-    asm_jal_imm_unused = asm_jal_imm[0];
+    asm_jal[`TINYRV1_INST_RS1]    = 3'b000;
+    asm_jal[`TINYRV1_INST_RS2]    = asm_jal_imm[5:3];
+    asm_jal[`TINYRV1_INST_IMM]    = asm_jal_imm[2:0];
 
   endfunction
 
@@ -325,12 +279,11 @@ module TinyRV1();
     input logic [`TINYRV1_INST_RS1_NBITS-1:0] rs1
   );
 
-    asm_jr[`TINYRV1_INST_FUNCT7] = 7'b0000000;
-    asm_jr[`TINYRV1_INST_RS2]    = 5'b00000;
+    asm_jr[`TINYRV1_INST_OPCODE] = 4'b1001;
+    asm_jr[`TINYRV1_INST_RD]     = 3'b000;
     asm_jr[`TINYRV1_INST_RS1]    = rs1;
-    asm_jr[`TINYRV1_INST_FUNCT3] = 3'b000;
-    asm_jr[`TINYRV1_INST_RD]     = 5'b00000;
-    asm_jr[`TINYRV1_INST_OPCODE] = 7'b1100111;
+    asm_jr[`TINYRV1_INST_RS2]    = 3'b000;
+    asm_jr[`TINYRV1_INST_IMM]    = 3'b000;
 
   endfunction
 
@@ -341,18 +294,15 @@ module TinyRV1();
   integer asm_bne_e;
   integer asm_bne_btarg_i;
   integer asm_bne_imm_i;
-  logic [12:0] asm_bne_imm;
-  logic asm_bne_imm_unused;
+  logic [5:0] asm_bne_imm;
 
   function [`TINYRV1_INST_NBITS-1:0] asm_bne
   (
-    input logic [31:0]                        addr,
+    input logic [7:0]                         addr,
     input logic [`TINYRV1_INST_RS1_NBITS-1:0] rs1,
     input logic [`TINYRV1_INST_RS2_NBITS-1:0] rs2,
     input logic [20*8-1:0]                    btarg_s
   );
-
-    // Parse branch target address
 
     asm_bne_e = $sscanf( btarg_s, "0x%x", asm_bne_btarg_i );
     if ( asm_bne_e == 0 )
@@ -360,46 +310,32 @@ module TinyRV1();
     if ( asm_bne_e == 0 )
       e = 0;
 
-    if ( (asm_bne_btarg_i % 4 ) != 0 ) begin
-      $display( " ERROR: Branch target (%x) must be evenly divisible by four",
+    if ( (asm_bne_btarg_i % 2 ) != 0 ) begin
+      $display( " ERROR: Branch target (%x) must be evenly divisible by two",
                 asm_bne_imm_i );
       e = 0;
     end
 
-    // Calculate immediate
+    asm_bne_imm_i = asm_bne_btarg_i - 32'(addr);
 
-    asm_bne_imm_i = asm_bne_btarg_i - addr;
-
-    // Check for valid immediate
-
-    e = 32'(check_imm( 13, 1, asm_bne_imm_i ));
+    e = 32'(check_imm( 6, 1, asm_bne_imm_i ));
 
     if ( e != 0 )
-      asm_bne_imm = 13'(asm_bne_imm_i);
+      asm_bne_imm = 6'(asm_bne_imm_i);
     else
       asm_bne_imm = 'x;
 
-    // Assemble the instruction
-
-    asm_bne[`TINYRV1_INST_FUNCT7] = { asm_bne_imm[12], asm_bne_imm[10:5] };
+    asm_bne[`TINYRV1_INST_OPCODE] = 4'b0100;
+    asm_bne[`TINYRV1_INST_RD]     = asm_bne_imm[5:3];
     asm_bne[`TINYRV1_INST_RS1]    = rs1;
     asm_bne[`TINYRV1_INST_RS2]    = rs2;
-    asm_bne[`TINYRV1_INST_FUNCT3] = 3'b001;
-    asm_bne[`TINYRV1_INST_RD]     = { asm_bne_imm[4:1], asm_bne_imm[11] };
-    asm_bne[`TINYRV1_INST_OPCODE] = 7'b1100011;
-
-    // Least signficant bit will always be zero in TinyRV1
-
-    asm_bne_imm_unused = asm_bne_imm[0];
+    asm_bne[`TINYRV1_INST_IMM]    = asm_bne_imm[2:0];
 
   endfunction
 
   //----------------------------------------------------------------------
   // asm
   //----------------------------------------------------------------------
-  // This function takes as input an assembly instruction as a string
-  // along with the address of this instruction in memory and then
-  // returns the corresponding machine instruction.
 
   logic [10*8-1:0] inst_s;
   logic [20*8-1:0] imm_s;
@@ -413,7 +349,7 @@ module TinyRV1();
 
   function [`TINYRV1_INST_NBITS-1:0] asm
   (
-    input [31:0] addr,
+    input [7:0] addr,
     input string str
   );
 
@@ -444,10 +380,6 @@ module TinyRV1();
     rs2     = 'x;
     rd      = 'x;
 
-    // If asm has any Xs then |(asm ^ asm)) will not equal zero, in which
-    // case we will stop the simulation with an error since something
-    // went wrong in the assembly process.
-
     if ((|(asm ^ asm)) == 1'b0);
     else begin
       $display( " ERROR: Could not assemble \"%s\"\n", str );
@@ -460,95 +392,78 @@ module TinyRV1();
   // disasm immediates
   //----------------------------------------------------------------------
 
-  logic [31:0] inst_unused;
+  logic [15:0] inst_unused;
 
-  function [11:0] disasm_imm_i
+  function [5:0] disasm_imm_i
   (
     input [`TINYRV1_INST_NBITS-1:0] inst
   );
-    disasm_imm_i = { inst[31], inst[30:25], inst[24:21], inst[20] };
+    logic [5:0] imm;
+    imm = { inst[5:3], inst[2:0] };
+    disasm_imm_i = imm;
     inst_unused = inst;
   endfunction
 
-  function [11:0] disasm_imm_s
+  function [5:0] disasm_imm_s
   (
     input [`TINYRV1_INST_NBITS-1:0] inst
   );
-    disasm_imm_s = { inst[31], inst[30:25], inst[11:8], inst[7] };
+    logic [5:0] imm;
+    imm = { inst[11:9], inst[2:0] };
+    disasm_imm_s = imm;
     inst_unused = inst;
   endfunction
 
-  function [31:0] disasm_imm_b
+  function [7:0] disasm_imm_b
   (
-    input [31:0] addr,
+    input [7:0] addr,
     input [`TINYRV1_INST_NBITS-1:0] inst
   );
-    disasm_imm_b = { {19{inst[31]}}, inst[31], inst[7], inst[30:25], inst[11:8], 1'b0 };
-    disasm_imm_b = addr + disasm_imm_b;
+    logic [5:0] imm;
+    logic [7:0] imm_ext;
+    imm = { inst[11:9], inst[2:0] };
+    imm_ext = { {2{imm[5]}}, imm };
+    disasm_imm_b = addr + imm_ext;
     inst_unused = inst;
   endfunction
 
-  function [31:0] disasm_imm_j
+  function [7:0] disasm_imm_j
   (
-    input [31:0] addr,
+    input [7:0] addr,
     input [`TINYRV1_INST_NBITS-1:0] inst
   );
-    disasm_imm_j = { {11{inst[31]}}, inst[31], inst[19:12], inst[20], inst[30:25], inst[24:21], 1'b0 };
-    disasm_imm_j = addr + disasm_imm_j;
+    logic [5:0] imm;
+    logic [7:0] imm_ext;
+    imm = { inst[5:3], inst[2:0] };
+    imm_ext = { {2{imm[5]}}, imm };
+    disasm_imm_j = addr + imm_ext;
     inst_unused = inst;
   endfunction
 
   //----------------------------------------------------------------------
   // disasm
   //----------------------------------------------------------------------
-  // This function takes as input a machine instruction and returns the
-  // corresponding assembly instruction as a string.
 
-  // logic [4*8-1:0]  rs1_s;
-  // logic [4*8-1:0]  rs2_s;
-  // logic [4*8-1:0]  rd_s;
   logic [20*8-1:0] disasm_;
 
   function [20*8-1:0] disasm
   (
-    input [31:0]                    addr,
+    input [7:0]                     addr,
     input [`TINYRV1_INST_NBITS-1:0] inst
   );
-
-    // Unpack the fields
 
     rs1 = inst[`TINYRV1_INST_RS1];
     rs2 = inst[`TINYRV1_INST_RS2];
     rd  = inst[`TINYRV1_INST_RD];
 
-    // Create fixed-width register specifiers
-
-    // if ( rs1 <= 9 )
-    //   $sformat( rs1_s, "x%0d, ", rs1 );
-    // else
-    //   $sformat( rs1_s, "x%d,",  rs1 );
-
-    // if ( rs2 <= 9 )
-    //   $sformat( rs2_s, "x%0d, ", rs2 );
-    // else
-    //   $sformat( rs2_s, "x%d,",  rs2 );
-
-    // if ( rd <= 9 )
-    //   $sformat( rd_s, "x%0d, ", rd );
-    // else
-    //   $sformat( rd_s, "x%d,",  rd );
-
-    // Actual disassembly
-
     casez ( inst )
       `TINYRV1_INST_ADD   : $sformat( disasm_, "add  x%-0d, x%-0d, x%-0d", rd, rs1, rs2 );
-      `TINYRV1_INST_ADDI  : $sformat( disasm_, "addi x%-0d, x%-0d, 0x%x",  rd, rs1, disasm_imm_i(inst) );
-
-      `TINYRV1_INST_LW    : $sformat( disasm_, "lw   x%-0d, 0x%x(x%-0d)",  rd, disasm_imm_i(inst), rs1 );
-      `TINYRV1_INST_SW    : $sformat( disasm_, "sw   x%-0d, 0x%x(x%-0d)",  rs2, disasm_imm_s(inst), rs1 );
-      `TINYRV1_INST_JAL   : $sformat( disasm_, "jal  x%-0d, 0x%x",         rd, 20'(disasm_imm_j(addr,inst)) );
+      `TINYRV1_INST_ADDI  : $sformat( disasm_, "addi x%-0d, x%-0d, %d",    rd, rs1, $signed(disasm_imm_i(inst)) );
+      `TINYRV1_INST_LW    : $sformat( disasm_, "lw   x%-0d, %d(x%-0d)",    rd, $signed(disasm_imm_i(inst)), rs1 );
+      `TINYRV1_INST_SW    : $sformat( disasm_, "sw   x%-0d, %d(x%-0d)",    rs2, $signed(disasm_imm_s(inst)), rs1 );
+      `TINYRV1_INST_JAL   : $sformat( disasm_, "jal  x%-0d, 0x%x",         rd,  disasm_imm_j(addr,inst) );
       `TINYRV1_INST_JR    : $sformat( disasm_, "jr   x%-0d",               rs1 );
-      `TINYRV1_INST_BNE   : $sformat( disasm_, "bne  x%-0d, x%-0d, 0x%x",  rs1, rs2, 20'(disasm_imm_b(addr,inst)) );
+      `TINYRV1_INST_BNE   : $sformat( disasm_, "bne  x%-0d, x%-0d, 0x%x",  rs1, rs2, disasm_imm_b(addr,inst) );
       default             : $sformat( disasm_, "illegal inst" );
     endcase
 
@@ -584,4 +499,3 @@ endmodule
 `endif /* SYNTHESIS */
 
 `endif /* TINYRV1_ASM_V */
-

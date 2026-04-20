@@ -1,18 +1,18 @@
 //========================================================================
-// Mux4_32b
+// Mux4_8b
 //========================================================================
 
-`ifndef MUX4_32B_V
-`define MUX4_32B_V
+`ifndef MUX4_8B_V
+`define MUX4_8B_V
 
-module Mux4_32b
+module Mux4_8b
 (
-  input  logic [31:0] in0,
-  input  logic [31:0] in1,
-  input  logic [31:0] in2,
-  input  logic [31:0] in3,
-  input  logic  [1:0] sel,
-  output logic [31:0] out
+  input  logic [7:0] in0,
+  input  logic [7:0] in1,
+  input  logic [7:0] in2,
+  input  logic [7:0] in3,
+  input  logic [1:0] sel,
+  output logic [7:0] out
 );
 
   always_comb begin
@@ -27,4 +27,4 @@ module Mux4_32b
 
 endmodule
 
-`endif /* MUX4_32B_V */
+`endif /* MUX4_8B_V */

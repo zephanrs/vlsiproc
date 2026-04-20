@@ -1,5 +1,5 @@
 //========================================================================
-// ALU_32b
+// ALU_8b
 //========================================================================
 // Simple ALU which supports both addition and equality comparision.
 //
@@ -7,24 +7,24 @@
 //  - op == 1 : equality comparison (LSB = 1 if equal, 0 otherwise)
 //
 
-`ifndef ALU_32B_V
-`define ALU_32B_V
+`ifndef ALU_8B_V
+`define ALU_8B_V
 
-`include "ref/Adder_32b.v"
-`include "ref/EqComparator_32b.v"
-`include "ref/Mux2_32b.v"
+`include "ref/Adder_8b.v"
+`include "ref/EqComparator_8b.v"
+`include "ref/Mux2_8b.v"
 
-module ALU_32b
+module ALU_8b
 (
-  input  logic [31:0] in0,
-  input  logic [31:0] in1,
-  input  logic        op,
-  output logic [31:0] out
+  input  logic [7:0] in0,
+  input  logic [7:0] in1,
+  input  logic       op,
+  output logic [7:0] out
 );
 
-  logic [31:0] sum;
+  logic [7:0] sum;
 
-  Adder_32b adder
+  Adder_8b adder
   (
     .in0 (in0),
     .in1 (in1),
@@ -33,19 +33,19 @@ module ALU_32b
 
   logic eq;
 
-  EqComparator_32b cmp
+  EqComparator_8b cmp
   (
     .in0 (in0),
     .in1 (in1),
     .eq  (eq)
   );
 
-  logic [31:0] eq_extend;
+  logic [7:0] eq_extend;
 
-  assign eq_extend[0]    = eq;
-  assign eq_extend[31:1] = 31'b0;
+  assign eq_extend[0]   = eq;
+  assign eq_extend[7:1] = 7'b0;
 
-  Mux2_32b mux
+  Mux2_8b mux
   (
     .in0 (sum),
     .in1 (eq_extend),
@@ -55,4 +55,4 @@ module ALU_32b
 
 endmodule
 
-`endif /* ALU_32B_V */
+`endif /* ALU_8B_V */

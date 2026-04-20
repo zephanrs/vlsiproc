@@ -6,14 +6,14 @@
 `define PROC_DPATH_V
 
 `include "ref/tinyrv1.v"
-`include "ref/Register_32b.v"
-`include "ref/Adder_32b.v"
+`include "ref/Register_8b.v"
+`include "ref/Register_16b.v"
+`include "ref/Adder_8b.v"
 `include "ref/Regfile.v"
-`include "ref/ALU_32b.v"
+`include "ref/ALU_8b.v"
 `include "ref/ImmGen.v"
-`include "ref/Mux2_32b.v"
-`include "ref/Mux4_32b.v"
-
+`include "ref/Mux2_8b.v"
+`include "ref/Mux4_8b.v"
 
 module ProcDpath
 (
@@ -21,17 +21,14 @@ module ProcDpath
   input  logic        rst,
 
   // Memory Interface
-  output logic [31:0] idmem_addr,
-  output logic [31:0] idmem_wdata,
-  input  logic [31:0] idmem_rdata,
-
-
+  output logic [7:0]  idmem_addr,
+  output logic [7:0]  idmem_wdata,
+  input  logic [15:0] idmem_rdata,
 
   // Control Signals (Control Unit -> Datapath)
   input  logic        pc_en,
   input  logic        addr_sel,
   input  logic        ir_en,
-  input  logic [1:0]  imm_type,
   input  logic        a_en,
   input  logic        b_en,
   input  logic        oldpc_en,
@@ -45,18 +42,18 @@ module ProcDpath
   input  logic        rf_wen,
 
   // Status Signals (Datapath -> Control Unit)
-  output logic [31:0] inst,
+  output logic [15:0] inst,
   output logic        eq
 );
 
   // Predefine Signals
-  logic [31:0] wb_val;
-  logic [31:0] addr;
+  logic [7:0] wb_val;
+  logic [7:0] addr;
 
   // PC Register
-  logic [31:0] pc;
+  logic [7:0] pc;
 
-  Register_32b pc_reg
+  Register_8b pc_reg
   (
     .clk (clk),
     .rst (rst),
@@ -66,7 +63,7 @@ module ProcDpath
   );
 
   // Address Mux
-  Mux2_32b addr_mux
+  Mux2_8b addr_mux
   (
     .in0 (pc),
     .in1 (addr),
@@ -75,7 +72,7 @@ module ProcDpath
   );
 
   // Instruction Register
-  Register_32b IR
+  Register_16b IR
   (
     .clk (clk),
     .rst (rst),
@@ -86,7 +83,7 @@ module ProcDpath
 
   // Extract instruction fields
   logic [`TINYRV1_INST_RS1_NBITS-1:0] rs1;
-  logic [`TINYRV1_INST_RS1_NBITS-1:0] rs2;
+  logic [`TINYRV1_INST_RS2_NBITS-1:0] rs2;
   logic [`TINYRV1_INST_RD_NBITS-1:0]  rd;
 
   assign rs1 = inst[`TINYRV1_INST_RS1];
@@ -94,9 +91,9 @@ module ProcDpath
   assign rd  = inst[`TINYRV1_INST_RD];
 
   // Register File
-  logic [31:0] rf_wdata;
-  logic [31:0] rf_rdata0;
-  logic [31:0] rf_rdata1;
+  logic [7:0] rf_wdata;
+  logic [7:0] rf_rdata0;
+  logic [7:0] rf_rdata1;
 
   Regfile rf
   (
@@ -114,9 +111,9 @@ module ProcDpath
   );
 
   // A Reg
-  logic [31:0] a;
+  logic [7:0] a;
 
-  Register_32b A_reg
+  Register_8b A_reg
   (
     .clk (clk),
     .rst (rst),
@@ -126,9 +123,9 @@ module ProcDpath
   );
 
   // B Reg
-  logic [31:0] b;
+  logic [7:0] b;
 
-  Register_32b B_reg
+  Register_8b B_reg
   (
     .clk (clk),
     .rst (rst),
@@ -140,19 +137,18 @@ module ProcDpath
   assign idmem_wdata = b;
 
   // Immediate Generation
-  logic [31:0] immgen_imm;
+  logic [7:0] immgen_imm;
 
   ImmGen immgen
   (
-    .inst     (inst),
-    .imm_type (imm_type),
-    .imm      (immgen_imm)
+    .inst (inst),
+    .imm  (immgen_imm)
   );
 
   // Old PC Register
-  logic [31:0] oldpc;
+  logic [7:0] oldpc;
 
-  Register_32b oldpc_reg
+  Register_8b oldpc_reg
   (
     .clk (clk),
     .rst (rst),
@@ -162,9 +158,9 @@ module ProcDpath
   );
 
   // PC Mux
-  logic [31:0] op_pc;
+  logic [7:0] op_pc;
 
-  Mux2_32b pc_mux
+  Mux2_8b pc_mux
   (
     .in0 (oldpc),
     .in1 (pc),
@@ -172,12 +168,10 @@ module ProcDpath
     .out (op_pc)
   );
 
-
-
   // Op1 Mux
-  logic [31:0] op1_data;
+  logic [7:0] op1_data;
 
-  Mux2_32b op1_mux
+  Mux2_8b op1_mux
   (
     .in0 (a),
     .in1 (op_pc),
@@ -186,22 +180,22 @@ module ProcDpath
   );
 
   // Op2 Mux
-  logic [31:0] op2_data;
+  logic [7:0] op2_data;
 
-  Mux4_32b op2_mux
+  Mux4_8b op2_mux
   (
     .in0 (b),
-    .in1 (32'b0),
+    .in1 (8'b0),
     .in2 (immgen_imm),
-    .in3 (32'd4),
+    .in3 (8'd2),
     .sel (op2_sel),
     .out (op2_data)
   );
 
   // ALU
-  logic [31:0] alu_out;
+  logic [7:0] alu_out;
 
-  ALU_32b alu
+  ALU_8b alu
   (
     .in0 (op1_data),
     .in1 (op2_data),
@@ -212,7 +206,7 @@ module ProcDpath
   assign eq = alu_out[0];
 
   // Address Register
-  Register_32b addr_reg
+  Register_8b addr_reg
   (
     .clk (clk),
     .rst (rst),
@@ -221,19 +215,30 @@ module ProcDpath
     .q   (addr)
   );
 
-  // Writeback Mux
-  Mux4_32b wb_mux
+  // Read Data Byte Select Mux
+  logic [7:0] rdata_byte;
+  
+  Mux2_8b rdata_mux
   (
-    .in0 (32'b0),
+    .in0 (idmem_rdata[7:0]),
+    .in1 (idmem_rdata[15:8]),
+    .sel (addr[0]),
+    .out (rdata_byte)
+  );
+
+  // Writeback Mux
+  Mux4_8b wb_mux
+  (
+    .in0 (8'b0),
     .in1 (alu_out),
-    .in2 (idmem_rdata),
-    .in3 (32'b0),
+    .in2 (rdata_byte),
+    .in3 (8'b0),
     .sel (wb_sel),
     .out (wb_val)
   );
 
   // Writeback Register
-  Register_32b WD
+  Register_8b WD
   (
     .clk (clk),
     .rst (rst),
@@ -241,7 +246,6 @@ module ProcDpath
     .d   (wb_val),
     .q   (rf_wdata)
   );
-
 
 endmodule
 

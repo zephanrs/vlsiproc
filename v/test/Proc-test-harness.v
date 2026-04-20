@@ -32,9 +32,9 @@ module Top();
 
   logic        idmem_val;
   logic        idmem_type;
-  logic [31:0] idmem_addr;
-  logic [31:0] idmem_wdata;
-  logic [31:0] idmem_rdata;
+  logic [7:0]  idmem_addr;
+  logic [7:0]  idmem_wdata;
+  logic [15:0] idmem_rdata;
 
   Proc proc
   (
@@ -66,15 +66,15 @@ module Top();
   // run_test
   //----------------------------------------------------------------------
 
-  task run_test( input logic [31:0] end_addr );
+  task run_test( input logic [7:0] end_addr );
     begin
       // Insert dummy instruction so the final real instruction guarantees writeback
       asm( end_addr, "addi x0, x0, 0" );
       
       // Wait for PC to advance past the dummy instruction
-      while ( proc.dpath.pc !== (end_addr + 4) ) begin
+      while ( proc.dpath.pc !== (end_addr + 2) ) begin
         if ( t.cycles > 9999 ) begin
-          $display("ERROR: Timeout waiting for PC to reach %x", end_addr + 4);
+          $display("ERROR: Timeout waiting for PC to reach %x", end_addr + 2);
           $finish;
         end
         #10;
@@ -89,13 +89,13 @@ module Top();
 
   task check_rf
   (
-    input logic [4:0]  reg_id,
-    input logic [31:0] expected
+    input logic [2:0]  reg_id,
+    input logic [7:0] expected
   );
     if ( !t.failed ) begin
       t.num_checks += 1;
       if ( reg_id == 0 ) begin
-        `CHECK_EQ_HEX( 32'd0, expected );
+        `CHECK_EQ_HEX( 8'd0, expected );
       end else begin
         `CHECK_EQ_HEX( proc.dpath.rf.m[reg_id], expected );
       end
@@ -108,7 +108,7 @@ module Top();
 
   task asm
   (
-    input logic [31:0] addr,
+    input logic [7:0] addr,
     input string str
   );
     mem.asm( addr, str );
@@ -120,8 +120,8 @@ module Top();
 
   task data
   (
-    input logic [31:0] addr,
-    input logic [31:0] data_
+    input logic [7:0] addr,
+    input logic [15:0] data_
   );
     mem.write( addr, data_ );
   endtask

@@ -13,13 +13,13 @@ task test_case_1_basic();
 
   // Write assembly program into memory
 
-  asm( 'h000, "addi x1, x0, 2"   );
-  asm( 'h004, "addi x2, x1, 2"   );
+  asm( 'h00, "addi x1, x0, 2"   );
+  asm( 'h02, "addi x2, x1, 2"   );
 
   // Run processor and check register file
-  run_test( 'h008 );
-  check_rf( 5'd1, 32'h0000_0002 );
-  check_rf( 5'd2, 32'h0000_0004 );
+  run_test( 'h04 );
+  check_rf( 3'd1, 8'd2 );
+  check_rf( 3'd2, 8'd4 );
 
   t.test_case_end();
 endtask
@@ -35,18 +35,18 @@ task test_case_2_x0();
 
   // Write assembly program into memory
 
-  asm( 'h000, "addi x1, x0, 2"   );
-  asm( 'h004, "addi x0, x1, 3"   );
-  asm( 'h008, "addi x2, x0, 4"   );
-  asm( 'h00c, "addi x0, x0, 5"   );
-  asm( 'h010, "addi x3, x0, 6"   );
+  asm( 'h00, "addi x1, x0, 2"   );
+  asm( 'h02, "addi x0, x1, 3"   );
+  asm( 'h04, "addi x2, x0, 4"   );
+  asm( 'h06, "addi x0, x0, 5"   );
+  asm( 'h08, "addi x3, x0, 6"   );
 
   // Run processor and check register file
-  run_test( 'h014 );
-  check_rf( 5'd1, 32'h0000_0002 );
-  check_rf( 5'd0, 32'h0000_0000 ); // x0 should always be 0
-  check_rf( 5'd2, 32'h0000_0004 );
-  check_rf( 5'd3, 32'h0000_0006 );
+  run_test( 'h0A );
+  check_rf( 3'd1, 8'd2 );
+  check_rf( 3'd0, 8'd0 ); // x0 should always be 0
+  check_rf( 3'd2, 8'd4 );
+  check_rf( 3'd3, 8'd6 );
 
   t.test_case_end();
 endtask
@@ -60,47 +60,24 @@ task test_case_3_regs();
 
   // Write assembly program into memory
 
-  asm( 'h000, "addi x1,  x0,  0x01"   );
-  asm( 'h004, "addi x2,  x0,  0x02"   );
-  asm( 'h008, "addi x3,  x0,  0x03"   );
-  asm( 'h00c, "addi x4,  x0,  0x04"   );
+  asm( 'h00, "addi x1, x0, 0x01" );
+  asm( 'h02, "addi x2, x0, 0x02" );
+  asm( 'h04, "addi x3, x0, 0x03" );
+  asm( 'h06, "addi x4, x0, 0x04" );
 
-  asm( 'h010, "addi x28, x0,  0x05"   );
-  asm( 'h014, "addi x29, x0,  0x06"   );
-  asm( 'h018, "addi x30, x0,  0x07"   );
-  asm( 'h01c, "addi x31, x0,  0x08"   );
-
-  asm( 'h020, "addi x5,  x1,  0x09"   );
-  asm( 'h024, "addi x6,  x2,  0x0a"   );
-  asm( 'h028, "addi x7,  x3,  0x0b"   );
-  asm( 'h02c, "addi x8,  x4,  0x0c"   );
-
-  asm( 'h030, "addi x24, x28, 0x0d"   );
-  asm( 'h034, "addi x25, x29, 0x0e"   );
-  asm( 'h038, "addi x26, x30, 0x0f"   );
-  asm( 'h03c, "addi x27, x31, 0x10"   );
+  asm( 'h08, "addi x5, x1, 0x05" );
+  asm( 'h0A, "addi x6, x2, 0x06" );
+  asm( 'h0C, "addi x7, x3, 0x07" );
 
   // Run processor and check register file
-  run_test( 'h040 );
-  check_rf( 5'd1,  32'h0000_0001 );
-  check_rf( 5'd2,  32'h0000_0002 );
-  check_rf( 5'd3,  32'h0000_0003 );
-  check_rf( 5'd4,  32'h0000_0004 );
-
-  check_rf( 5'd28, 32'h0000_0005 );
-  check_rf( 5'd29, 32'h0000_0006 );
-  check_rf( 5'd30, 32'h0000_0007 );
-  check_rf( 5'd31, 32'h0000_0008 );
-
-  check_rf( 5'd5,  32'h0000_000a );
-  check_rf( 5'd6,  32'h0000_000c );
-  check_rf( 5'd7,  32'h0000_000e );
-  check_rf( 5'd8,  32'h0000_0010 );
-
-  check_rf( 5'd24, 32'h0000_0012 );
-  check_rf( 5'd25, 32'h0000_0014 );
-  check_rf( 5'd26, 32'h0000_0016 );
-  check_rf( 5'd27, 32'h0000_0018 );
+  run_test( 'h0E );
+  check_rf( 3'd1, 8'd1 );
+  check_rf( 3'd2, 8'd2 );
+  check_rf( 3'd3, 8'd3 );
+  check_rf( 3'd4, 8'd4 );
+  check_rf( 3'd5, 8'd6 );
+  check_rf( 3'd6, 8'd8 );
+  check_rf( 3'd7, 8'd10 );
 
   t.test_case_end();
 endtask
@@ -114,14 +91,14 @@ task test_case_4_deps();
 
   // Write assembly program into memory
 
-  asm( 'h000, "addi x1,  x0,  0x01"   );
-  asm( 'h004, "addi x1,  x1,  0x02"   );
-  asm( 'h008, "addi x1,  x1,  0x03"   );
-  asm( 'h00c, "addi x1,  x1,  0x04"   );
+  asm( 'h00, "addi x1, x0, 1"   );
+  asm( 'h02, "addi x1, x1, 2"   );
+  asm( 'h04, "addi x1, x1, 3"   );
+  asm( 'h06, "addi x1, x1, 4"   );
 
   // Run processor and check register file
-  run_test( 'h010 );
-  check_rf( 5'd1, 32'h0000_000a );
+  run_test( 'h08 );
+  check_rf( 3'd1, 8'd10 );
 
   t.test_case_end();
 endtask
@@ -135,20 +112,20 @@ task test_case_5_pos();
 
   // Write assembly program into memory
 
-  asm( 'h000, "addi x1,  x0,  1"    );
-  asm( 'h004, "addi x2,  x1,  3"    );
-  asm( 'h008, "addi x2,  x1,  4"    );
-  asm( 'h00c, "addi x2,  x1,  5"    );
+  asm( 'h00, "addi x1, x0, 1"    );
+  asm( 'h02, "addi x2, x1, 3"    );
+  asm( 'h04, "addi x2, x1, 4"    );
+  asm( 'h06, "addi x2, x1, 5"    );
 
-  asm( 'h010, "addi x1,  x0,  1"    );
-  asm( 'h014, "addi x2,  x1,  2001" );
-  asm( 'h018, "addi x2,  x1,  2002" );
-  asm( 'h01c, "addi x2,  x1,  2003" );
+  asm( 'h08, "addi x1, x0, 1"    );
+  asm( 'h0A, "addi x2, x1, 21"   );
+  asm( 'h0C, "addi x2, x1, 22"   );
+  asm( 'h0E, "addi x2, x1, 23"   );
 
   // Run processor and check register file
-  run_test( 'h020 );
-  check_rf( 5'd1, 1 );
-  check_rf( 5'd2, 2004 );
+  run_test( 'h10 );
+  check_rf( 3'd1, 8'd1 );
+  check_rf( 3'd2, 8'd24 );
 
   t.test_case_end();
 endtask
@@ -162,20 +139,20 @@ task test_case_6_neg();
 
   // Write assembly program into memory
 
-  asm( 'h000, "addi x1,  x0,  1"     );
-  asm( 'h004, "addi x2,  x1,  -3"    );
-  asm( 'h008, "addi x2,  x1,  -4"    );
-  asm( 'h00c, "addi x2,  x1,  -5"    );
+  asm( 'h00, "addi x1, x0, 1"     );
+  asm( 'h02, "addi x2, x1, -3"    );
+  asm( 'h04, "addi x2, x1, -4"    );
+  asm( 'h06, "addi x2, x1, -5"    );
 
-  asm( 'h010, "addi x1,  x0,  1"     );
-  asm( 'h014, "addi x2,  x1,  -2001" );
-  asm( 'h018, "addi x2,  x1,  -2002" );
-  asm( 'h01c, "addi x2,  x1,  -2003" );
+  asm( 'h08, "addi x1, x0, 1"     );
+  asm( 'h0A, "addi x2, x1, -21"   );
+  asm( 'h0C, "addi x2, x1, -22"   );
+  asm( 'h0E, "addi x2, x1, -23"   );
 
   // Run processor and check register file
-  run_test( 'h020 );
-  check_rf( 5'd1, 1 );
-  check_rf( 5'd2, -2002 );
+  run_test( 'h10 );
+  check_rf( 3'd1, 8'd1 );
+  check_rf( 3'd2, -8'd22 );
 
   t.test_case_end();
 endtask
@@ -189,13 +166,13 @@ task test_case_7_overflow();
 
   // Write assembly program into memory
 
-  asm( 'h000, "addi x1,  x0,  0xfff" );
-  asm( 'h004, "addi x2,  x1,  0xfff" );
+  asm( 'h00, "addi x1, x0, -1" );
+  asm( 'h02, "addi x2, x1, -1" );
 
   // Run processor and check register file
-  run_test( 'h008 );
-  check_rf( 5'd1, 32'hFFFF_FFFF );
-  check_rf( 5'd2, 32'hFFFF_FFFE );
+  run_test( 'h04 );
+  check_rf( 3'd1, 8'hFF );
+  check_rf( 3'd2, 8'hFE );
 
   t.test_case_end();
 endtask
