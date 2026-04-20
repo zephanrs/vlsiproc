@@ -50,11 +50,11 @@ module TestMemory
   // Read Port
   //----------------------------------------------------------------------
 
-  always_comb begin
+  always_ff @( posedge clk ) begin
     if ( mem_val && (mem_type == 0) )
-      mem_rdata = m[mem_addr_idx];
+      mem_rdata <= m[mem_addr_idx];
     else
-      mem_rdata = 'x;
+      mem_rdata <= 'x;
   end
 
   //----------------------------------------------------------------------

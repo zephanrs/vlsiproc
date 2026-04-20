@@ -305,7 +305,7 @@ task test_case_10_mix();
 
   asm( 'h010, "lw   x5,  0(x1)"     );
   asm( 'h014, "lw   x6,  0(x2)"     );
-  asm( 'h018, "mul  x7,  x5, x6"    );
+  asm( 'h018, "add  x7,  x5, x6"    );
   asm( 'h01c, "add  x4,  x4, x7"    );
   asm( 'h020, "sw   x4,  0(x3)"     );
   asm( 'h024, "addi x1,  x1, 4"     );
@@ -332,10 +332,10 @@ task test_case_10_mix();
   check_rf( 5'd1, 'h104 );
   check_rf( 5'd2, 'h114 );
   check_rf( 5'd3, 'h124 );
-  check_rf( 5'd4, 5 );
+  check_rf( 5'd4, 6 );
   check_rf( 5'd5, 1 );
   check_rf( 5'd6, 5 );
-  check_rf( 5'd7, 5 );
+  check_rf( 5'd7, 6 );
 
   t.test_case_end();
 endtask

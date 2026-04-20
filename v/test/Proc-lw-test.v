@@ -234,21 +234,21 @@ task test_case_7_mix();
 
   asm( 'h00c, "lw   x4,  0(x1)"     );
   asm( 'h010, "lw   x5,  0(x2)"     );
-  asm( 'h014, "mul  x6,  x4, x5"    );
+  asm( 'h014, "add  x6,  x4, x5"    );
   asm( 'h018, "add  x3,  x3, x6"    );
   asm( 'h01c, "addi x1,  x1, 4"     );
   asm( 'h020, "addi x2,  x2, 4"     );
 
   asm( 'h024, "lw   x4,  0(x1)"     );
   asm( 'h028, "lw   x5,  0(x2)"     );
-  asm( 'h02c, "mul  x6,  x4, x5"    );
+  asm( 'h02c, "add  x6,  x4, x5"    );
   asm( 'h030, "add  x3,  x3, x6"    );
   asm( 'h034, "addi x1,  x1, 4"     );
   asm( 'h038, "addi x2,  x2, 4"     );
 
   asm( 'h03c, "lw   x4,  0(x1)"     );
   asm( 'h040, "lw   x5,  0(x2)"     );
-  asm( 'h044, "mul  x6,  x4, x5"    );
+  asm( 'h044, "add  x6,  x4, x5"    );
   asm( 'h048, "add  x3,  x3, x6"    );
   asm( 'h04c, "addi x1,  x1, 4"     );
   asm( 'h050, "addi x2,  x2, 4"     );
@@ -267,10 +267,10 @@ task test_case_7_mix();
   run_test( 'h054 );
   check_rf( 5'd1, 32'h0000_010c );
   check_rf( 5'd2, 32'h0000_011c );
-  check_rf( 5'd3, 38 );
+  check_rf( 5'd3, 24 );
   check_rf( 5'd4, 3 );
   check_rf( 5'd5, 7 );
-  check_rf( 5'd6, 21 );
+  check_rf( 5'd6, 10 );
 
   t.test_case_end();
 endtask

@@ -8,7 +8,6 @@ ref_srcs = \
   Mux2_32b.v \
   Mux4_32b.v \
   Register_32b.v \
-  Multiplier_32x32b.v \
   ALU_32b.v \
   ImmGen.v \
   Regfile.v \
@@ -19,7 +18,6 @@ ref_srcs = \
 ref_tests = \
   Proc-addi-test.v \
   Proc-add-test.v \
-  Proc-mul-test.v \
   Proc-lw-test.v \
   Proc-sw-test.v \
   Proc-jal-test.v \

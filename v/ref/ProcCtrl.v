@@ -68,7 +68,7 @@ module ProcCtrl
   localparam cmp   = 1'd1;
 
   // wb_sel
-  localparam wb_mu = 2'd0; // mul_out
+
   localparam wb_al = 2'd1; // alu_out
   localparam wb_in = 2'd2; // inst / idmem_rdata
 
@@ -117,21 +117,22 @@ module ProcCtrl
   endtask
 
   // State Encoding
-  localparam F   = 4'h0;
-  localparam D   = 4'h1;
-  localparam AI  = 4'h2;
-  localparam WB  = 4'h3;
+  localparam F0  = 4'h0;
+  localparam F1  = 4'h1;
+  localparam D   = 4'h2;
+  localparam AI  = 4'h3;
   localparam A   = 4'h4;
-  localparam M   = 4'h5;
-  localparam L0  = 4'h6;
-  localparam L1  = 4'h7;
+  localparam L0  = 4'h5;
+  localparam L1  = 4'h6;
+  localparam L2  = 4'h7;
   localparam S0  = 4'h8;
   localparam S1  = 4'h9;
   localparam JR  = 4'hA;
   localparam JA0 = 4'hB;
   localparam JA1 = 4'hC;
-  localparam B0  = 4'hD;
-  localparam B1  = 4'hE;
+  localparam WB  = 4'hD;
+  localparam B0  = 4'hE;
+  localparam B1  = 4'hF;
 
   // State
   logic [3:0] state;
@@ -146,32 +147,34 @@ module ProcCtrl
   // Next State Logic
   always_comb begin
     case (state) 
-      F: next_state = D;
+      F0: next_state = F1;
+      F1: next_state = D;
       D: casez ( inst )
         `TINYRV1_INST_ADDI: next_state = AI;
         `TINYRV1_INST_ADD:  next_state = A;
-        `TINYRV1_INST_MUL:  next_state = M;
+
         `TINYRV1_INST_LW:   next_state = L0;
         `TINYRV1_INST_SW:   next_state = S0;
         `TINYRV1_INST_JAL:  next_state = JA0;
         `TINYRV1_INST_JR:   next_state = JR;
         `TINYRV1_INST_BNE:  next_state = B0;
-        default:            next_state = F;
+        default:            next_state = F0;
       endcase
       AI:  next_state = WB;
       A:   next_state = WB;
-      M:   next_state = WB;
+
       L0:  next_state = L1;
-      L1:  next_state = WB;
+      L1:  next_state = L2;
+      L2:  next_state = WB;
       S0:  next_state = S1;
-      S1:  next_state = F;
-      JR:  next_state = F;
+      S1:  next_state = F0;
+      JR:  next_state = F0;
       JA0: next_state = JA1;
       JA1: next_state = WB;
-      B0:  next_state = eq ? F : B1;
-      B1:  next_state = F;
-      WB:  next_state = F;
-      default: next_state = F;
+      B0:  next_state = eq ? F0 : B1;
+      B1:  next_state = F0;
+      WB:  next_state = F0;
+      default: next_state = F0;
     endcase
   end
 
@@ -180,23 +183,24 @@ module ProcCtrl
     casez ( state )
           //   pc   oldpc ir   a    b    addr  pc    op1    op2    imm     alu   addr  mem   mem   wb     wd   rf 
           //   en   en    en   en   en   sel   sel   sel    sel    type    func  en    val   type  sel    en   wen
-      F:   cs( 1,   1,    1,   0,   0,   pc,   curr,  op1_p, op2_4, 'x,    add,  0,    1,    rd,   wb_al, 0,   0   );
-      D:   cs( 0,   0,    0,   1,   1,   'x,   'x,    'x,    'x,    'x,    'x,   0,    0,    'x,   'x,    0,   0   );
-      AI:  cs( 0,   0,    0,   0,   0,   'x,   'x,    op1_a, op2_i, imm_i, add,  0,    0,    'x,   wb_al, 1,   0   );
-      WB:  cs( 0,   0,    0,   0,   0,   'x,   'x,    'x,    'x,    'x,    'x,   0,    0,    'x,   wb_mu, 0,   1   );
-      A:   cs( 0,   0,    0,   0,   0,   'x,   'x,    op1_a, op2_b, 'x,    add,  0,    0,    'x,   wb_al, 1,   0   );
-      M:   cs( 0,   0,    0,   0,   0,   'x,   'x,    'x,    'x,    'x,    'x,   0,    0,    'x,   wb_mu, 1,   0   );
-      L0:  cs( 0,   0,    0,   0,   0,   'x,   'x,    op1_a, op2_i, imm_i, add,  1,    0,    'x,   'x,    0,   0   );
-      L1:  cs( 0,   0,    0,   0,   0,   addr, 'x,    'x,    'x,    'x,    'x,   0,    1,    rd,   wb_in, 1,   0   );
-      S0:  cs( 0,   0,    0,   0,   0,   'x,   'x,    op1_a, op2_i, imm_s, add,  1,    0,    'x,   'x,    0,   0   );
-      S1:  cs( 0,   0,    0,   0,   0,   addr, 'x,    'x,    'x,    'x,    'x,   0,    1,    wr,   'x,    0,   0   );
-      JR:  cs( 1,   0,    0,   0,   0,   'x,   'x,    op1_a, op2_0, 'x,    add,  0,    0,    rd,   wb_al, 0,   0   );
-      JA0: cs( 0,   0,    0,   0,   0,   'x,   old,   op1_p, op2_4, 'x,    add,  0,    0,    rd,   wb_al, 1,   0   );
-      JA1: cs( 1,   0,    0,   0,   0,   'x,   old,   op1_p, op2_i, imm_j, add,  0,    0,    rd,   wb_al, 0,   1   );
-      B0:  cs( 0,   0,    0,   0,   0,   'x,   'x,    op1_a, op2_b, 'x,    cmp,  0,    0,    rd,   'x,    0,   0   );
-      B1:  cs( 1,   0,    0,   0,   0,   'x,   old,   op1_p, op2_i, imm_b, add,  0,    0,    rd,   wb_al, 0,   0   );
+      F0:  cs( 0,   0,    0,   0,   0,   pc,   curr, 'x,    'x,    'x,    'x,    0,    1,    rd,   'x,    0,   0   );
+      F1:  cs( 1,   1,    1,   0,   0,   'x,   curr, op1_p, op2_4, 'x,    add,   0,    0,    'x,   wb_al, 0,   0   );
+      D:   cs( 0,   0,    0,   1,   1,   'x,   'x,   'x,    'x,    'x,    'x,    0,    0,    'x,   'x,    0,   0   );
+      AI:  cs( 0,   0,    0,   0,   0,   'x,   'x,   op1_a, op2_i, imm_i, add,   0,    0,    'x,   wb_al, 1,   0   );
+      WB:  cs( 0,   0,    0,   0,   0,   'x,   'x,   'x,    'x,    'x,    'x,    0,    0,    'x,   'x,    0,   1   );
+      A:   cs( 0,   0,    0,   0,   0,   'x,   'x,   op1_a, op2_b, 'x,    add,   0,    0,    'x,   wb_al, 1,   0   );
+      L0:  cs( 0,   0,    0,   0,   0,   'x,   'x,   op1_a, op2_i, imm_i, add,   1,    0,    'x,   'x,    0,   0   );
+      L1:  cs( 0,   0,    0,   0,   0,   addr, 'x,   'x,    'x,    'x,    'x,    0,    1,    rd,   'x,    0,   0   );
+      L2:  cs( 0,   0,    0,   0,   0,   'x,   'x,   'x,    'x,    'x,    'x,    0,    0,    'x,   wb_in, 1,   0   );
+      S0:  cs( 0,   0,    0,   0,   0,   'x,   'x,   op1_a, op2_i, imm_s, add,   1,    0,    'x,   'x,    0,   0   );
+      S1:  cs( 0,   0,    0,   0,   0,   addr, 'x,   'x,    'x,    'x,    'x,    0,    1,    wr,   'x,    0,   0   );
+      JR:  cs( 1,   0,    0,   0,   0,   'x,   'x,   op1_a, op2_0, 'x,    add,   0,    0,    'x,   wb_al, 0,   0   );
+      JA0: cs( 0,   0,    0,   0,   0,   'x,   old,  op1_p, op2_4, 'x,    add,   0,    0,    'x,   wb_al, 1,   0   );
+      JA1: cs( 1,   0,    0,   0,   0,   'x,   old,  op1_p, op2_i, imm_j, add,   0,    0,    'x,   wb_al, 0,   1   );
+      B0:  cs( 0,   0,    0,   0,   0,   'x,   'x,   op1_a, op2_b, 'x,    cmp,   0,    0,    'x,   'x,    0,   0   );
+      B1:  cs( 1,   0,    0,   0,   0,   'x,   old,  op1_p, op2_i, imm_b, add,   0,    0,    'x,   wb_al, 0,   0   );
       default:
-           cs( 'x, 'x,   'x,  'x,  'x,   'x,   'x,   'x,    'x,    'x,     'x,  'x,   'x,    'x,   'x,   'x,  'x  );
+           cs( 'x,  'x,   'x,  'x,  'x,  'x,   'x,   'x,    'x,    'x,    'x,    'x,   'x,    'x,   'x,    'x,  'x  );
     endcase
   end
 

@@ -247,7 +247,7 @@ task test_case_6_mix();
 
   asm( 'h010, "lw   x5,  0(x1)"     );
   asm( 'h014, "lw   x6,  0(x2)"     );
-  asm( 'h018, "mul  x7,  x5, x6"    );
+  asm( 'h018, "add  x7,  x5, x6"    );
   asm( 'h01c, "add  x4,  x4, x7"    );
   asm( 'h020, "sw   x4,  0(x3)"     );
   asm( 'h024, "addi x1,  x1, 4"     );
@@ -256,7 +256,7 @@ task test_case_6_mix();
 
   asm( 'h030, "lw   x5,  0(x1)"     );
   asm( 'h034, "lw   x6,  0(x2)"     );
-  asm( 'h038, "mul  x7,  x5, x6"    );
+  asm( 'h038, "add  x7,  x5, x6"    );
   asm( 'h03c, "add  x4,  x4, x7"    );
   asm( 'h040, "sw   x4,  0(x3)"     );
   asm( 'h044, "addi x1,  x1, 4"     );
@@ -265,7 +265,7 @@ task test_case_6_mix();
 
   asm( 'h050, "lw   x5,  0(x1)"     );
   asm( 'h054, "lw   x6,  0(x2)"     );
-  asm( 'h058, "mul  x7,  x5, x6"    );
+  asm( 'h058, "add  x7,  x5, x6"    );
   asm( 'h05c, "add  x4,  x4, x7"    );
   asm( 'h060, "sw   x4,  0(x3)"     );
   asm( 'h064, "addi x1,  x1, 4"     );
@@ -294,9 +294,9 @@ task test_case_6_mix();
   // Run processor and check register file
   run_test( 'h080 );
   check_rf( 5'd1, 32'h0000_0120 );
-  check_rf( 5'd2, 32'h0000_0005 );
-  check_rf( 5'd3, 32'h0000_0011 );
-  check_rf( 5'd4, 32'h0000_0026 );
+  check_rf( 5'd2, 32'h0000_0006 );
+  check_rf( 5'd3, 32'h0000_000e );
+  check_rf( 5'd4, 32'h0000_0018 );
 
   t.test_case_end();
 endtask
