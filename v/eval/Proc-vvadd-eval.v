@@ -26,6 +26,7 @@
 `include "eval/Proc-eval-harness.v"
 
 int   correct;
+int   check_i;
 logic [7:0] actual;
 
 initial begin
@@ -90,17 +91,14 @@ initial begin
 
   begin
     correct = 1;
-    $write("DBG A[0..63]:");
-    for (int i = 0; i < 64; i++) begin
-      if (i % 2 == 0)
-        actual = mem.m[7'(64 + i/2)][7:0];
+    for (check_i = 0; check_i < 64; check_i = check_i + 1) begin
+      if (check_i % 2 == 0)
+        actual = mem.m[64 + check_i/2][7:0];
       else
-        actual = mem.m[7'(64 + i/2)][15:8];
-      $write(" %0d", actual);
+        actual = mem.m[64 + check_i/2][15:8];
       if (actual !== 8'd65)
         correct = 0;
     end
-    $display("");
 
     //------------------------------------------------------------------
     // Display results
