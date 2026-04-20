@@ -67,6 +67,7 @@ tests := $(ref_tests)
 
 VPATH := $(top_dir)/v/ref
 VPATH += $(top_dir)/v/test
+VPATH += $(top_dir)/v/eval
 
 #-------------------------------------------------------------------------
 # Tests
