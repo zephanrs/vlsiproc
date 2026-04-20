@@ -9,8 +9,7 @@
 
 module Top();
 
-  logic clk, rst;
-  TestUtilsClkRst t ( .clk(clk), .rst(rst) );
+  TestUtils t();
 
   logic [15:0] inst;
   logic  [7:0] imm;

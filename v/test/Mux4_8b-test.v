@@ -7,8 +7,7 @@
 
 module Top();
 
-  logic clk, rst;
-  TestUtilsClkRst t ( .clk(clk), .rst(rst) );
+  TestUtils t();
 
   logic [7:0] in0, in1, in2, in3, out;
   logic [1:0] sel;

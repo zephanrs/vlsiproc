@@ -7,8 +7,7 @@
 
 module Top();
 
-  logic clk, rst;
-  TestUtilsClkRst t ( .clk(clk), .rst(rst) );
+  TestUtils t();
 
   logic in0, in1, cin, cout, sum;
   FullAdder dut ( .in0(in0), .in1(in1), .cin(cin), .cout(cout), .sum(sum) );
