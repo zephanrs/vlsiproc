@@ -2,18 +2,20 @@
 # eval
 #=========================================================================
 
-eval_tests = \
-  Proc-vvadd-eval.v \
-  Proc-sort-eval.v \
+eval_dir := $(top_dir)/v/eval
 
-eval_exes := $(patsubst %.v, %, $(eval_tests))
-eval_logs := $(patsubst %.v, %.log, $(eval_tests))
-eval_deps := $(patsubst %.v, %.d, $(eval_tests))
+eval_srcs = \
+  $(eval_dir)/Proc-vvadd-eval.v \
+  $(eval_dir)/Proc-sort-eval.v \
 
-$(eval_deps) : %.d : %.v
+eval_exes := $(patsubst $(eval_dir)/%.v, %, $(eval_srcs))
+eval_logs := $(patsubst $(eval_dir)/%.v, %.log, $(eval_srcs))
+eval_deps := $(patsubst $(eval_dir)/%.v, %.d, $(eval_srcs))
+
+$(eval_deps) : %.d : $(eval_dir)/%.v
 	$(VMKDEPS) -I $(top_dir)/v $* $<
 
-$(eval_exes) : % : %.v
+$(eval_exes) : % : $(eval_dir)/%.v
 	$(VERILATOR_LINT) -I$(top_dir)/v --top-module Top $<
 	$(IVERILOG_COMPILE) -I $(top_dir)/v -s Top -o $@ $<
 
