@@ -2,8 +2,6 @@
 # eval
 #=========================================================================
 
-VPATH += $(top_dir)/v/eval
-
 eval_tests = \
   Proc-vvadd-eval.v \
   Proc-sort-eval.v \
