@@ -24,16 +24,13 @@ module Proc
   // Control Signals (Control Unit -> Datapath)
   logic       pc_en;
   logic       addr_sel;
-  logic       ir_en;
-  logic       a_en;
-  logic       b_en;
-  logic       oldpc_en;
+  logic       fetch_latch_en;
+  logic       ab_en;
   logic       pc_sel;
   logic       op1_sel;
   logic [1:0] op2_sel;
-  logic       alu_func;
   logic       addr_en;
-  logic [1:0] wb_sel;
+  logic       wb_sel;
   logic       wd_en;
   logic       rf_wen;
 

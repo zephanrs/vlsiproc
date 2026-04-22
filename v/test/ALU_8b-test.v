@@ -9,22 +9,23 @@ module Top();
 
   TestUtils t();
 
-  logic [7:0] in0, in1, out;
-  logic       op;
-  ALU_8b dut ( .in0(in0), .in1(in1), .op(op), .out(out) );
+  logic [7:0] in0, in1, sum;
+  logic       eq;
+  ALU_8b dut ( .in0(in0), .in1(in1), .sum(sum), .eq(eq) );
 
   task check
   (
     input logic [7:0] in0_,
     input logic [7:0] in1_,
-    input logic       op_,
-    input logic [7:0] out_
+    input logic [7:0] sum_,
+    input logic       eq_
   );
     if ( !t.failed ) begin
       t.num_checks += 1;
-      in0 = in0_; in1 = in1_; op = op_;
+      in0 = in0_; in1 = in1_;
       #8;
-      `CHECK_EQ_HEX( out, out_ );
+      `CHECK_EQ_HEX( sum, sum_ );
+      `CHECK_EQ_HEX( eq,  eq_  );
       #2;
     end
   endtask
@@ -35,13 +36,13 @@ module Top();
 
   task test_case_1_add();
     t.test_case_begin( "test_case_1_add" );
-    //        in0       in1       op      out
-    check( 8'd0,    8'd0,    1'b0,  8'd0   );
-    check( 8'd1,    8'd2,    1'b0,  8'd3   );
-    check( 8'd10,   8'd20,   1'b0,  8'd30  );
-    check( 8'd100,  8'd27,   1'b0,  8'd127 );
-    check( 8'hff,   8'h01,   1'b0,  8'h00  );
-    check( 8'hff,   8'hff,   1'b0,  8'hfe  );
+    //        in0       in1       sum     eq
+    check( 8'd0,    8'd0,    8'd0,   1'b1 );
+    check( 8'd1,    8'd2,    8'd3,   1'b0 );
+    check( 8'd10,   8'd20,   8'd30,  1'b0 );
+    check( 8'd100,  8'd27,   8'd127, 1'b0 );
+    check( 8'hff,   8'h01,   8'h00,  1'b0 );
+    check( 8'hff,   8'hff,   8'hfe,  1'b1 );
     t.test_case_end();
   endtask
 
@@ -51,14 +52,14 @@ module Top();
 
   task test_case_2_eq();
     t.test_case_begin( "test_case_2_eq" );
-    //        in0       in1       op      out
-    check( 8'd0,    8'd0,    1'b1,  8'h01 );
-    check( 8'd1,    8'd1,    1'b1,  8'h01 );
-    check( 8'haa,   8'haa,   1'b1,  8'h01 );
-    check( 8'hff,   8'hff,   1'b1,  8'h01 );
-    check( 8'd0,    8'd1,    1'b1,  8'h00 );
-    check( 8'hff,   8'h00,   1'b1,  8'h00 );
-    check( 8'haa,   8'h55,   1'b1,  8'h00 );
+    //        in0       in1       sum     eq
+    check( 8'd0,    8'd0,    8'd0,   1'b1 );
+    check( 8'd1,    8'd1,    8'd2,   1'b1 );
+    check( 8'haa,   8'haa,   8'h54,  1'b1 );
+    check( 8'hff,   8'hff,   8'hfe,  1'b1 );
+    check( 8'd0,    8'd1,    8'd1,   1'b0 );
+    check( 8'hff,   8'h00,   8'hff,  1'b0 );
+    check( 8'haa,   8'h55,   8'hff,  1'b0 );
     t.test_case_end();
   endtask
 

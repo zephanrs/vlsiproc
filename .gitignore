@@ -1,4 +1,5 @@
 build/
+build-simplify/
 
 # Cadence user preferences, history, and session state
 cadence/.cadence/

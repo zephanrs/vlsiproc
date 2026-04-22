@@ -28,16 +28,13 @@ module ProcDpath
   // Control Signals (Control Unit -> Datapath)
   input  logic        pc_en,
   input  logic        addr_sel,
-  input  logic        ir_en,
-  input  logic        a_en,
-  input  logic        b_en,
-  input  logic        oldpc_en,
+  input  logic        fetch_latch_en,
+  input  logic        ab_en,
   input  logic        pc_sel,
   input  logic        op1_sel,
   input  logic [1:0]  op2_sel,
-  input  logic        alu_func,
   input  logic        addr_en,
-  input  logic [1:0]  wb_sel,
+  input  logic        wb_sel,
   input  logic        wd_en,
   input  logic        rf_wen,
 
@@ -76,7 +73,7 @@ module ProcDpath
   (
     .clk (clk),
     .rst (rst),
-    .en  (ir_en),
+    .en  (fetch_latch_en),
     .d   (idmem_rdata),
     .q   (inst)
   );
@@ -117,7 +114,7 @@ module ProcDpath
   (
     .clk (clk),
     .rst (rst),
-    .en  (a_en),
+    .en  (ab_en),
     .d   (rf_rdata0),
     .q   (a)
   );
@@ -129,7 +126,7 @@ module ProcDpath
   (
     .clk (clk),
     .rst (rst),
-    .en  (b_en),
+    .en  (ab_en),
     .d   (rf_rdata1),
     .q   (b)
   );
@@ -152,7 +149,7 @@ module ProcDpath
   (
     .clk (clk),
     .rst (rst),
-    .en  (oldpc_en),
+    .en  (fetch_latch_en),
     .d   (pc),
     .q   (oldpc)
   );
@@ -199,11 +196,9 @@ module ProcDpath
   (
     .in0 (op1_data),
     .in1 (op2_data),
-    .op  (alu_func),
-    .out (alu_out)
+    .sum (alu_out),
+    .eq  (eq)
   );
-
-  assign eq = alu_out[0];
 
   // Address Register
   Register_8b addr_reg
@@ -227,12 +222,10 @@ module ProcDpath
   );
 
   // Writeback Mux
-  Mux4_8b wb_mux
+  Mux2_8b wb_mux
   (
-    .in0 (8'b0),
-    .in1 (alu_out),
-    .in2 (rdata_byte),
-    .in3 (8'b0),
+    .in0 (alu_out),
+    .in1 (rdata_byte),
     .sel (wb_sel),
     .out (wb_val)
   );

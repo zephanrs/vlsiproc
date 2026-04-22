@@ -19,16 +19,13 @@ module ProcCtrl
   // Control Signals (Control Unit -> Datapath)
   output logic        pc_en,
   output logic        addr_sel,
-  output logic        ir_en,
-  output logic        a_en,
-  output logic        b_en,
-  output logic        oldpc_en,
+  output logic        fetch_latch_en,
+  output logic        ab_en,
   output logic        pc_sel,
   output logic        op1_sel,
   output logic [1:0]  op2_sel,
-  output logic        alu_func,
   output logic        addr_en,
-  output logic [1:0]  wb_sel,
+  output logic        wb_sel,
   output logic        wd_en,
   output logic        rf_wen,
 
@@ -57,14 +54,10 @@ module ProcCtrl
   localparam op2_i = 2'd2; // immediate
   localparam op2_2 = 2'd3; // constant 2
 
-  // alu_func
-  localparam add   = 1'd0;
-  localparam cmp   = 1'd1;
-
   // wb_sel
 
-  localparam wb_al = 2'd1; // alu_out
-  localparam wb_in = 2'd2; // inst / idmem_rdata
+  localparam wb_al = 1'd0; // alu_out
+  localparam wb_in = 1'd1; // inst / idmem_rdata
 
   // dmem_type (mem type)
   localparam rd    = 1'd0;
@@ -74,32 +67,26 @@ module ProcCtrl
   task automatic cs
   (
     input logic       pc_en_,
-    input logic       oldpc_en_,
-    input logic       ir_en_,
-    input logic       a_en_,
-    input logic       b_en_,
+    input logic       fetch_latch_en_,
+    input logic       ab_en_,
     input logic       addr_sel_,
     input logic       pc_sel_,
     input logic       op1_sel_,
     input logic [1:0] op2_sel_,
-    input logic       alu_func_,
     input logic       addr_en_,
     input logic       idmem_val_,
     input logic       idmem_type_,
-    input logic [1:0] wb_sel_,
+    input logic       wb_sel_,
     input logic       wd_en_,
     input logic       rf_wen_
   );
     pc_en         = pc_en_;
-    oldpc_en      = oldpc_en_;
-    ir_en         = ir_en_;
-    a_en          = a_en_;
-    b_en          = b_en_;
+    fetch_latch_en = fetch_latch_en_;
+    ab_en          = ab_en_;
     addr_sel      = addr_sel_;
     pc_sel        = pc_sel_;
     op1_sel       = op1_sel_;
     op2_sel       = op2_sel_;
-    alu_func      = alu_func_;
     addr_en       = addr_en_;
     idmem_val     = idmem_val_;
     idmem_type    = idmem_type_;
@@ -170,26 +157,26 @@ module ProcCtrl
   // Control signal table
   always_comb begin
     casez ( state )
-          //   pc   oldpc ir   a    b    addr  pc    op1    op2    alu   addr  mem   mem   wb     wd   rf 
-          //   en   en    en   en   en   sel   sel   sel    sel    func  en    val   type  sel    en   wen
-      F0:  cs( 0,   0,    0,   0,   0,   pc,   curr, 'x,    'x,    'x,    0,    1,    rd,   'x,    0,   0   );
-      F1:  cs( 1,   1,    1,   0,   0,   'x,   curr, op1_p, op2_2, add,   0,    0,    'x,   wb_al, 0,   0   );
-      D:   cs( 0,   0,    0,   1,   1,   'x,   'x,   'x,    'x,    'x,    0,    0,    'x,   'x,    0,   0   );
-      AI:  cs( 0,   0,    0,   0,   0,   'x,   'x,   op1_a, op2_i, add,   0,    0,    'x,   wb_al, 1,   0   );
-      WB:  cs( 0,   0,    0,   0,   0,   'x,   'x,   'x,    'x,    'x,    0,    0,    'x,   'x,    0,   1   );
-      A0:  cs( 0,   0,    0,   0,   0,   'x,   'x,   op1_a, op2_b, add,   0,    0,    'x,   wb_al, 1,   0   );
-      L0:  cs( 0,   0,    0,   0,   0,   'x,   'x,   op1_a, op2_i, add,   1,    0,    'x,   'x,    0,   0   );
-      L1:  cs( 0,   0,    0,   0,   0,   addr, 'x,   'x,    'x,    'x,    0,    1,    rd,   'x,    0,   0   );
-      L2:  cs( 0,   0,    0,   0,   0,   'x,   'x,   'x,    'x,    'x,    0,    0,    'x,   wb_in, 1,   0   );
-      S0:  cs( 0,   0,    0,   0,   0,   'x,   'x,   op1_a, op2_i, add,   1,    0,    'x,   'x,    0,   0   );
-      S1:  cs( 0,   0,    0,   0,   0,   addr, 'x,   'x,    'x,    'x,    0,    1,    wr,   'x,    0,   0   );
-      JR:  cs( 1,   0,    0,   0,   0,   'x,   'x,   op1_a, op2_0, add,   0,    0,    'x,   wb_al, 0,   0   );
-      JA0: cs( 0,   0,    0,   0,   0,   'x,   old,  op1_p, op2_2, add,   0,    0,    'x,   wb_al, 1,   0   );
-      JA1: cs( 1,   0,    0,   0,   0,   'x,   old,  op1_p, op2_i, add,   0,    0,    'x,   wb_al, 0,   0   );
-      B0:  cs( 0,   0,    0,   0,   0,   'x,   'x,   op1_a, op2_b, cmp,   0,    0,    'x,   'x,    0,   0   );
-      B1:  cs( 1,   0,    0,   0,   0,   'x,   old,  op1_p, op2_i, add,   0,    0,    'x,   wb_al, 0,   0   );
+          //   pc   fetch ab   addr  pc    op1    op2    addr  mem   mem   wb     wd   rf 
+          //   en   en    en   sel   sel   sel    sel    en    val   type  sel    en   wen
+      F0:  cs( 0,   0,    0,   pc,   curr, 'x,    'x,    0,    1,    rd,   'x,    0,   0   );
+      F1:  cs( 1,   1,    0,   'x,   curr, op1_p, op2_2, 0,    0,    'x,   wb_al, 0,   0   );
+      D:   cs( 0,   0,    1,   'x,   'x,   'x,    'x,    0,    0,    'x,   'x,    0,   0   );
+      AI:  cs( 0,   0,    0,   'x,   'x,   op1_a, op2_i, 0,    0,    'x,   wb_al, 1,   0   );
+      WB:  cs( 0,   0,    0,   'x,   'x,   'x,    'x,    0,    0,    'x,   'x,    0,   1   );
+      A0:  cs( 0,   0,    0,   'x,   'x,   op1_a, op2_b, 0,    0,    'x,   wb_al, 1,   0   );
+      L0:  cs( 0,   0,    0,   'x,   'x,   op1_a, op2_i, 1,    0,    'x,   'x,    0,   0   );
+      L1:  cs( 0,   0,    0,   addr, 'x,   'x,    'x,    0,    1,    rd,   'x,    0,   0   );
+      L2:  cs( 0,   0,    0,   'x,   'x,   'x,    'x,    0,    0,    'x,   wb_in, 1,   0   );
+      S0:  cs( 0,   0,    0,   'x,   'x,   op1_a, op2_i, 1,    0,    'x,   'x,    0,   0   );
+      S1:  cs( 0,   0,    0,   addr, 'x,   'x,    'x,    0,    1,    wr,   'x,    0,   0   );
+      JR:  cs( 1,   0,    0,   'x,   'x,   op1_a, op2_0, 0,    0,    'x,   wb_al, 0,   0   );
+      JA0: cs( 0,   0,    0,   'x,   old,  op1_p, op2_2, 0,    0,    'x,   wb_al, 1,   0   );
+      JA1: cs( 1,   0,    0,   'x,   old,  op1_p, op2_i, 0,    0,    'x,   wb_al, 0,   0   );
+      B0:  cs( 0,   0,    0,   'x,   'x,   op1_a, op2_b, 0,    0,    'x,   'x,    0,   0   );
+      B1:  cs( 1,   0,    0,   'x,   old,  op1_p, op2_i, 0,    0,    'x,   wb_al, 0,   0   );
       default:
-           cs( 'x,  'x,   'x,  'x,  'x,  'x,   'x,   'x,    'x,    'x,    'x,   'x,    'x,   'x,    'x,  'x  );
+           cs( 'x,  'x,   'x,  'x,   'x,   'x,    'x,    'x,   'x,    'x,   'x,    'x,  'x  );
     endcase
   end
 
