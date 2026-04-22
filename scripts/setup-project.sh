@@ -29,3 +29,5 @@ export PS1="\[\e[1;34m\]proc:\[\e[0m\] \[\e[1m\]\w\[\e[0m\] % "
 export PROMPT_DIRTRIM=2
 alias rmlck='find . -type f -name "*cdslck*" -delete'
 export SETUP_COURSE="project"
+
+export ROOTDIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)
