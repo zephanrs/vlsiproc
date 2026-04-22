@@ -1,0 +1,49 @@
+name: Datapath Floorplan
+
+on: [push]
+
+jobs:
+  run_floorplan:
+    name: datapath-floorplan
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Run floorplan unit tests
+        run: |
+          python3 -m unittest discover -s tests -p 'test_*.py'
+
+      - name: Generate floorplan report
+        run: |
+          mkdir -p build/floorplan
+          python3 scripts/datapath_floorplan.py \
+            --verilog v/ref/ProcDpath.v \
+            --module-dir v/ref \
+            --out-dir build/floorplan \
+            --steps 4000 \
+            --seed 7 \
+            --stdout-report
+
+      - name: Publish text summary
+        run: |
+          {
+            echo "## Datapath floorplan"
+            echo
+            echo '```text'
+            cat build/floorplan/proc-dpath-floorplan.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload floorplan artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: datapath-floorplan
+          path: |
+            build/floorplan/proc-dpath-floorplan.txt
+            build/floorplan/proc-dpath-floorplan.json
+            build/floorplan/proc-dpath-floorplan.svg
+            build/floorplan/proc-dpath-floorplan-bitslice.svg
