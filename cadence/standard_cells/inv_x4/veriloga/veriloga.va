@@ -1,0 +1,56 @@
+// VerilogA for ECE4740_to_share_lab1, HA, veriloga
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module inv_x4(in, out, vdd, gnd);
+	input in;					// two inputs, A and B
+	output out;				// two outputs, Sum and Carry out
+	electrical in, out;
+	(* inh_conn_prop_name = "gnd", inh_conn_def_value = "cds_globals.\\gnd! " *) inout gnd; electrical gnd;
+	(* inh_conn_prop_name = "vdd", inh_conn_def_value = "cds_globals.\\vdd! " *) inout vdd; electrical vdd;
+
+	parameter real init_slew = 1p;	//initial slew
+	parameter real trise_out = 40p;	//output rise time
+	parameter real tfall_out = 40p;	//output fall time
+
+// delays
+	// Input -> output  delays
+	parameter real tpd_rise = 10p;
+	parameter real tpd_fall = 10p;
+
+
+    integer lin;							// logic values of inputs
+    integer lout, new_lout;			// logic value of output
+
+
+	real vth;      			// Threshold
+    real last_delay;			// Delay is chosen based on the most recent output-causing event
+
+	analog begin
+		vth = V(vdd, gnd)/2;		// Threshold definition
+
+        @(initial_step) begin				// Logic state intialization
+			lin = (V(in, gnd) > vth);		//"1" if in>vth, "0" otherwise
+			lout = (!lin);				// out is inverse of in
+			last_delay = 0;
+        end
+
+        @(cross(V(in, gnd) - vth, 0)) begin			// Input event: in crosses vth
+			lin= (V(in, gnd) > vth);				//"1" if in>vth, "0" otherwise
+			new_lout = (!lin);				// out is inverse of in
+            if (new_lout != lout) begin		// if S changes
+                if (new_lout == 1) begin
+                    last_delay = tpd_rise;	//out rises: apply that delay
+                end else begin
+                    last_delay = tpd_fall;	//out falls: apply that delay
+                end
+                lout = new_lout;						// update out
+			end
+        end
+
+
+		V(out, gnd) <+ transition( (lout ? V(vdd,gnd) : 0), last_delay, trise_out, tfall_out );	// Drive output with chosen timing
+	end
+
+endmodule
