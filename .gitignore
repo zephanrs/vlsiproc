@@ -14,5 +14,5 @@ cadence/*.log
 
 # Cadence lock files (created during active sessions)
 **/*.lck
-**/*.cdslck
+**/*cdslck*
 **/cdslck/
