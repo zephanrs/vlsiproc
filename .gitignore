@@ -1,4 +1,4 @@
-build/
+build-*/
 build-simplify/
 
 # Cadence user preferences, history, and session state
@@ -16,3 +16,7 @@ cadence/*.log
 **/*.lck
 **/*cdslck*
 **/cdslck/
+
+# Ignore all log and tmp files
+*.tmp*
+*log*
