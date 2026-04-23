@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
-<statedb ICVersion="IC23.1-64b.ISR7.27" modifiedTime="04/22/2026 22:17:06" version="5">active
+<statedb ICVersion="IC23.1-64b.ISR7.27" modifiedTime="04/22/2026 22:16:54" version="5">active
 	<Test Name="testbenchs_Mux4_tb_1">
 		<component Name="adeInfo" Type="skillTable">adeinfo
-			<field Name="designInfo" Type="list">("testbenchs" "Xor_tb" "schematic" "spectre")</field>
+			<field Name="designInfo" Type="list">("testbenchs" "Nor2_tb" "schematic" "spectre")</field>
 			<field Name="descriptiontext" Type="string">"None"</field>
-			<field Name="projectDir" Type="string">"/home/iw87/simulation/testbenchs/Xor_tb/maestro/results/maestro/.tmpADEDir_iw87/testbenchs_Mux4_tb_1/simulation"</field>
+			<field Name="projectDir" Type="string">"/home/iw87/simulation/testbenchs/Nor2_tb/maestro/results/maestro/.tmpADEDir_iw87/testbenchs_Mux4_tb_1/simulation"</field>
 		</component>
 		<component Name="rfstim" Type="skillTable">rfstim</component>
 		<component Name="analyses" Type="skillTable">asiEnvSaveTable
