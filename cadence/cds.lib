@@ -3,3 +3,4 @@ INCLUDE /opt/cadence-designkits/gpdk045_v_6_0/cds.lib
 DEFINE standard_cells $ROOTDIR/cadence/standard_cells
 DEFINE processor $ROOTDIR/cadence/processor
 DEFINE testbenchs $ROOTDIR/cadence/testbenchs
+DEFINE avTech /opt/cadence/ASSURA41/tools.lnx86/assura/etc/avtech/avTech
