@@ -1,23 +1,26 @@
 <?xml version="1.0"?>
 <setupdb version="7">history
+	
 	<active>Active Setup</active>
 	<history>History
+		
 		<historyentry assemblerOrExplorer="explorer" roOrView="view" runningOrFinished="finished">ExplorerRun.0
-<<<<<<< HEAD
-			<timestamp>Apr 22 23:06:52 2026</timestamp>
-			<uuid>{026043f3-0fc8-4c59-a88d-5ae944cb08b3}</uuid>
-=======
-			<timestamp>Apr 22 22:26:48 2026</timestamp>
-			<uuid>{a57f0a83-85e3-465c-9cb5-785bd93adcc5}</uuid>
->>>>>>> 424124e55463383fb12868ff3f4db262fcf81f11
+</historyentry>
+		<historyentry assemblerOrExplorer="explorer" roOrView="view" runningOrFinished="finished">ExplorerRun.0
+			<timestamp>Apr 24 19:12:09 2026</timestamp>
+			<uuid>{b702da07-3507-4d16-8fdd-e62a4bfa54f1}</uuid>
 			<locked>0</locked>
 			<mode>Single Run, Sweeps and Corners</mode>
-			<resultsname>/home/iw87/processor/cadence/testbenchs/rf_tb/maestro/results/maestro/$AXL_HISTORY_NAME.rdb</resultsname>
+			<resultsname>/home/zrs29/processor/cadence/testbenchs/rf_tb/maestro/results/maestro/$AXL_HISTORY_NAME.rdb</resultsname>
 			<simresults>$AXL_SETUPDB_DIR/results/maestro/$AXL_HISTORY_NAME.rdb</simresults>
-			<runlog>/home/iw87/processor/cadence/testbenchs/rf_tb/maestro/results/maestro/$AXL_HISTORY_NAME.log</runlog>
+			<runlog>/home/zrs29/processor/cadence/testbenchs/rf_tb/maestro/results/maestro/$AXL_HISTORY_NAME.log</runlog>
 			<runlogfile>$AXL_SETUPDB_DIR/results/maestro/$AXL_HISTORY_NAME.log</runlogfile>
-			<psfdir>/home/iw87/simulation/testbenchs/rf_tb/maestro/results/maestro/$AXL_HISTORY_NAME</psfdir>
+			<psfdir>/home/zrs29/simulation/testbenchs/rf_tb/maestro/results/maestro/$AXL_HISTORY_NAME</psfdir>
 			<simdir>$AXL_PROJECT_DIR/testbenchs/rf_tb/maestro/results/maestro/$AXL_HISTORY_NAME</simdir>
+			<timestamp>Apr 24 19:12:57 2026</timestamp>
+			<uuid>{f7a3c16b-c7bd-4323-99dc-679321db3059}</uuid>
 		</historyentry>
+		<historyentry>ExplorerRun.0</historyentry>
 	</history>
+	<history>History</history>
 </setupdb>
