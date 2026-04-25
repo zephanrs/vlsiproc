@@ -1,0 +1,13 @@
+# SVDB: Port Table (ports)
+# SVDB: Layout Primary RFReg
+rdata1 24 rdata1 4950 3300 metal1_conn
+clk 6 clk 1140 2260 metal1_conn
+ren1 9 ren1 4680 820 metal1_conn
+vdd! 12 vdd! 460 5100 metal1_conn
+D 1 D 410 2780 metal1_conn
+ren0 7 ren0 3450 820 metal1_conn
+ren1_b 10 ren1_b 4680 3900 metal1_conn
+gnd! 14 gnd! 400 0 metal1_conn
+rdata0 23 rdata0 3750 3300 metal1_conn
+clk_b 11 clk_b 1890 3800 metal2_conn
+ren0_b 8 ren0_b 3450 3900 metal1_conn
