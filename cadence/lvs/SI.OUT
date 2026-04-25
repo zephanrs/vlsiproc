@@ -26,10 +26,16 @@ done!
 Loaded gpdk045/libInit.il successfully!
 Loading hnlInit.cxt 
 Running Artist Hierarchical Netlisting ...
-"ERROR (OSSHNL-503): Netlister failed to open netlist file '/home/jyh42/processor/cadence/lvs//netlist'. Netlisting has stopped. Ensure that you have right permissions in run directory and netlist again.\n\n"
-End netlisting Apr 25 16:41:34 2026
-ERROR (OSSHNL-514): Netlist generation failed because of the errors reported above. The netlist might not have been generated at all, or the generated netlist could be corrupt. Fix the reported errors and regenerate the netlist.
-*WARNING* (ilRemoveProtect): could not find pointer; FILE hnl/lxRemoveDevice.cpp LINE 3127
-*WARNING* (ilRemoveProtect): could not find pointer; FILE hnl/lxRemoveDevice.cpp LINE 3130
-*WARNING* (ilRemoveProtect): could not find pointer; FILE hnl/hnl.cpp LINE 5970
-INFO (AUCDL-22): (Analog) CDL netlisting failed.*WARNING* (ilRemoveProtect): could not find pointer; FILE hnl/hnl.cpp LINE 5971
+End netlisting Apr 25 17:48:33 2026
+
+Running simin
+
+Running runSim()...
+
+
+Running runsim with simulator: "auCdl"
+Begin simulation:    Apr 25 17:48:33 2026
+
+auCdl netlisting completed
+End simulation:      Apr 25 17:48:33 2026
+INFO (AUCDL-21): (Analog) CDL netlisting completed successfully.
