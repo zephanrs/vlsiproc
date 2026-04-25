@@ -4,6 +4,8 @@ build-simplify/
 # Cadence user preferences, history, and session state
 cadence/.cadence/
 cadence/perf/
+cadence/drc/
+cadence/lvs/
 
 # Cadence log files
 cadence/libManager.log
