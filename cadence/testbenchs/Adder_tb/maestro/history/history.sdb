@@ -27,8 +27,8 @@
 			<simdir>$AXL_PROJECT_DIR/testbenchs/Adder_tb/maestro/results/maestro/$AXL_HISTORY_NAME</simdir>
 		</historyentry>
 		<historyentry assemblerOrExplorer="explorer" roOrView="view" runningOrFinished="finished">ExplorerRun.0
-			<timestamp>Apr 23 23:31:30 2026</timestamp>
-			<uuid>{667bb4e5-94f7-4dad-b6d3-4692d82a7176}</uuid>
+			<timestamp>Apr 25 15:30:58 2026</timestamp>
+			<uuid>{17fe55f2-c154-49eb-b04a-00ebeafe3eff}</uuid>
 			<locked>0</locked>
 			<mode>Single Run, Sweeps and Corners</mode>
 			<resultsname>/home/jyh42/processor/cadence/testbenchs/Adder_tb/maestro/results/maestro/$AXL_HISTORY_NAME.rdb</resultsname>

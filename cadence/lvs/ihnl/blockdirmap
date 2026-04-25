@@ -1,0 +1,7 @@
+CADENCE IHNL11145
+
+standard_cells RFReg schematic cds0
+standard_cells inv_x1 schematic cds1
+standard_cells RFzero schematic cds2
+standard_cells inv_x4 schematic cds3
+processor RFslice schematic cds4
