@@ -24,20 +24,18 @@
 						<value>spectre</value>
 					</option>
 					<option>view
-						<value>schematic</value>
+						<value>config</value>
 					</option>
 					<option>state
 						<value>active</value>
 					</option>
 				</tooloptions>
-				<vars>
-					<var>s1
-						<value>1</value>
-					</var>
-					<var>s2
-						<value>1,2</value>
-					</var>
-				</vars>
+				<vars></vars>
+				<outputs>
+					<output>/f
+						<evalType>point</evalType>
+					</output>
+				</outputs>
 			</test>
 		</tests>
 		<extensions>
@@ -53,7 +51,7 @@
 		</checksasserts>
 		<plottingoptions>
 			<plottingoption>waveformtemplate
-				<value>(None)</value>
+				<value></value>
 			</plottingoption>
 			<plottingoption>plottingmode
 				<value>Replace</value>
@@ -65,7 +63,7 @@
 				<value>no</value>
 			</plottingoption>
 			<plottingoption>useMaestroPlottingTemplate
-				<value>yes</value>
+				<value>no</value>
 			</plottingoption>
 			<plottingoption>allplottingtemplates
 				<value></value>
