@@ -7,7 +7,11 @@
 AbortOnLayoutError                          "TRUE"
 AbortOnSoftChk                              "FALSE"
 AbortOnSupplyError                          "FALSE"
+<<<<<<< HEAD
 ActualRulesFile                             "../../../../opt/cadence-designkits/gpdk045_v_6_0/pvs/pvlLVS.rul"
+=======
+ActualRulesFile                             "/opt/cadence-designkits/gpdk045_v_6_0/pvs/pvlLVS.rul"
+>>>>>>> 9c6388d (startign subcell layout)
 AdvancedCPUsetting                          "FALSE"
 Automatch                                   "FALSE"
 BreakingAmbiguitiesThreshold                "32"
@@ -28,7 +32,15 @@ DPmode                                      "Single CPU"
 DPsh                                        "Local host"
 EnableColoring                              "TRUE"
 EnableOptions                               "TRUE"
+<<<<<<< HEAD
+<<<<<<<< HEAD:cadence/virtuoso6.lvs_preset
 ErcReportFile                               "Mux2.sum"
+========
+ErcReportFile                               "adder_white_b.sum"
+>>>>>>>> 9c6388d (startign subcell layout):cadence/lvs/.preset.autosave
+=======
+ErcReportFile                               "adder_white_b.sum"
+>>>>>>> 9c6388d (startign subcell layout)
 ErcReportLimit                              "1000"
 ExcludeComparisonStep                       "FALSE"
 ExpandCellOnErrorDuringComparison           "FALSE"
@@ -56,17 +68,40 @@ LVSColorsFileName                           ""
 LVSColorsMode                               "auto"
 LVSColorsOn                                 "FALSE"
 LayerMapList                                ""
+<<<<<<< HEAD
+<<<<<<<< HEAD:cadence/virtuoso6.lvs_preset
 LayoutDFIIcell                              "Mux2"
 LayoutDFIIintermFile                        "./lvs/Mux2.gds.gz"
 LayoutDFIIintermFileStage                   "Create GDSII"
 LayoutDFIIlibrary                           "standard_cells"
 LayoutDFIIview                              "layout"
 LayoutSPICEfile                             "./lvs/Mux2.spi"
+========
+=======
+>>>>>>> 9c6388d (startign subcell layout)
+LayoutDFIIcell                              "adder_white_b"
+LayoutDFIIintermFile                        "./lvs/adder_white_b.gds.gz"
+LayoutDFIIintermFileStage                   "Create GDSII"
+LayoutDFIIlibrary                           "standard_cells"
+LayoutDFIIview                              "layout"
+LayoutSPICEfile                             "./lvs/adder_white_b.spi"
+<<<<<<< HEAD
+>>>>>>>> 9c6388d (startign subcell layout):cadence/lvs/.preset.autosave
+=======
+>>>>>>> 9c6388d (startign subcell layout)
 LayoutSPICEfileStage                        "Create SPICE"
 LicenseDPContinue                           "FALSE"
 LicenseTimeout                              ""
 LocalCommandLine                            ""
+<<<<<<< HEAD
+<<<<<<<< HEAD:cadence/virtuoso6.lvs_preset
 LvsReportFile                               "Mux2.rep"
+========
+LvsReportFile                               "adder_white_b.rep"
+>>>>>>>> 9c6388d (startign subcell layout):cadence/lvs/.preset.autosave
+=======
+LvsReportFile                               "adder_white_b.rep"
+>>>>>>> 9c6388d (startign subcell layout)
 MultiHostMode                               "User-defined"
 MultiHostProcessorsNumber                   "1"
 MultiHostTotalProcessorsNumber              "1"
@@ -75,7 +110,15 @@ NetNamesGround                              ""
 NetNamesPower                               ""
 ObjectMapFile                               ""
 OutputErrorsHierarchically                  "Rules Definition"
+<<<<<<< HEAD
+<<<<<<<< HEAD:cadence/virtuoso6.lvs_preset
 OutputFile                                  "./lvs/Mux2.erc_errors.ascii"
+========
+OutputFile                                  "./lvs/adder_white_b.erc_errors.ascii"
+>>>>>>>> 9c6388d (startign subcell layout):cadence/lvs/.preset.autosave
+=======
+OutputFile                                  "./lvs/adder_white_b.erc_errors.ascii"
+>>>>>>> 9c6388d (startign subcell layout)
 OutputFormat                                "ASCII"
 PBSresourceString                           ""
 PVLInclude:exception_severity               "OFF; "
@@ -148,14 +191,28 @@ ReportOption_SPI                            "FALSE"
 ReportOption_X                              "FALSE"
 ReportOutputCompletePathchkResults          "FALSE"
 ReportStatisticsByCell                      "FALSE"
+<<<<<<< HEAD
 RulesFile                                   ""
+=======
+RulesFile                                   "/opt/cadence-designkits/gpdk045_v_6_0/pvs/pvlLVS.rul"
+>>>>>>> 9c6388d (startign subcell layout)
 RunDir                                      "./lvs"
 RunErcChecks                                "TRUE"
 SchematicCDLIncludeFile                     ""
 SchematicCDLIncludeFileStage                "Do Not Use Include File"
 SchematicCPFfile                            ""
+<<<<<<< HEAD
+<<<<<<<< HEAD:cadence/virtuoso6.lvs_preset
 SchematicDFIIcell                           "Mux2"
 SchematicDFIIiCDLfile                       "./lvs/Mux2.cdl"
+========
+SchematicDFIIcell                           "adder_white_b"
+SchematicDFIIiCDLfile                       "./lvs/adder_white_b.cdl"
+>>>>>>>> 9c6388d (startign subcell layout):cadence/lvs/.preset.autosave
+=======
+SchematicDFIIcell                           "adder_white_b"
+SchematicDFIIiCDLfile                       "./lvs/adder_white_b.cdl"
+>>>>>>> 9c6388d (startign subcell layout)
 SchematicDFIIiCDLfileStage                  "Create CDL"
 SchematicDFIIlibrary                        "standard_cells"
 SchematicDFIIview                           "schematic"
@@ -164,7 +221,15 @@ SchematicFormat                             "DFII"
 SchematicIncludeCDLFiles                    ""
 SchematicMapBusNames                        "FALSE"
 SchematicNetlistFile                        ""
+<<<<<<< HEAD
+<<<<<<<< HEAD:cadence/virtuoso6.lvs_preset
 SchematicNetlistTopCell                     "Mux2"
+========
+SchematicNetlistTopCell                     "adder_white_b"
+>>>>>>>> 9c6388d (startign subcell layout):cadence/lvs/.preset.autosave
+=======
+SchematicNetlistTopCell                     "adder_white_b"
+>>>>>>> 9c6388d (startign subcell layout)
 SchematicPreserveBangInNetlist              "FALSE"
 SchematicResistorThreshold                  "2000"
 SchematicStopList                           "auCdl"
@@ -180,8 +245,13 @@ StreamoutPinTextMapFile                     ""
 StreamoutReplaceBusBitChar                  "FALSE"
 StreamoutUseStreamOutKeys                   "FALSE"
 TechnologyLibPath                           ""
+<<<<<<< HEAD
 TechnologyName                              "gpdk045_pvs"
 TechnologyRuleSet                           "default"
+=======
+TechnologyName                              "---none---"
+TechnologyRuleSet                           "---none---"
+>>>>>>> 9c6388d (startign subcell layout)
 TextDepth                                   ""
 TextDepthSelector                           "Primary"
 TmpDirs                                     ""
@@ -195,10 +265,23 @@ VirtualConnectNames                         ""
 VirtualConnectReport                        "FALSE"
 VirtualConnectReportMaximum                 "all"
 VirtualConnectSemicolon                     "TRUE"
+<<<<<<< HEAD
+<<<<<<<< HEAD:cadence/virtuoso6.lvs_preset
 WaiverBatchAppliedFile                      "./lvs/Mux2.erc_errors.ascii.waivers.applied"
 WaiverBatchFiles                            ""
 WaiverBatchMagnifyIn                        ""
 WaiverBatchRejectedFile                     "./lvs/Mux2.erc_errors.ascii.waivers.rejected"
+========
+=======
+>>>>>>> 9c6388d (startign subcell layout)
+WaiverBatchAppliedFile                      "./lvs/adder_white_b.erc_errors.ascii.waivers.applied"
+WaiverBatchFiles                            ""
+WaiverBatchMagnifyIn                        ""
+WaiverBatchRejectedFile                     "./lvs/adder_white_b.erc_errors.ascii.waivers.rejected"
+<<<<<<< HEAD
+>>>>>>>> 9c6388d (startign subcell layout):cadence/lvs/.preset.autosave
+=======
+>>>>>>> 9c6388d (startign subcell layout)
 WaiverBatchSetupFile                        ""
 WaiverBatchTolerance                        "0"
 WaiverFilesOn                               "FALSE"

@@ -1,0 +1,15 @@
+[General]
+RunTabLayout=@ByteArray(\x1\xd9\xd0\xcb\0\x3\0\0\0\0\0\0\0\0\0\0\0\0\x3J\0\0\x2Y\0\0\0\0\0\0\0\0\xff\xff\xff\xff\xff\xff\xff\xff\0\0\0\0\0\0\0\0\a\x80\0\0\0\0\0\0\0\0\0\0\x3J\0\0\x2Y)
+
+[DRC]
+ZoomMode=Zoom
+
+[Layout]
+Splitters\RunBrowser=200
+
+[MarkerBrowser]
+LogSplitterState=@ByteArray(\0\0\0\xff\0\0\0\x1\0\0\0\x2\0\0\x1\0\xff\xff\xff\xff\x1\xff\xff\xff\xff\x1\0\0\0\x1\0)
+TableSplitterState=@ByteArray(\0\0\0\xff\0\0\0\x1\0\0\0\x2\0\0\x1\x11\0\0\0\xf0\x1\xff\xff\xff\xff\x1\0\0\0\x2\0)
+
+[Table_MarkerTable]
+Header=@ByteArray(\0\0\0\xff\0\0\0\0\0\0\0\x1\0\0\0\0\0\0\0\x4\x1\0\0\0\0\0\0\0\0\0\0\0\a`\0\0\0\x2\0\0\0\x5\0\0\0\x64\0\0\0\x6\0\0\0\x64\0\0\x1\x1f\0\0\0\a\x1\x1\x1\x1\0\0\0\0\0\0\0\0\0\0\0\0\x64\xff\xff\xff\xff\0\0\0\x84\0\0\0\0\0\0\0\a\0\0\0\x1d\0\0\0\x1\0\0\0\0\0\0\0$\0\0\0\x1\0\0\0\0\0\0\0 \0\0\0\x1\0\0\0\0\0\0\0\x1e\0\0\0\x1\0\0\0\0\0\0\0\xa0\0\0\0\x1\0\0\0\0\0\0\0\0\0\0\0\x1\0\0\0\0\0\0\0\0\0\0\0\x1\0\0\0\0\0\0\x3\xe8\0\0\0\0\x64)
