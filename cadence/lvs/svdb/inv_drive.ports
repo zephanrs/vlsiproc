@@ -1,7 +1,0 @@
-# SVDB: Port Table (ports)
-# SVDB: Layout Primary inv_drive
-gnd! 6 gnd! 400 0 metal1_conn
-vdd! 7 vdd! 460 5100 metal1_conn
-out 8 out 220 1890 metal1_conn
-in 2 in 920 2080 metal1_conn
-out_b 5 out_b 2750 800 metal1_conn
