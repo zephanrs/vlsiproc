@@ -9,9 +9,9 @@ logFile	"/home/jyh42/processor/cadence/drc/PIPO1.LOG"
 maxVertices	2048
 pinAttNum	0
 runDir	"/home/jyh42/processor/cadence/drc"
-strmFile	"/home/jyh42/processor/cadence/drc/adder_white_b.gds.gz"
+strmFile	"/home/jyh42/processor/cadence/drc/adder_gray_b.gds.gz"
 strmVersion	5
 techLib	"gpdk045"
-topCell	"adder_white_b"
+topCell	"adder_gray_b"
 view	"layout"
 enableColoring
