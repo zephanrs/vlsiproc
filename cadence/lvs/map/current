@@ -1,0 +1,23 @@
+( ( nil
+  version "2.1"
+  mapType "incremental"
+  blockName "RFslice"
+  repList "auCdl schematic"
+  stopList "auCdl"
+  globalList "gnd! vdd!"
+  hierDelim "."
+  netlistDir "/home/zrs29/processor/cadence/lvs/"
+ )
+( model
+( "standard_cells/RFzero/schematic" "RFzero" )
+( "processor/RFslice/schematic" "RFslice" )
+( "standard_cells/inv_x1/schematic" "inv_x1" )
+( "standard_cells/RFReg/schematic" "RFReg" )
+( "standard_cells/inv_x4/schematic" "inv_x4" )
+ )
+( "inv_x4" "ihnl/cds3/map" )
+( "RFzero" "ihnl/cds2/map" )
+( "inv_x1" "ihnl/cds1/map" )
+( "RFReg" "ihnl/cds0/map" )
+( "RFslice" "ihnl/cds4/map" )
+ )
