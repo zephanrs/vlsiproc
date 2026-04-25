@@ -1,0 +1,28 @@
+			*****************************************************
+			**                                                 **
+			**                L V S  R E P O R T               **
+			**                                                 **
+			*****************************************************
+
+
+Report File Name         : RFslice.rep
+ERC Summary File         : /home/zrs29/processor/cadence/lvs/RFslice.sum
+LVS Comparison Report    : RFslice.rep.cls
+LVS Softchk Report       : RFslice.softchk
+Layout Name              : /home/zrs29/processor/cadence/lvs/RFslice.gds.gz ("RFslice")
+User Name                : zrs29
+Creation Time            : Fri Apr 24 22:58:25 2026
+Current directory        : /home/zrs29/processor/cadence/lvs
+Pegasus Version          : 23.23-s012 Wed May 29 16:54:16 PDT 2024
+
+
+			*****************************************************
+			**                                                 **
+			**            D E V E X T  R E P O R T             **
+			**                                                 **
+			*****************************************************
+
+
+    LVS_SOFTCHK psubstrate -TYPE CONTACT   Total Result        0 (       0)
+    LVS_SOFTCHK nwell_conn -TYPE CONTACT   Total Result        0 (       0)
+    LVS_SOFTCHK Nburied -TYPE CONTACT   Total Result        0 (       0)
