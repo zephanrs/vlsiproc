@@ -1,0 +1,7 @@
+# SVDB: Port Table (ports)
+# SVDB: Layout Primary RFzero
+rdata1 3 rdata1 1630 3750 metal1_conn
+gnd! 4 gnd! 400 0 metal1_conn
+ren0 1 ren0 740 2380 metal1_conn
+rdata0 5 rdata0 330 3750 metal1_conn
+ren1 2 ren1 1280 2380 metal1_conn

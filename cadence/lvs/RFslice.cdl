@@ -1,0 +1,140 @@
+************************************************************************
+* auCdl Netlist:
+* 
+* Library Name:  processor
+* Top Cell Name: RFslice
+* View Name:     schematic
+* Netlisted on:  Apr 24 22:58:21 2026
+************************************************************************
+
+*.BIPOLAR
+*.RESI = 2000 
+*.RESVAL
+*.CAPVAL
+*.DIOPERI
+*.DIOAREA
+*.EQUATION
+*.SCALE METER
+*.MEGA
+.PARAM
+
+*.GLOBAL gnd!
++        vdd!
+
+*.PIN gnd!
+*+    vdd!
+
+************************************************************************
+* Library Name: standard_cells
+* Cell Name:    RFReg
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT RFReg D clk clk_b rdata0 rdata1 ren0 ren0_b ren1 ren1_b
+*.PININFO D:I clk:I clk_b:I ren0:I ren0_b:I ren1:I ren1_b:I rdata0:B rdata1:B
+MPM12 net36 net12 vdd! vdd! g45p1svt m=1 l=45n w=160n
+MPM11 rdata1 ren1_b net36 vdd! g45p1svt m=1 l=45n w=160n
+MPM10 net29 net12 vdd! vdd! g45p1svt m=1 l=45n w=160n
+MPM9 rdata0 ren0_b net29 vdd! g45p1svt m=1 l=45n w=160n
+MPM8 net14 net12 vdd! vdd! g45p1svt m=1 l=45n w=160n
+MPM7 net3 clk net14 vdd! g45p1svt m=1 l=45n w=160n
+MPM6 net12 net3 vdd! vdd! g45p1svt m=1 l=45n w=160n
+MPM5 net17 clk_b net3 vdd! g45p1svt m=1 l=45n w=160n
+MPM4 net21 net17 vdd! vdd! g45p1svt m=1 l=45n w=160n
+MPM3 net4 clk_b net21 vdd! g45p1svt m=1 l=45n w=160n
+MPM2 net17 net4 vdd! vdd! g45p1svt m=1 l=45n w=160n
+MPM1 net1 D vdd! vdd! g45p1svt m=1 l=45n w=160n
+MPM0 net4 clk net1 vdd! g45p1svt m=1 l=45n w=160n
+MNM12 net30 net12 gnd! gnd! g45n1svt m=1 l=45n w=120n
+MNM11 rdata1 ren1 net30 gnd! g45n1svt m=1 l=45n w=120n
+MNM10 net7 net12 gnd! gnd! g45n1svt m=1 l=45n w=120n
+MNM9 rdata0 ren0 net7 gnd! g45n1svt m=1 l=45n w=120n
+MNM8 net16 net12 gnd! gnd! g45n1svt m=1 l=45n w=120n
+MNM7 net3 clk_b net16 gnd! g45n1svt m=1 l=45n w=120n
+MNM6 net12 net3 gnd! gnd! g45n1svt m=1 l=45n w=120n
+MNM5 net17 clk net3 gnd! g45n1svt m=1 l=45n w=120n
+MNM4 net15 net17 gnd! gnd! g45n1svt m=1 l=45n w=120n
+MNM3 net4 clk net15 gnd! g45n1svt m=1 l=45n w=120n
+MNM2 net17 net4 gnd! gnd! g45n1svt m=1 l=45n w=120n
+MNM1 net8 D gnd! gnd! g45n1svt m=1 l=45n w=120n
+MNM0 net4 clk_b net8 gnd! g45n1svt m=1 l=45n w=120n
+.ENDS
+
+************************************************************************
+* Library Name: standard_cells
+* Cell Name:    inv_x1
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT inv_x1 in out
+*.PININFO in:I out:O
+MNM0 out in gnd! gnd! g45n1svt m=1 l=45n w=120n
+MPM0 out in vdd! vdd! g45p1svt m=1 l=45n w=160n
+.ENDS
+
+************************************************************************
+* Library Name: standard_cells
+* Cell Name:    RFzero
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT RFzero rdata0 rdata1 ren0 ren1
+*.PININFO ren0:I ren1:I rdata0:B rdata1:B
+MNM1 rdata1 ren1 gnd! gnd! g45n1svt m=1 l=45n w=120n
+MNM0 rdata0 ren0 gnd! gnd! g45n1svt m=1 l=45n w=120n
+.ENDS
+
+************************************************************************
+* Library Name: standard_cells
+* Cell Name:    inv_x4
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT inv_x4 in out
+*.PININFO in:I out:O
+MNM0 out in gnd! gnd! g45n1svt m=1 l=45n w=480n
+MPM0 out in vdd! vdd! g45p1svt m=1 l=45n w=670n
+.ENDS
+
+************************************************************************
+* Library Name: processor
+* Cell Name:    RFslice
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT RFslice rdata0 rdata1 ren0<7> ren0<6> ren0<5> ren0<4> ren0<3> ren0<2> 
++ ren0<1> ren0<0> ren0_b<7> ren0_b<6> ren0_b<5> ren0_b<4> ren0_b<3> ren0_b<2> 
++ ren0_b<1> ren0_b<0> ren1<7> ren1<6> ren1<5> ren1<4> ren1<3> ren1<2> ren1<1> 
++ ren1<0> ren1_b<7> ren1_b<6> ren1_b<5> ren1_b<4> ren1_b<3> ren1_b<2> 
++ ren1_b<1> ren1_b<0> wdata wen<7> wen<6> wen<5> wen<4> wen<3> wen<2> wen<1> 
++ wen_b<7> wen_b<6> wen_b<5> wen_b<4> wen_b<3> wen_b<2> wen_b<1>
+*.PININFO ren0<7>:I ren0<6>:I ren0<5>:I ren0<4>:I ren0<3>:I ren0<2>:I 
+*.PININFO ren0<1>:I ren0<0>:I ren0_b<7>:I ren0_b<6>:I ren0_b<5>:I ren0_b<4>:I 
+*.PININFO ren0_b<3>:I ren0_b<2>:I ren0_b<1>:I ren0_b<0>:I ren1<7>:I ren1<6>:I 
+*.PININFO ren1<5>:I ren1<4>:I ren1<3>:I ren1<2>:I ren1<1>:I ren1<0>:I 
+*.PININFO ren1_b<7>:I ren1_b<6>:I ren1_b<5>:I ren1_b<4>:I ren1_b<3>:I 
+*.PININFO ren1_b<2>:I ren1_b<1>:I ren1_b<0>:I wdata:I wen<7>:I wen<6>:I 
+*.PININFO wen<5>:I wen<4>:I wen<3>:I wen<2>:I wen<1>:I wen_b<7>:I wen_b<6>:I 
+*.PININFO wen_b<5>:I wen_b<4>:I wen_b<3>:I wen_b<2>:I wen_b<1>:I rdata0:O 
+*.PININFO rdata1:O
+XI1<7> wdata wen<7> wen_b<7> rawdata0 rawdata1 ren0<7> ren0_b<7> ren1<7> 
++ ren1_b<7> / RFReg
+XI1<6> wdata wen<6> wen_b<6> rawdata0 rawdata1 ren0<6> ren0_b<6> ren1<6> 
++ ren1_b<6> / RFReg
+XI1<5> wdata wen<5> wen_b<5> rawdata0 rawdata1 ren0<5> ren0_b<5> ren1<5> 
++ ren1_b<5> / RFReg
+XI1<4> wdata wen<4> wen_b<4> rawdata0 rawdata1 ren0<4> ren0_b<4> ren1<4> 
++ ren1_b<4> / RFReg
+XI1<3> wdata wen<3> wen_b<3> rawdata0 rawdata1 ren0<3> ren0_b<3> ren1<3> 
++ ren1_b<3> / RFReg
+XI1<2> wdata wen<2> wen_b<2> rawdata0 rawdata1 ren0<2> ren0_b<2> ren1<2> 
++ ren1_b<2> / RFReg
+XI1<1> wdata wen<1> wen_b<1> rawdata0 rawdata1 ren0<1> ren0_b<1> ren1<1> 
++ ren1_b<1> / RFReg
+XI6 rawdata1 net2 / inv_x1
+XI5 rawdata0 net1 / inv_x1
+XI2 rawdata0 rawdata1 ren0<0> ren1<0> / RFzero
+XI8 net2 rdata1 / inv_x4
+XI7 net1 rdata0 / inv_x4
+.ENDS
+
