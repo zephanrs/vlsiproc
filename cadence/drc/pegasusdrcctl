@@ -1,0 +1,12 @@
+text_depth -primary;
+virtual_connect -colon no;
+virtual_connect -semicolon_as_colon yes;
+virtual_connect -noname;
+virtual_connect -report no;
+virtual_connect -depth -primary;
+report_summary -drc "RFslice.sum" -replace;
+max_results -drc 1000;
+results_db -drc "/home/zrs29/processor/cadence/drc/RFslice.drc_errors.ascii" -ascii;
+abort_on_layout_error yes;
+layout_format gdsii;
+layout_path "/home/zrs29/processor/cadence/drc/RFslice.gds.gz";

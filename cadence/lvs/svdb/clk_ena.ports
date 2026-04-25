@@ -1,0 +1,7 @@
+# SVDB: Port Table (ports)
+# SVDB: Layout Primary clk_ena
+gnd! 6 gnd! 400 0 metal1_conn
+clk 3 clk 2850 1860 metal1_conn
+ena 1 ena 410 2060 metal1_conn
+vdd! 7 vdd! 460 5100 metal1_conn
+ena_clk_b 10 ena_clk_b 4330 1460 metal1_conn
