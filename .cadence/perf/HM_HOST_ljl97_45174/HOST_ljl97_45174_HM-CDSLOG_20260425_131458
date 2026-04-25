@@ -1,0 +1,81 @@
+\# Program start time:     UTC 2026.04.25 17:14:52.186
+\# Local time: EDT (UTC-04:00) 2026.04.25 13:14:52.186
+\o Program:		@(#)$CDS: Virtuoso Studio version IC23.1-64b 05/22/2024 07:43 (cpgbld16) $
+\o Hierarchy:		/opt/cadence/IC231.007/tools.lnx86/dfII/
+\o Sub version:		sub-version  IC23.1-64b.ISR7.27  (64-bit addresses)
+\# Command line:	/opt/cadence/IC231.007/tools.lnx86/dfII/bin/64bit/virtuoso
+\# Host name (type):	en-ec-rhel-ph314-08.coecis.cornell.edu (x86_64)
+\# Operating system:	Linux 4.18.0-553.47.1.el8_10.x86_64 #1 SMP Thu Mar 20 10:01:53 EDT 2025
+\# Linux /etc/issue:	\S
+\# Linux /etc/issue:	Kernel \r on an \m
+\# X display name (WxH):	:1 (1920x1080)
+\# Available geometry:			TL(0:27) BR(1919:1079)
+\# X server:			The X.Org Foundation
+\# Depth of Visual (Root):	24 (24)
+\# Number of Planes Used:	24
+\# X version:		11.0 (vendor release 12011000)
+\# X resource pool:	base 0x2600000, mask 0x1fffff (2097151), shift 0
+\# 			current id 0x0, current max 0x1ffffa (2097146)
+\# Max data seg size:	     unlimited
+\# Max process size:	     unlimited
+\# Initial sbrk value:	        745 MB
+\# Available memory:	     33,188 MB
+\# System memory:	     35,667 MB
+\# Maximum memory size:	     35,097 MB
+\# Max mem available:	     33,362 MB
+\# Initial memory used:	        175 MB
+\#        process size:	      1,697 MB
+\# Thread usage limits (effective/default):	maxthreads 126029/126029 maxload 32.00/32.00
+\# Qt version:		5.15.9
+\# Window Manager:	GNOME Shell
+\# User Name:		ljl97
+\o Working Directory:	en-ec-rhel-ph314-08.coecis.cornell.edu:/home/ljl97/processor
+\# Process Id:		45174
+\o 
+\o COPYRIGHT (C) 1992-2024  CADENCE DESIGN SYSTEMS INC.  ALL RIGHTS RESERVED.
+\o           (C) 1992-2024  UNIX SYSTEMS Laboratories INC.,
+\o                          Reproduced with permission.
+\o 
+\o This Cadence Design Systems program and online documentation are
+\o proprietary/confidential information and may be disclosed/used only
+\o as authorized in a license agreement controlling such use and disclosure.
+\o 
+\o           RESTRICTED RIGHTS NOTICE (SHORT FORM)
+\o Use/reproduction/disclosure is subject to restriction
+\o set forth at FAR 1252.227-19 or its equivalent.
+\o Loading geView.cxt 
+\o Loading menuBuilder.cxt 
+\o Loading im.cxt 
+\o Loading schView.cxt 
+\o Loading selectSv.cxt 
+\o Loading pegasusui.cxt
+\o Loading wireEdit.cxt 
+\o Loading pte2.cxt 
+\o Loading xlUI.cxt 
+\o Loading auCore.cxt 
+\o Loading vhdl.cxt 
+\o Loading seismic.cxt 
+\o Loading ci.cxt 
+\# Memory report: using         284 MB, process size 1,906 MB at UTC 2026.04.25 17:14:56.092
+\o Loading layers.cxt 
+\o Loading drv.cxt 
+\o Loading ams.cxt 
+\o Loading adexlDM.cxt 
+\o Loading cpf.cxt 
+\o Loading cli.cxt 
+\o Loading lp.cxt 
+\o Loading sipLayout.cxt 
+\o Loading diagCenter.cxt 
+\# [13:14:52.343937] Configured Lic search path (23.02-s006): 5280@en-license-05.coecis.cornell.edu
+\o Virtuoso Framework License (111) was checked out successfully. Total checkout time was 0.01s.
+\p > 
+\o Loading le.cxt 
+\o Loading tilp.cxt 
+\o Loading validator.cxt 
+\o Loading vrf.cxt 
+\o Loading multiTechPlugin.cxt 
+\o Loading exportDie.cxt 
+\# Loading perfDiag...
+\# (PerfDiag): Set GDB path to environment variable 'gdbPath' (gdb).
+\o The Health Monitor tool is installed. You can access it from CIW - Tools - Diagnostic Center or use the shell command 'cdsPerfDiag -p 45174' to open it when Virtuoso freezes.
+\# (PerfDiag): Use backtrace from GLIBC.
