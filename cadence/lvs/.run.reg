@@ -1,0 +1,15 @@
+# This Pegasus GUI File Index Registry was created automatically
+# Do not attempt to modify this file as any change may lead
+# to Pegasus GUI Tools malfunction.
+# 
+"Run Directory" internal none /home/jyh42/processor/cadence/lvs
+"Current Directory" internal none /home/jyh42/processor/cadence
+"Cadence Directory" internal none /home/jyh42/processor/cadence/.cadence/
+"Job Signature" internal none IPVS_1777149694_64480
+"Pegasus Job Mode" internal none lvs
+"GUI Flow" internal none virtuoso6
+"GUI Preset" internal none /home/jyh42/processor/cadence/lvs/.preset.autosave
+"Pegasus Version" internal none 23.23-s012
+"Binary Name" internal none pegasusgui
+"Pegasus Build Date" internal none "Wed May 29 16:54:16 PDT 2024"
+"Pegasus Job Time" internal none 1777149694
