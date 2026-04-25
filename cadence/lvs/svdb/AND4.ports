@@ -1,9 +1,0 @@
-# SVDB: Port Table (ports)
-# SVDB: Layout Primary AND4
-C 3 C 1310 3320 metal1_conn
-out 9 out 2680 2210 metal1_conn
-vdd! 6 vdd! 460 5100 metal1_conn
-A 1 A 530 3090 metal1_conn
-D 4 D 1850 3320 metal1_conn
-B 2 B 1010 1560 metal1_conn
-gnd! 8 gnd! 400 0 metal1_conn
