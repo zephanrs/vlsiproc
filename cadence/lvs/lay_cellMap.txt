@@ -1,5 +1,0 @@
-processor RFslice layout RFslice
-standard_cells inv_x1 layout inv_x1
-standard_cells RFzero layout RFzero
-standard_cells inv_x4 layout inv_x4
-standard_cells RFReg layout RFReg
