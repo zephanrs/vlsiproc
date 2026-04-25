@@ -92,5 +92,6 @@
 		<overwritehistoryname>ExplorerRun.0</overwritehistoryname>
 	</active>
 	<history>History
+		<historyentry>ExplorerRun.0</historyentry>
 	</history>
 </setupdb>
