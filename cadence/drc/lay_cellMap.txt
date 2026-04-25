@@ -1,0 +1,1 @@
+standard_cells adder_white_b layout adder_white_b
