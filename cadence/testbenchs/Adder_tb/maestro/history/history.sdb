@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 <setupdb version="7">history
+	
 	<active>Active Setup</active>
 	<history>History
+		
 		<historyentry assemblerOrExplorer="assembler" roOrView="view" runningOrFinished="finished">Interactive.0
 			<timestamp>Apr 23 23:19:54 2026</timestamp>
 			<uuid>{16ace9a5-8fe0-4070-9cba-3bde036d2cd4}</uuid>
@@ -27,13 +29,10 @@
 			<simdir>$AXL_PROJECT_DIR/testbenchs/Adder_tb/maestro/results/maestro/$AXL_HISTORY_NAME</simdir>
 		</historyentry>
 		<historyentry assemblerOrExplorer="explorer" roOrView="view" runningOrFinished="finished">ExplorerRun.0
-<<<<<<< HEAD
-			<timestamp>Apr 25 15:30:58 2026</timestamp>
-			<uuid>{17fe55f2-c154-49eb-b04a-00ebeafe3eff}</uuid>
-=======
-			<timestamp>Apr 26 00:44:41 2026</timestamp>
-			<uuid>{5be4cc8c-01a1-4ece-ade6-a3c714b1d70b}</uuid>
->>>>>>> c427000e35a6c4ab379e792d1af6b6f30c235de8
+</historyentry>
+		<historyentry assemblerOrExplorer="explorer" roOrView="view" runningOrFinished="running">ExplorerRun.0
+			<timestamp>Apr 26 17:29:05 2026</timestamp>
+			<uuid>{2c231438-1c95-435e-97a9-a3886ab344e6}</uuid>
 			<locked>0</locked>
 			<mode>Single Run, Sweeps and Corners</mode>
 			<resultsname>/home/jyh42/processor/cadence/testbenchs/Adder_tb/maestro/results/maestro/$AXL_HISTORY_NAME.rdb</resultsname>
@@ -42,6 +41,46 @@
 			<runlogfile>$AXL_SETUPDB_DIR/results/maestro/$AXL_HISTORY_NAME.log</runlogfile>
 			<psfdir>/home/jyh42/simulation/testbenchs/Adder_tb/maestro/results/maestro/$AXL_HISTORY_NAME</psfdir>
 			<simdir>$AXL_PROJECT_DIR/testbenchs/Adder_tb/maestro/results/maestro/$AXL_HISTORY_NAME</simdir>
+			<timestamp>Apr 26 17:29:24 2026</timestamp>
+			<uuid>{72fd219d-19af-41e8-8f32-29cc7febbba2}</uuid>
+			<timestamp>Apr 26 17:30:15 2026</timestamp>
+			<uuid>{9ba98537-d859-4dac-aabd-b4ef935ab0c6}</uuid>
+			<timestamp>Apr 26 17:30:19 2026</timestamp>
+			<uuid>{0c9de0c5-afd0-4f45-9cd7-9ace7b43b7f0}</uuid>
+			<timestamp>Apr 26 17:32:15 2026</timestamp>
+			<uuid>{f8f0669b-191d-4463-9f47-e9182438f4d7}</uuid>
+			<timestamp>Apr 26 17:32:19 2026</timestamp>
+			<uuid>{bd45bce9-6ad9-4542-a461-b4ad5ba50a72}</uuid>
+			<timestamp>Apr 26 17:34:16 2026</timestamp>
+			<uuid>{0c0349cf-6dd2-4573-bd6b-2fc26a6ad708}</uuid>
+			<timestamp>Apr 26 17:34:21 2026</timestamp>
+			<uuid>{daf65815-1465-40fe-ac82-5e90a63e6cf0}</uuid>
+			<timestamp>Apr 26 17:36:36 2026</timestamp>
+			<uuid>{30d9523e-81b2-430b-8940-74136a8f83e8}</uuid>
+			<timestamp>Apr 26 17:36:38 2026</timestamp>
+			<uuid>{9dae90e8-7a4d-472c-a638-63376421dc9d}</uuid>
+			<timestamp>Apr 26 17:36:43 2026</timestamp>
+			<uuid>{2c378a77-fd04-4e17-904f-b33956f2a019}</uuid>
+			<timestamp>Apr 26 17:40:02 2026</timestamp>
+			<uuid>{b83a36ee-c1ef-4d23-b0e8-3727bb8957e6}</uuid>
+			<timestamp>Apr 26 17:40:07 2026</timestamp>
+			<uuid>{2768306b-ef09-4463-ad6a-8410ade5bc4d}</uuid>
+			<timestamp>Apr 26 17:41:33 2026</timestamp>
+			<uuid>{11ed91b3-cf55-4c51-aeee-c3204f34d065}</uuid>
 		</historyentry>
+		<historyentry>ExplorerRun.0</historyentry>
+		<historyentry>ExplorerRun.0</historyentry>
+		<historyentry>ExplorerRun.0</historyentry>
+		<historyentry>ExplorerRun.0</historyentry>
+		<historyentry>ExplorerRun.0</historyentry>
+		<historyentry>ExplorerRun.0</historyentry>
+		<historyentry>ExplorerRun.0</historyentry>
+		<historyentry>ExplorerRun.0</historyentry>
+		<historyentry>ExplorerRun.0</historyentry>
+		<historyentry>ExplorerRun.0</historyentry>
+		<historyentry>ExplorerRun.0</historyentry>
+		<historyentry>ExplorerRun.0</historyentry>
+		<historyentry>ExplorerRun.0</historyentry>
 	</history>
+	<history>History</history>
 </setupdb>

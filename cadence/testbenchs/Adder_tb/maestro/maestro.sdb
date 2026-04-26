@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <setupdb version="7">maestro
+	
 	<active>Active Setup
+		
 		<jobcontrolmode>LSCS</jobcontrolmode>
 		<corners>
 			<corner enabled="1">_default</corner>
@@ -76,11 +78,132 @@
 		</checksasserts>
 		<plottingoptions>
 			<plottingoption>waveformtemplate
-<<<<<<< HEAD
-				<value>(None)</value>
-=======
+</plottingoption>
+		</plottingoptions>
+	</active>
+	<active>Active Setup
+		<corners>
+			<corner enabled="1">_default</corner>
+		</corners>
+		<overwritehistory>0</overwritehistory>
+		<tests>
+			<test>testbenchs_Adder_tb_1
+				<tool>ADE</tool>
+				<tooloptions>
+					<option>cell
+						<value>Adder_tb</value>
+					</option>
+					<option>lib
+						<value>testbenchs</value>
+					</option>
+					<option>sim
+						<value>spectre</value>
+					</option>
+					<option>view
+						<value>schematic</value>
+					</option>
+					<option>path
+						<value>$AXL_SETUPDB_DIR</value>
+					</option>
+					<option>state
+						<value>active</value>
+					</option>
+				</tooloptions>
+				<vars>
+					<var>A_in
+						<value>255</value>
+					</var>
+					<var>B_in
+						<value>0</value>
+					</var>
+				</vars>
+				<outputs>
+					<output>/A&lt;7:0&gt;
+						<evalType>point</evalType>
+					</output>
+					<output>/B&lt;7:0&gt;
+						<evalType>point</evalType>
+					</output>
+					<output>/S&lt;7:0&gt;
+						<evalType>point</evalType>
+					</output>
+					<output>/P&lt;7:0&gt;
+						<evalType>point</evalType>
+					</output>
+					<output>"/I0/P&lt;7:0&gt;"
+						<evalType>point</evalType>
+					</output>
+					<output>"/I0/P&lt;7&gt;"
+						<evalType>point</evalType>
+					</output>
+					<output>/I0/P&lt;7&gt;
+						<evalType>point</evalType>
+					</output>
+					<output>/I0/P&lt;6&gt;
+						<evalType>point</evalType>
+					</output>
+					<output>/I0/P&lt;5&gt;
+						<evalType>point</evalType>
+					</output>
+					<output>/I0/P&lt;4&gt;
+						<evalType>point</evalType>
+					</output>
+					<output>/I0/P&lt;3&gt;
+						<evalType>point</evalType>
+					</output>
+					<output>/I0/P&lt;2&gt;
+						<evalType>point</evalType>
+					</output>
+					<output>/I0/P&lt;1&gt;
+						<evalType>point</evalType>
+					</output>
+					<output>/I0/P&lt;0&gt;
+						<evalType>point</evalType>
+					</output>
+					<output>"/I0/G&lt;7&gt;"
+						<evalType>point</evalType>
+					</output>
+					<output>/I0/G&lt;7&gt;
+						<evalType>point</evalType>
+					</output>
+					<output>/I0/G&lt;6&gt;
+						<evalType>point</evalType>
+					</output>
+					<output>/I0/G&lt;5&gt;
+						<evalType>point</evalType>
+					</output>
+					<output>/I0/G&lt;4&gt;
+						<evalType>point</evalType>
+					</output>
+					<output>/I0/G&lt;3&gt;
+						<evalType>point</evalType>
+					</output>
+					<output>/I0/G&lt;2&gt;
+						<evalType>point</evalType>
+					</output>
+					<output>/I0/G&lt;1&gt;
+						<evalType>point</evalType>
+					</output>
+					<output>/I0/G&lt;0&gt;
+						<evalType>point</evalType>
+					</output>
+				</outputs>
+			</test>
+		</tests>
+		<extensions>
+			<extension>Parasitics
+				<callback>_parSetupDBExtensionCB</callback>
+				<iconvalue></iconvalue>
+				<icontype></icontype>
+			</extension>
+		</extensions>
+		<currentmode>Single Run, Sweeps and Corners</currentmode>
+		<checksasserts netlist="0">
+			<test netlist="0" netlistscope="all">testbenchs_Adder_tb_1</test>
+		</checksasserts>
+		<plottingoptions>
+			<plottingoption>waveformtemplate
 				<value></value>
->>>>>>> c427000e35a6c4ab379e792d1af6b6f30c235de8
 			</plottingoption>
 			<plottingoption>plottingmode
 				<value>Replace</value>
@@ -92,37 +215,21 @@
 				<value>no</value>
 			</plottingoption>
 			<plottingoption>useMaestroPlottingTemplate
-<<<<<<< HEAD
 				<value>yes</value>
-=======
-				<value>no</value>
->>>>>>> c427000e35a6c4ab379e792d1af6b6f30c235de8
 			</plottingoption>
-			<plottingoption>allplottingtemplates</plottingoption>
+			<plottingoption>allplottingtemplates
+				<value></value>
+			</plottingoption>
 			<plottingoption>defaultplottingtemplate
 				<value></value>
 			</plottingoption>
 			<plottingoption>distributedplot_enabled
 				<value>no</value>
 			</plottingoption>
-			<plottingoption>autoplotmode
-<<<<<<< HEAD
-				<value>Replace</value>
-=======
-				<value>Append</value>
->>>>>>> c427000e35a6c4ab379e792d1af6b6f30c235de8
-			</plottingoption>
 		</plottingoptions>
 		<exploreroptions>
 			<exploreroption>waveformtemplate
 				<value>(None)</value>
-			</exploreroption>
-			<exploreroption>autoplotmode
-<<<<<<< HEAD
-				<value>Replace</value>
-=======
-				<value>Append</value>
->>>>>>> c427000e35a6c4ab379e792d1af6b6f30c235de8
 			</exploreroption>
 		</exploreroptions>
 		<incrementalsimsetup>
@@ -132,10 +239,6 @@
 			<copyreferenceresults>1</copyreferenceresults>
 		</incrementalsimsetup>
 		<overwritehistoryname>ExplorerRun.0</overwritehistoryname>
-		<incrementalsimulationoptions>
-			<incrementalSimulation>0</incrementalSimulation>
-		</incrementalsimulationoptions>
-		<sortVariableValues>0</sortVariableValues>
 	</active>
 	<history>History
 	</history>
