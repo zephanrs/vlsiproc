@@ -20,6 +20,7 @@ cadence/*.log
 **/*cdslck*
 **/cdslck/
 
-# Ignore all log and tmp files
+# Ignore all log, cache, and tmp files
 *.tmp*
 *log*
+*oacache*
