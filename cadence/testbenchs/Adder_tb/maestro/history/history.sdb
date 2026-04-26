@@ -26,7 +26,7 @@
 			<psfdir>/home/jyh42/simulation/testbenchs/Adder_tb/maestro/results/maestro/$AXL_HISTORY_NAME</psfdir>
 			<simdir>$AXL_PROJECT_DIR/testbenchs/Adder_tb/maestro/results/maestro/$AXL_HISTORY_NAME</simdir>
 		</historyentry>
-		<historyentry assemblerOrExplorer="explorer" roOrView="view" runningOrFinished="running">ExplorerRun.0
+		<historyentry assemblerOrExplorer="explorer" roOrView="view" runningOrFinished="finished">ExplorerRun.0
 			<timestamp>Apr 26 00:44:41 2026</timestamp>
 			<uuid>{5be4cc8c-01a1-4ece-ade6-a3c714b1d70b}</uuid>
 			<locked>0</locked>
