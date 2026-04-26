@@ -1,8 +1,6 @@
 <?xml version="1.0"?>
 <setupdb version="7">maestro
-	
 	<active>Active Setup
-		
 		<jobcontrolmode>LSCS</jobcontrolmode>
 		<corners>
 			<corner enabled="1">_default</corner>
@@ -34,20 +32,38 @@
 				</tooloptions>
 				<vars>
 					<var>A_in
-						<value>0 0 255 1 2 4 8 16 32 64 128 0 0 0 0 0 0 0 0 1 2 4 8 16 32 64 128 1 3 7 15 31 63 127 255 255 128 255 128 127 170 85 170 85 170 85 128 129 192 127 180 204 150 225 102</value>
+						<value>0 255 1 128 127 170 85 128 127 255 127 128 0 1 0 255 254 128 129 1 2 4 8 16 32 64 128 1 0 128 127 255 254 170 85 170 85 171 84 255 0 255 1 128 1 240 241 16 17 192 193 32 16 48 96 160 144 179 63 99 200 17 128 64</value>
 					</var>
 					<var>B_in
-						<value>0 255 0 0 0 0 0 0 0 0 0 1 2 4 8 16 32 64 128 1 2 4 8 16 32 64 128 1 1 1 1 1 1 1 1 255 128 1 127 127 85 170 170 85 1 1 1 129 64 1 77 51 105 31 154</value>
+						<value>0 255 1 128 127 170 85 127 128 127 255 0 128 0 1 254 255 129 128 0 0 0 0 0 0 0 0 0 1 127 128 254 255 85 170 84 86 170 85 0 255 1 255 1 128 241 240 17 16 193 192 16 32 32 112 144 160 76 192 99 201 16 129 64</value>
 					</var>
 				</vars>
 				<outputs>
-					<output>/A&lt;7:0&gt;
+					<output>"/A&lt;7:0&gt;"
 						<evalType>point</evalType>
 					</output>
-					<output>/B&lt;7:0&gt;
+					<output>"/B&lt;7:0&gt;"
+						<evalType>point</evalType>
+					</output>
+					<output>"/S&lt;7:0&gt;"
+						<evalType>point</evalType>
+					</output>
+					<output>"/in0&lt;7:0&gt;"
+						<evalType>point</evalType>
+					</output>
+					<output>"/in1&lt;7:0&gt;"
 						<evalType>point</evalType>
 					</output>
 					<output>/S&lt;7:0&gt;
+						<evalType>point</evalType>
+					</output>
+					<output>/eq
+						<evalType>point</evalType>
+					</output>
+					<output>/in0&lt;7:0&gt;
+						<evalType>point</evalType>
+					</output>
+					<output>/in1&lt;7:0&gt;
 						<evalType>point</evalType>
 					</output>
 				</outputs>
@@ -78,135 +94,10 @@
 		</checksasserts>
 		<plottingoptions>
 			<plottingoption>waveformtemplate
-</plottingoption>
-		</plottingoptions>
-	</active>
-	<active>Active Setup
-		<corners>
-			<corner enabled="1">_default</corner>
-		</corners>
-		<overwritehistory>0</overwritehistory>
-		<tests>
-			<test>testbenchs_Adder_tb_1
-				<tool>ADE</tool>
-				<tooloptions>
-					<option>cell
-						<value>Adder_tb</value>
-					</option>
-					<option>lib
-						<value>testbenchs</value>
-					</option>
-					<option>sim
-						<value>spectre</value>
-					</option>
-					<option>view
-						<value>schematic</value>
-					</option>
-					<option>path
-						<value>$AXL_SETUPDB_DIR</value>
-					</option>
-					<option>state
-						<value>active</value>
-					</option>
-				</tooloptions>
-				<vars>
-					<var>A_in
-						<value>255</value>
-					</var>
-					<var>B_in
-						<value>0</value>
-					</var>
-				</vars>
-				<outputs>
-					<output>/A&lt;7:0&gt;
-						<evalType>point</evalType>
-					</output>
-					<output>/B&lt;7:0&gt;
-						<evalType>point</evalType>
-					</output>
-					<output>/S&lt;7:0&gt;
-						<evalType>point</evalType>
-					</output>
-					<output>/P&lt;7:0&gt;
-						<evalType>point</evalType>
-					</output>
-					<output>"/I0/P&lt;7:0&gt;"
-						<evalType>point</evalType>
-					</output>
-					<output>"/I0/P&lt;7&gt;"
-						<evalType>point</evalType>
-					</output>
-					<output>/I0/P&lt;7&gt;
-						<evalType>point</evalType>
-					</output>
-					<output>/I0/P&lt;6&gt;
-						<evalType>point</evalType>
-					</output>
-					<output>/I0/P&lt;5&gt;
-						<evalType>point</evalType>
-					</output>
-					<output>/I0/P&lt;4&gt;
-						<evalType>point</evalType>
-					</output>
-					<output>/I0/P&lt;3&gt;
-						<evalType>point</evalType>
-					</output>
-					<output>/I0/P&lt;2&gt;
-						<evalType>point</evalType>
-					</output>
-					<output>/I0/P&lt;1&gt;
-						<evalType>point</evalType>
-					</output>
-					<output>/I0/P&lt;0&gt;
-						<evalType>point</evalType>
-					</output>
-					<output>"/I0/G&lt;7&gt;"
-						<evalType>point</evalType>
-					</output>
-					<output>/I0/G&lt;7&gt;
-						<evalType>point</evalType>
-					</output>
-					<output>/I0/G&lt;6&gt;
-						<evalType>point</evalType>
-					</output>
-					<output>/I0/G&lt;5&gt;
-						<evalType>point</evalType>
-					</output>
-					<output>/I0/G&lt;4&gt;
-						<evalType>point</evalType>
-					</output>
-					<output>/I0/G&lt;3&gt;
-						<evalType>point</evalType>
-					</output>
-					<output>/I0/G&lt;2&gt;
-						<evalType>point</evalType>
-					</output>
-					<output>/I0/G&lt;1&gt;
-						<evalType>point</evalType>
-					</output>
-					<output>/I0/G&lt;0&gt;
-						<evalType>point</evalType>
-					</output>
-				</outputs>
-			</test>
-		</tests>
-		<extensions>
-			<extension>Parasitics
-				<callback>_parSetupDBExtensionCB</callback>
-				<iconvalue></iconvalue>
-				<icontype></icontype>
-			</extension>
-		</extensions>
-		<currentmode>Single Run, Sweeps and Corners</currentmode>
-		<checksasserts netlist="0">
-			<test netlist="0" netlistscope="all">testbenchs_Adder_tb_1</test>
-		</checksasserts>
-		<plottingoptions>
-			<plottingoption>waveformtemplate
-				<value></value>
+				<value>(None)</value>
 			</plottingoption>
 			<plottingoption>plottingmode
-				<value>Replace</value>
+				<value>New Win</value>
 			</plottingoption>
 			<plottingoption>plottype
 				<value>None</value>
@@ -226,10 +117,16 @@
 			<plottingoption>distributedplot_enabled
 				<value>no</value>
 			</plottingoption>
+			<plottingoption>autoplotmode
+				<value>New Win</value>
+			</plottingoption>
 		</plottingoptions>
 		<exploreroptions>
 			<exploreroption>waveformtemplate
 				<value>(None)</value>
+			</exploreroption>
+			<exploreroption>autoplotmode
+				<value>New Win</value>
 			</exploreroption>
 		</exploreroptions>
 		<incrementalsimsetup>
