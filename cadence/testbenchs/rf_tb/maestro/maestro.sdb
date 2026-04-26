@@ -24,7 +24,7 @@
 						<value>spectre</value>
 					</option>
 					<option>view
-						<value>schematic</value>
+						<value>config</value>
 					</option>
 					<option>state
 						<value>active</value>
@@ -36,6 +36,9 @@
 					</var>
 					<var>tclk
 						<value>1n</value>
+					</var>
+					<var>tdelay
+						<value>150p</value>
 					</var>
 				</vars>
 				<outputs></outputs>
@@ -54,7 +57,7 @@
 		</checksasserts>
 		<plottingoptions>
 			<plottingoption>waveformtemplate
-				<value></value>
+				<value>digital_view</value>
 			</plottingoption>
 			<plottingoption>plottingmode
 				<value>Replace</value>
@@ -66,21 +69,36 @@
 				<value>no</value>
 			</plottingoption>
 			<plottingoption>useMaestroPlottingTemplate
-				<value>no</value>
+				<value>yes</value>
 			</plottingoption>
 			<plottingoption>allplottingtemplates
 				<value></value>
+				<plottingtemplate>digital_view
+					<templatehistory>ExplorerRun.0</templatehistory>
+					<templatetime>Apr 25 20:29:22 2026</templatetime>
+					<templatecomment></templatecomment>
+					<templatelocation>/home/zrs29/processor/cadence/testbenchs/rf_tb/maestro/plottingTemplates/</templatelocation>
+				</plottingtemplate>
 			</plottingoption>
 			<plottingoption>defaultplottingtemplate
 				<value></value>
+				<historydefault>ExplorerRun.0
+					<value>digital_view</value>
+				</historydefault>
 			</plottingoption>
 			<plottingoption>distributedplot_enabled
 				<value>no</value>
 			</plottingoption>
+			<plottingoption>autoplotmode
+				<value>Replace</value>
+			</plottingoption>
 		</plottingoptions>
 		<exploreroptions>
 			<exploreroption>waveformtemplate
-				<value>(None)</value>
+				<value>digital_view</value>
+			</exploreroption>
+			<exploreroption>autoplotmode
+				<value>Replace</value>
 			</exploreroption>
 		</exploreroptions>
 		<incrementalsimsetup>
@@ -92,6 +110,5 @@
 		<overwritehistoryname>ExplorerRun.0</overwritehistoryname>
 	</active>
 	<history>History
-		<historyentry>ExplorerRun.0</historyentry>
 	</history>
 </setupdb>
