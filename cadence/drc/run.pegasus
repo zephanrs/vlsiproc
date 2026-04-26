@@ -5,7 +5,7 @@ pwd_d=`pwd`
 cd /home/jyh42/processor/cadence/drc ;\
 /opt/cadence/PEGASUS232/bin/pegasus \
 	--log_dir LOGS \
-	-top_cell XOR2 \
+	-top_cell Mux4_redo \
 	-ui_data \
 	--control /home/jyh42/processor/cadence/drc/pegasusdrcctl \
 	/opt/cadence-designkits/gpdk045_v_6_0/pvs/pvlDRC.rul
