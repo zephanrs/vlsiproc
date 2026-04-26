@@ -1,1 +1,1 @@
-standard_cells XOR2 layout XOR2
+standard_cells Mux4_redo layout Mux4_redo

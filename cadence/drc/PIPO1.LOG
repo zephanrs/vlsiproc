@@ -2,15 +2,15 @@
 Product   : Virtuoso(R) XStream Out
 Program   : @(#)$CDS: strmout version IC23.1-64b 05/22/2024 07:39 (cpgbld16) $
           : sub-version  IC23.1-64b.ISR7.27 
-Started at: 25-Apr-2026  20:40:05
+Started at: 26-Apr-2026  01:55:35
 User Name : jyh42
-Host Name : en-ec-rhel-ph314-03.coecis.cornell.edu
+Host Name : ecelinux-04.ece.cornell.edu
 Directory : /home/jyh42/processor/cadence
 CADENCE Design Systems, Inc.
 ********************************************************************************
 Info: Cellview Rev Num:99,  Tech Rev Num:59
 
-WARNING (XSTRM-20): Output Stream file '/home/jyh42/processor/cadence/drc/XOR2.gds.gz' already exists. It will be overwritten.
+WARNING (XSTRM-20): Output Stream file '/home/jyh42/processor/cadence/drc/Mux4_redo.gds.gz' already exists. It will be overwritten.
 INFO (XSTRM-217): Reading the layer map file, /opt/cadence-designkits/gpdk045_v_6_0/gpdk045/gpdk045.layermap
 WARNING (XSTRM-333): The '-enableColoring' option will be ignored during XStream Out. This is because there is no color entry in the layer map and the object map file.
 INFO (XSTRM-427): Based on current hardware configuration, running XStream Out translation in multi-threaded mode with 4 threads.
@@ -19,8 +19,8 @@ INFO (XSTRM-162): You have not used the '-viaMap' option. If the OpenAccess desi
 
 Summary of Options :
 library                                 standard_cells
-strmFile                                /home/jyh42/processor/cadence/drc/XOR2.gds.gz
-topCell                                 XOR2
+strmFile                                /home/jyh42/processor/cadence/drc/Mux4_redo.gds.gz
+topCell                                 Mux4_redo
 view                                    layout
 runDir                                  /home/jyh42/processor/cadence/drc
 logFile                                 /home/jyh42/processor/cadence/drc/PIPO1.LOG
@@ -34,26 +34,33 @@ case                                    Preserve
 convertDot                              node
 
 INFO (XSTRM-180): You have not used the '-objectMap' option. The design has instance(s) of at least one of following OpenAccess objects: oaBlockage, oaBoundary, oaRow, and oaMarker. Any information about these objects will not be translated into the generated stream file. Use the '-objectMap' option to translate/preserve these objects using XStream.
-INFO (XSTRM-223): 1. Translating stdVia gpdk045/M1_PO/layout as STRUCTURE M1_PO_CDNS_777164005170.
-INFO (XSTRM-223): 2. Translating stdVia gpdk045/M1_NWELL/layout as STRUCTURE M1_NWELL_CDNS_777164005171.
-INFO (XSTRM-223): 3. Translating stdVia gpdk045/M1_PSUB/layout as STRUCTURE M1_PSUB_CDNS_777164005172.
-INFO (XSTRM-223): 4. Translating stdVia gpdk045/M1_PO/layout as STRUCTURE M1_PO_CDNS_777164005173.
-INFO (XSTRM-223): 5. Translating cellview gpdk045/nmos1v/layout as STRUCTURE nmos1v_CDNS_777164005170.
-INFO (XSTRM-223): 6. Translating cellview gpdk045/pmos1v/layout as STRUCTURE pmos1v_CDNS_777164005171.
-INFO (XSTRM-223): 7. Translating cellview gpdk045/pmos1v/layout as STRUCTURE pmos1v_CDNS_777164005172.
-INFO (XSTRM-223): 8. Translating cellview gpdk045/nmos1v/layout as STRUCTURE nmos1v_CDNS_777164005173.
-INFO (XSTRM-223): 9. Translating cellview gpdk045/pmos1v/layout as STRUCTURE pmos1v_CDNS_777164005174.
-INFO (XSTRM-223): 10. Translating cellview gpdk045/pmos1v/layout as STRUCTURE pmos1v_CDNS_777164005175.
-INFO (XSTRM-223): 11. Translating cellview gpdk045/nmos1v/layout as STRUCTURE nmos1v_CDNS_777164005176.
-INFO (XSTRM-223): 12. Translating cellview gpdk045/nmos1v/layout as STRUCTURE nmos1v_CDNS_777164005177.
-INFO (XSTRM-223): 13. Translating cellview standard_cells/XOR2/layout as STRUCTURE XOR2.
+INFO (XSTRM-223): 1. Translating stdVia gpdk045/M1_PIMP/layout as STRUCTURE M1_PIMP_CDNS_777182935580.
+INFO (XSTRM-223): 2. Translating stdVia gpdk045/M1_NWELL/layout as STRUCTURE M1_NWELL_CDNS_777182935581.
+INFO (XSTRM-223): 3. Translating stdVia gpdk045/M1_PSUB/layout as STRUCTURE M1_PSUB_CDNS_777182935582.
+INFO (XSTRM-223): 4. Translating cellview gpdk045/nmos1v/layout as STRUCTURE nmos1v_CDNS_777182935580.
+INFO (XSTRM-223): 5. Translating cellview gpdk045/nmos1v/layout as STRUCTURE nmos1v_CDNS_777182935581.
+INFO (XSTRM-223): 6. Translating cellview gpdk045/pmos1v/layout as STRUCTURE pmos1v_CDNS_777182935582.
+INFO (XSTRM-223): 7. Translating cellview gpdk045/pmos1v/layout as STRUCTURE pmos1v_CDNS_777182935583.
+INFO (XSTRM-223): 8. Translating cellview gpdk045/nmos1v/layout as STRUCTURE nmos1v_CDNS_777182935584.
+INFO (XSTRM-223): 9. Translating cellview gpdk045/nmos1v/layout as STRUCTURE nmos1v_CDNS_777182935585.
+INFO (XSTRM-223): 10. Translating cellview gpdk045/pmos1v/layout as STRUCTURE pmos1v_CDNS_777182935586.
+INFO (XSTRM-223): 11. Translating cellview gpdk045/nmos1v/layout as STRUCTURE nmos1v_CDNS_777182935587.
+INFO (XSTRM-223): 12. Translating cellview gpdk045/nmos1v/layout as STRUCTURE nmos1v_CDNS_777182935588.
+INFO (XSTRM-223): 13. Translating cellview gpdk045/pmos1v/layout as STRUCTURE pmos1v_CDNS_777182935589.
+INFO (XSTRM-223): 14. Translating cellview gpdk045/nmos1v/layout as STRUCTURE nmos1v_CDNS_7771829355810.
+INFO (XSTRM-223): 15. Translating cellview gpdk045/nmos1v/layout as STRUCTURE nmos1v_CDNS_7771829355811.
+INFO (XSTRM-223): 16. Translating cellview gpdk045/pmos1v/layout as STRUCTURE pmos1v_CDNS_7771829355812.
+INFO (XSTRM-223): 17. Translating cellview gpdk045/nmos1v/layout as STRUCTURE nmos1v_CDNS_7771829355813.
+INFO (XSTRM-223): 18. Translating cellview gpdk045/pmos1v/layout as STRUCTURE pmos1v_CDNS_7771829355814.
+INFO (XSTRM-223): 19. Translating cellview gpdk045/pmos1v/layout as STRUCTURE pmos1v_CDNS_7771829355815.
+INFO (XSTRM-223): 20. Translating cellview standard_cells/Mux4_redo/layout as STRUCTURE Mux4_redo.
 
 Summary of Objects Translated:
-	Scalar Instances:                       12
+	Scalar Instances:                       22
 	Array Instances:                        0
 	Polygons:                               0
 	Paths:                                  0
-	Rectangles:                             146
+	Rectangles:                             252
 	Lines:                                  0
 	Arcs:                                   0
 	Donuts:                                 0
@@ -66,13 +73,13 @@ Summary of Objects Translated:
 	Markers:                                0
 	Rows:                                   0
 	Stitch:                                 0
-	Standard Vias                           7
+	Standard Vias                           4
 	Custom Vias:                            0
 	CdsGen Vias:                            0
-	Pathsegs:                               33
-	Text:                                   3
+	Pathsegs:                               19
+	Text:                                   0
 	TextDisplay:                            2
-	Cells:                                  13
+	Cells:                                  20
 
-Elapsed Time: 0.1s   User Time: 0.1s   CPU Time: 0.0s   Peak VM: 33852KB
+Elapsed Time: 0.2s   User Time: 0.1s   CPU Time: 0.0s   Peak VM: 34572KB
 INFO (XSTRM-234): Translation completed. '0' error(s) and '2' warning(s) found.

@@ -9,9 +9,9 @@ logFile	"/home/jyh42/processor/cadence/drc/PIPO1.LOG"
 maxVertices	2048
 pinAttNum	0
 runDir	"/home/jyh42/processor/cadence/drc"
-strmFile	"/home/jyh42/processor/cadence/drc/XOR2.gds.gz"
+strmFile	"/home/jyh42/processor/cadence/drc/Mux4_redo.gds.gz"
 strmVersion	5
 techLib	"gpdk045"
-topCell	"XOR2"
+topCell	"Mux4_redo"
 view	"layout"
 enableColoring
