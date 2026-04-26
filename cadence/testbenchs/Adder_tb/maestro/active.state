@@ -612,6 +612,7 @@
 			</partition>
 		</component>
 		<component Name="paramSetup" Type="skillTable">expr</component>
+<<<<<<< HEAD
 		<component Name="relxOptions" Type="skillTable">asiEnvSaveTable
 			<partition Name="relxOpts">
 				<field Name="mosDevDegVdlinModels" Type="string">""</field>
@@ -838,6 +839,8 @@
 				<field Name="tmiHCI" Type="string">""</field>
 			</partition>
 		</component>
+=======
+>>>>>>> c427000e35a6c4ab379e792d1af6b6f30c235de8
 		<component Name="simulationFiles" Type="skillTable">_simulationFiles
 			<field Name="allIncludedPaths" Type="list">nil</field>
 			<field Name="allSpefFiles" Type="list">nil</field>
