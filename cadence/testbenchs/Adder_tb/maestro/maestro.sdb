@@ -76,7 +76,7 @@
 		</checksasserts>
 		<plottingoptions>
 			<plottingoption>waveformtemplate
-				<value>(None)</value>
+				<value></value>
 			</plottingoption>
 			<plottingoption>plottingmode
 				<value>Replace</value>
@@ -88,7 +88,7 @@
 				<value>no</value>
 			</plottingoption>
 			<plottingoption>useMaestroPlottingTemplate
-				<value>yes</value>
+				<value>no</value>
 			</plottingoption>
 			<plottingoption>allplottingtemplates</plottingoption>
 			<plottingoption>defaultplottingtemplate
@@ -98,7 +98,7 @@
 				<value>no</value>
 			</plottingoption>
 			<plottingoption>autoplotmode
-				<value>Replace</value>
+				<value>Append</value>
 			</plottingoption>
 		</plottingoptions>
 		<exploreroptions>
@@ -106,7 +106,7 @@
 				<value>(None)</value>
 			</exploreroption>
 			<exploreroption>autoplotmode
-				<value>Replace</value>
+				<value>Append</value>
 			</exploreroption>
 		</exploreroptions>
 		<incrementalsimsetup>
