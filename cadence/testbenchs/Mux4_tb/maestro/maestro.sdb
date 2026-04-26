@@ -24,23 +24,13 @@
 						<value>spectre</value>
 					</option>
 					<option>view
-						<value>schematic</value>
+						<value>config</value>
 					</option>
 					<option>state
 						<value>active</value>
 					</option>
 				</tooloptions>
-				<vars>
-					<var>s1
-						<value>4</value>
-					</var>
-					<var>s2
-						<value>2</value>
-					</var>
-					<var>s3
-						<value>1</value>
-					</var>
-				</vars>
+				<vars></vars>
 			</test>
 		</tests>
 		<extensions>
@@ -68,7 +58,7 @@
 				<value>no</value>
 			</plottingoption>
 			<plottingoption>useMaestroPlottingTemplate
-				<value>yes</value>
+				<value>no</value>
 			</plottingoption>
 			<plottingoption>allplottingtemplates
 				<value></value>
