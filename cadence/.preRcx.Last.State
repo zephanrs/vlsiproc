@@ -1,0 +1,14 @@
+
+
+vuipreRcxFormTable = '(
+	runName  "Mux4"
+	runDir  "/home/iw87/processor/cadence/lvs/svdb"
+	assuraTech  "/home/iw87/processor/cadence/pvtech.lib"
+	tech  "gpdk045_pvs"
+	mapFile  ""
+	netProp  5
+	instProp  6
+	devProp  7
+)
+
+
