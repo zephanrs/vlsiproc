@@ -26,7 +26,7 @@ done!
 Loaded gpdk045/libInit.il successfully!
 Loading hnlInit.cxt 
 Running Artist Hierarchical Netlisting ...
-End netlisting Apr 25 17:48:33 2026
+End netlisting Apr 25 20:40:18 2026
 
 Running simin
 
@@ -34,8 +34,8 @@ Running runSim()...
 
 
 Running runsim with simulator: "auCdl"
-Begin simulation:    Apr 25 17:48:33 2026
+Begin simulation:    Apr 25 20:40:18 2026
 
 auCdl netlisting completed
-End simulation:      Apr 25 17:48:33 2026
+End simulation:      Apr 25 20:40:18 2026
 INFO (AUCDL-21): (Analog) CDL netlisting completed successfully.
