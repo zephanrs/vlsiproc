@@ -30,7 +30,20 @@
 						<value>active</value>
 					</option>
 				</tooloptions>
-				<vars></vars>
+				<vars>
+					<var>s1
+						<value></value>
+					</var>
+					<var>s2
+						<value></value>
+					</var>
+					<var>s3
+						<value></value>
+					</var>
+					<var>V
+						<value></value>
+					</var>
+				</vars>
 				<outputs>
 					<output>/f
 						<evalType>point</evalType>
@@ -51,7 +64,7 @@
 		</checksasserts>
 		<plottingoptions>
 			<plottingoption>waveformtemplate
-				<value></value>
+				<value>(None)</value>
 			</plottingoption>
 			<plottingoption>plottingmode
 				<value>Replace</value>
@@ -63,7 +76,7 @@
 				<value>no</value>
 			</plottingoption>
 			<plottingoption>useMaestroPlottingTemplate
-				<value>no</value>
+				<value>yes</value>
 			</plottingoption>
 			<plottingoption>allplottingtemplates
 				<value></value>

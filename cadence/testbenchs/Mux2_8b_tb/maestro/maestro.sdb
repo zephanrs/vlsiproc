@@ -8,7 +8,7 @@
 		<sharedvarinfo></sharedvarinfo>
 		<overwritehistory>0</overwritehistory>
 		<tests>
-			<test>testbenchs_Mux2_tb_1
+			<test>testbenchs_Mux2_8b_tb_1
 				<tool>ADE</tool>
 				<tooloptions>
 					<option>cell
@@ -44,7 +44,6 @@
 						<value></value>
 					</var>
 				</vars>
-				<outputs></outputs>
 			</test>
 		</tests>
 		<extensions>
@@ -56,7 +55,7 @@
 		</extensions>
 		<currentmode>Single Run, Sweeps and Corners</currentmode>
 		<checksasserts netlist="0">
-			<test netlist="0" netlistscope="all">testbenchs_Mux2_tb_1</test>
+			<test netlist="0" netlistscope="all">testbenchs_Mux2_8b_tb_1</test>
 		</checksasserts>
 		<plottingoptions>
 			<plottingoption>waveformtemplate

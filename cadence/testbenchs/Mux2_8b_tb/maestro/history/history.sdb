@@ -3,8 +3,8 @@
 	<active>Active Setup</active>
 	<history>History
 		<historyentry assemblerOrExplorer="explorer" roOrView="view" runningOrFinished="finished">ExplorerRun.0
-			<timestamp>Apr 25 19:55:00 2026</timestamp>
-			<uuid>{6c5644dc-90ca-4856-a1fa-21144d2c058a}</uuid>
+			<timestamp>Apr 26 18:28:30 2026</timestamp>
+			<uuid>{08b77e98-aeb8-42e3-9644-765720f63563}</uuid>
 			<locked>0</locked>
 			<mode>Single Run, Sweeps and Corners</mode>
 			<resultsname>/home/dnb68/processor/cadence/testbenchs/Mux2_8b_tb/maestro/results/maestro/$AXL_HISTORY_NAME.rdb</resultsname>

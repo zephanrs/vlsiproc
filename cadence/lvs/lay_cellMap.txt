@@ -1,1 +1,4 @@
-standard_cells XOR2 layout XOR2
+processor imm_gen layout imm_gen
+processor Mux2_8b layout Mux2_8b
+standard_cells inv_drive layout inv_drive
+standard_cells Mux2 layout Mux2
