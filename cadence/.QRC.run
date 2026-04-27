@@ -1,6 +1,0 @@
-#!/bin/sh -f
-#--------------------------------------------------------------------------------------
-# THE RUN FILE created by Cadence Extraction Quantus UI Version 23.1.1-p051
-#--------------------------------------------------------------------------------------
-
-qrc  -log_file /home/dnb68/processor/cadence/lvs/svdb/qrc.Mux2_8b_m4.log -cmd /home/dnb68/processor/cadence/lvs/svdb/qrc.Mux2_8b_m4.ccl 
