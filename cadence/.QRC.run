@@ -3,4 +3,4 @@
 # THE RUN FILE created by Cadence Extraction Quantus UI Version 23.1.1-p051
 #--------------------------------------------------------------------------------------
 
-qrc  -log_file /home/iw87/processor/cadence/lvs/svdb/qrc.Mux4.log -cmd /home/iw87/processor/cadence/lvs/svdb/qrc.Mux4.ccl 
+qrc  -log_file /home/jyh42/processor/cadence/lvs/svdb/qrc.Nor2.log -cmd /home/jyh42/processor/cadence/lvs/svdb/qrc.Nor2.ccl 
