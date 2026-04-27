@@ -1,0 +1,19 @@
+
+*** Checking layout cellview 'standard_cells/NAND2/layout' against source cellview 'standard_cells/NAND2/schematic'. - Sun Apr 26 19:28:40 2026 ***
+
+INFO (LX-1018): Schematic pin 'Y' has no corresponding layout pin.
+INFO (LX-1016): Instance terminal 'D' on layout instance 'NM4' is connected to net 'net1'
+but should be connected to the layout counterpart of the schematic net 'net2'.
+INFO (LX-1016): Instance terminal 'D' on layout instance 'NM5' is connected to net 'Y_b'
+but should be connected to the layout counterpart of the schematic net 'Y'.
+INFO (LX-1016): Instance terminal 'D' on layout instance 'PM5' is connected to net 'Y_b'
+but should be connected to the layout counterpart of the schematic net 'Y'.
+INFO (LX-1016): Instance terminal 'D' on layout instance 'PM6' is connected to net 'Y_b'
+but should be connected to the layout counterpart of the schematic net 'Y'.
+INFO (LX-1016): Instance terminal 'S' on layout instance 'NM5' is connected to net 'net1'
+but should be connected to the layout counterpart of the schematic net 'net2'.
+INFO (LX-1031): Net 'Y_b' in the layout design which has no corresponding schematic net is connected to 3 shape(s) and to 1 route(s).
+INFO (LX-1031): Net 'net1' in the layout design which has no corresponding schematic net is connected to 1 shape(s).
+
+*** Check Against Source complete. ***
+
