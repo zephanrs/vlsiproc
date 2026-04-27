@@ -4,14 +4,14 @@ convertPin	"geometry"
 hierDepth	32
 labelCase	"preserve"
 labelDepth	32
-library	"standard_cells"
-logFile	"/home/jyh42/processor/cadence/lvs/PIPO1.LOG"
+library	"processor"
+logFile	"/home/dnb68/processor/cadence/lvs/PIPO1.LOG"
 maxVertices	2048
 pinAttNum	0
-runDir	"/home/jyh42/processor/cadence/lvs"
-strmFile	"/home/jyh42/processor/cadence/lvs/XOR2.gds.gz"
+runDir	"/home/dnb68/processor/cadence/lvs"
+strmFile	"/home/dnb68/processor/cadence/lvs/imm_gen.gds.gz"
 strmVersion	5
 techLib	"gpdk045"
-topCell	"XOR2"
+topCell	"imm_gen"
 view	"layout"
 enableColoring

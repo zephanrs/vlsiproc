@@ -4,14 +4,14 @@ convertPin	"geometry"
 hierDepth	32
 labelCase	"preserve"
 labelDepth	32
-library	"standard_cells"
-logFile	"/home/jyh42/processor/cadence/drc/PIPO1.LOG"
+library	"processor"
+logFile	"/home/dnb68/processor/cadence/drc/PIPO1.LOG"
 maxVertices	2048
 pinAttNum	0
-runDir	"/home/jyh42/processor/cadence/drc"
-strmFile	"/home/jyh42/processor/cadence/drc/Mux4_redo.gds.gz"
+runDir	"/home/dnb68/processor/cadence/drc"
+strmFile	"/home/dnb68/processor/cadence/drc/imm_gen.gds.gz"
 strmVersion	5
 techLib	"gpdk045"
-topCell	"Mux4_redo"
+topCell	"imm_gen"
 view	"layout"
 enableColoring

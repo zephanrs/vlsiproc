@@ -5,11 +5,7 @@
 
 [ virtuoso6.RunDRC ]
 AbortOnLayoutError                   "TRUE"
-<<<<<<< HEAD
 ActualRulesFile                      "../../../../opt/cadence-designkits/gpdk045_v_6_0/pvs/pvlDRC.rul"
-=======
-ActualRulesFile                      "/opt/cadence-designkits/gpdk045_v_6_0/pvs/pvlDRC.rul"
->>>>>>> 9c6388d (startign subcell layout)
 AdvancedCPUsetting                   "FALSE"
 AllowIncrementalConnectivity         "Rules definition"
 ApplyIncrementalConnectivity         "FALSE"
@@ -37,20 +33,10 @@ KeepLayers                           "None"
 LSFmasterHostSelectionResource       ""
 LSFmasterHostSelectionSubmitOptions  ""
 LayerMapList                         ""
-<<<<<<< HEAD
-<<<<<<<< HEAD:cadence/virtuoso6.drc_preset
-LayoutDFIIcell                       "Mux2"
-LayoutDFIIintermFile                 "./drc/Mux2.gds.gz"
-========
-LayoutDFIIcell                       "adder_white_b"
-LayoutDFIIintermFile                 "./drc/adder_white_b.gds.gz"
->>>>>>>> 9c6388d (startign subcell layout):cadence/drc/.preset.autosave
-=======
-LayoutDFIIcell                       "adder_white_b"
-LayoutDFIIintermFile                 "./drc/adder_white_b.gds.gz"
->>>>>>> 9c6388d (startign subcell layout)
+LayoutDFIIcell                       "Mux2_8b_m4"
+LayoutDFIIintermFile                 "./drc/Mux2_8b_m4.gds.gz"
 LayoutDFIIintermFileStage            "Create GDSII"
-LayoutDFIIlibrary                    "standard_cells"
+LayoutDFIIlibrary                    "processor"
 LayoutDFIIview                       "layout"
 LicenseDPContinue                    "FALSE"
 LicenseTimeout                       ""
@@ -63,15 +49,7 @@ ObjectMapFile                        ""
 OutputAddPrefixToCells               ""
 OutputAddSuffixToCells               ""
 OutputErrorsHierarchically           "Rules Definition"
-<<<<<<< HEAD
-<<<<<<<< HEAD:cadence/virtuoso6.drc_preset
-OutputFile                           "./drc/Mux2.drc_errors.ascii"
-========
-OutputFile                           "./drc/adder_white_b.drc_errors.ascii"
->>>>>>>> 9c6388d (startign subcell layout):cadence/drc/.preset.autosave
-=======
-OutputFile                           "./drc/adder_white_b.drc_errors.ascii"
->>>>>>> 9c6388d (startign subcell layout)
+OutputFile                           "./drc/Mux2_8b_m4.drc_errors.ascii"
 OutputFormat                         "ASCII"
 PBSresourceString                    ""
 PVLInclude:dfm_defaults              "OFF; "
@@ -91,23 +69,11 @@ PVLIncludeBox                        "FALSE"
 PegasusLogDirectory                  "LOGS"
 RemoteSubmissionLine                 ""
 ReportCaption                        "FALSE"
-<<<<<<< HEAD
-<<<<<<<< HEAD:cadence/virtuoso6.drc_preset
-ReportFile                           "Mux2.sum"
-========
-ReportFile                           "adder_white_b.sum"
->>>>>>>> 9c6388d (startign subcell layout):cadence/drc/.preset.autosave
+ReportFile                           "Mux2_8b_m4.sum"
 ReportFileWriteMode                  "Replace File"
 ReportLimit                          "1000"
 ReportStatisticsByCell               "FALSE"
 RulesFile                            ""
-=======
-ReportFile                           "adder_white_b.sum"
-ReportFileWriteMode                  "Replace File"
-ReportLimit                          "1000"
-ReportStatisticsByCell               "FALSE"
-RulesFile                            "/opt/cadence-designkits/gpdk045_v_6_0/pvs/pvlDRC.rul"
->>>>>>> 9c6388d (startign subcell layout)
 RunDir                               "./drc"
 StartDRCDE                           "TRUE"
 StreamoutConvertHalfWidthPath        "TRUE"
@@ -118,13 +84,8 @@ StreamoutPinTextMapFile              ""
 StreamoutReplaceBusBitChar           "FALSE"
 StreamoutUseStreamOutKeys            "FALSE"
 TechnologyLibPath                    ""
-<<<<<<< HEAD
 TechnologyName                       "gpdk045_pvs"
 TechnologyRuleSet                    "default"
-=======
-TechnologyName                       "---none---"
-TechnologyRuleSet                    "---none---"
->>>>>>> 9c6388d (startign subcell layout)
 TextDepth                            ""
 TextDepthSelector                    "Primary"
 TmpDirs                              ""
@@ -138,23 +99,10 @@ VirtualConnectNames                  ""
 VirtualConnectReport                 "FALSE"
 VirtualConnectReportMaximum          "all"
 VirtualConnectSemicolon              "TRUE"
-<<<<<<< HEAD
-<<<<<<<< HEAD:cadence/virtuoso6.drc_preset
-WaiverBatchAppliedFile               "./drc/Mux2.drc_errors.ascii.waivers.applied"
+WaiverBatchAppliedFile               "./drc/Mux2_8b_m4.drc_errors.ascii.waivers.applied"
 WaiverBatchFiles                     ""
 WaiverBatchMagnifyIn                 ""
-WaiverBatchRejectedFile              "./drc/Mux2.drc_errors.ascii.waivers.rejected"
-========
-=======
->>>>>>> 9c6388d (startign subcell layout)
-WaiverBatchAppliedFile               "./drc/adder_white_b.drc_errors.ascii.waivers.applied"
-WaiverBatchFiles                     ""
-WaiverBatchMagnifyIn                 ""
-WaiverBatchRejectedFile              "./drc/adder_white_b.drc_errors.ascii.waivers.rejected"
-<<<<<<< HEAD
->>>>>>>> 9c6388d (startign subcell layout):cadence/drc/.preset.autosave
-=======
->>>>>>> 9c6388d (startign subcell layout)
+WaiverBatchRejectedFile              "./drc/Mux2_8b_m4.drc_errors.ascii.waivers.rejected"
 WaiverBatchSetupFile                 ""
 WaiverBatchTolerance                 "0"
 WaiverFiles                          ""
