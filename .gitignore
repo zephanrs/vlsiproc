@@ -22,5 +22,7 @@ cadence/*.log
 
 # Ignore all log, cache, and tmp files
 *.tmp*
-*log*
+*.log
+*.log.*
+logs*/
 *oacache*
