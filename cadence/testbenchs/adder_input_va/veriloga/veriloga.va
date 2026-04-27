@@ -1,0 +1,62 @@
+// VerilogA for testbenchs, adder_input_va, veriloga
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module adder_input_gen(
+    A7, A6, A5, A4, A3, A2, A1, A0,
+    B7, B6, B5, B4, B3, B2, B1, B0
+);
+
+electrical A7, A6, A5, A4, A3, A2, A1, A0;
+electrical B7, B6, B5, B4, B3, B2, B1, B0;
+
+output A7, A6, A5, A4, A3, A2, A1, A0;
+output B7, B6, B5, B4, B3, B2, B1, B0;
+
+// --- Input word parameters (decimal, 0-255) ---
+parameter integer Aval = 170;   // e.g. 170 = 10101010
+parameter integer Bval = 85;    // e.g. 85  = 01010101
+
+// --- Pulse shape parameters ---
+parameter real vh  = 1.0;       // high voltage (V)
+parameter real tr  = 1e-12;     // rise time (s)
+parameter real tf  = 1e-12;     // fall time (s)
+parameter real tpw = 400e-12;   // pulse width (s)
+parameter real td  = 10e-12;    // initial delay before pulse (s)
+
+real pulse;
+
+analog begin
+
+    // Pulse: low before td, high during td to td+tpw, low after
+    if ($abstime < td)
+        pulse = 0.0;
+    else if ($abstime < td + tpw)
+        pulse = vh;
+    else
+        pulse = 0.0;
+
+    // --- A outputs ---
+    V(A0) <+ transition(((Aval & 8'h01) ? pulse : 0.0), 0, tr, tf);
+    V(A1) <+ transition(((Aval & 8'h02) ? pulse : 0.0), 0, tr, tf);
+    V(A2) <+ transition(((Aval & 8'h04) ? pulse : 0.0), 0, tr, tf);
+    V(A3) <+ transition(((Aval & 8'h08) ? pulse : 0.0), 0, tr, tf);
+    V(A4) <+ transition(((Aval & 8'h10) ? pulse : 0.0), 0, tr, tf);
+    V(A5) <+ transition(((Aval & 8'h20) ? pulse : 0.0), 0, tr, tf);
+    V(A6) <+ transition(((Aval & 8'h40) ? pulse : 0.0), 0, tr, tf);
+    V(A7) <+ transition(((Aval & 8'h80) ? pulse : 0.0), 0, tr, tf);
+
+    // --- B outputs ---
+    V(B0) <+ transition(((Bval & 8'h01) ? pulse : 0.0), 0, tr, tf);
+    V(B1) <+ transition(((Bval & 8'h02) ? pulse : 0.0), 0, tr, tf);
+    V(B2) <+ transition(((Bval & 8'h04) ? pulse : 0.0), 0, tr, tf);
+    V(B3) <+ transition(((Bval & 8'h08) ? pulse : 0.0), 0, tr, tf);
+    V(B4) <+ transition(((Bval & 8'h10) ? pulse : 0.0), 0, tr, tf);
+    V(B5) <+ transition(((Bval & 8'h20) ? pulse : 0.0), 0, tr, tf);
+    V(B6) <+ transition(((Bval & 8'h40) ? pulse : 0.0), 0, tr, tf);
+    V(B7) <+ transition(((Bval & 8'h80) ? pulse : 0.0), 0, tr, tf);
+
+end
+
+endmodule
