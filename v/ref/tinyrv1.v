@@ -5,9 +5,9 @@
 //  15       12 11     9 8       6 5       3 2      0
 // | opcode    | rd     | rs1     | rs2     | imm    |
 //
-// Immediate types (6-bit, derived from inst[14:13]):
-// I-type (01): {inst[5:3], inst[2:0]} = {rs2, imm}
-// S-type (10): {inst[11:9], inst[2:0]} = {rd, imm}
+// Immediate types (6-bit, selected by inst[13]):
+// I-type (inst[13]=1): {inst[5:3], inst[2:0]} = {rs2, imm}
+// S-type (inst[13]=0): {inst[11:9], inst[2:0]} = {rd, imm}
 //
 
 `ifndef TINYRV1_ASM_V
