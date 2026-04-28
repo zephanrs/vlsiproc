@@ -30,3 +30,14 @@ logs*/
 # Verilator flow generated files
 flow/obj_dir/
 flow/*-pickled.v
+
+# Processor flow generated tool output
+flow/alib/
+flow/work/
+flow/csrc/
+flow/*.daidir/
+flow/post-synth.*
+flow/*.rpt
+flow/proc2_vcs
+flow/proc2_ffglsim
+flow/ucli.key

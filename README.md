@@ -89,6 +89,23 @@ If you want more detailed test output:
 make check-ref-verbose
 ```
 
+### Running the processor flow
+
+Run the processor flow from a disposable build directory so generated
+pickles, logs, netlists, and simulator output do not land in source `flow/`.
+
+```bash
+cd ~/processor
+mkdir -p build-flow
+cd build-flow
+../configure
+cd flow
+./run-01-verilator
+./run-02-synopsys-vcs
+./run-03-dc-synth
+./run-04-ffglsim
+```
+
 ## Working With Git
 
 If you are new to git, use this as the default workflow for this repo.
