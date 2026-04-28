@@ -5,8 +5,7 @@
 
 # Stop on error and echo all commands
 
-set -e
-trap 'echo "CMD: $BASH_COMMAND"' DEBUG
+set -euo pipefail
 
 # Colors
 
@@ -17,19 +16,164 @@ RESET="\e[0m"
 
 # Determine RUNDIR
 
-RUNDIR="$(dirname $(readlink -f "${BASH_SOURCE[0]}"))"
-cd $RUNDIR
+RUNDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$RUNDIR"
 
 # Run rtlsim
 
 rm -rf obj_dir run.log
 
+PICKLED="Proc2-test-pickled.v"
+
+echo "CMD: pickle ../v/test/Proc2-test.v -> $PICKLED"
+python3 - "$PICKLED" <<'PY'
+from pathlib import Path
+import re
+import sys
+
+out_path = Path(sys.argv[1])
+top = Path("../v/test/Proc2-test.v").resolve()
+include_dirs = [
+    top.parent,
+    Path("../v").resolve(),
+]
+include_re = re.compile(r'^\s*`include\s+"([^"]+)"\s*$')
+asm_re = re.compile(r'^(\s*)asm\(\s*([^,]+?)\s*,\s*"([^"]+)"\s*\);\s*(?://(.*))?$')
+seen = set()
+
+def parse_int(token):
+    token = token.strip()
+    if token.startswith("'h"):
+        return int(token[2:], 16)
+    if token.startswith("'d"):
+        return int(token[2:], 10)
+    if token.startswith("'b"):
+        return int(token[2:], 2)
+    return int(token, 0)
+
+def parse_reg(token):
+    token = token.strip()
+    if not token.startswith("x"):
+        raise ValueError(f"Expected register, got {token!r}")
+    value = int(token[1:], 10)
+    if value < 0:
+        raise ValueError(f"Register out of range: {token!r}")
+    return value & 0x7
+
+def parse_imm(token):
+    value = parse_int(token)
+    if value < -32 or value > 63:
+        raise ValueError(f"Immediate out of 6-bit range: {token!r}")
+    return value & 0x3f
+
+def encode_asm(addr, inst):
+    inst = " ".join(inst.strip().split())
+
+    match = re.fullmatch(r"add (x\d+), (x\d+), (x\d+)", inst)
+    if match:
+        rd, rs1, rs2 = (parse_reg(x) for x in match.groups())
+        return (0x8 << 12) | (rd << 9) | (rs1 << 6) | (rs2 << 3)
+
+    match = re.fullmatch(r"addi (x\d+), (x\d+), ([-+]?0x[0-9a-fA-F]+|[-+]?0b[01]+|[-+]?\d+)", inst)
+    if match:
+        rd = parse_reg(match.group(1))
+        rs1 = parse_reg(match.group(2))
+        imm = parse_imm(match.group(3))
+        return (0x2 << 12) | (rd << 9) | (rs1 << 6) | ((imm >> 3) << 3) | (imm & 0x7)
+
+    match = re.fullmatch(r"lw (x\d+), ([-+]?0x[0-9a-fA-F]+|[-+]?0b[01]+|[-+]?\d+)\((x\d+)\)", inst)
+    if match:
+        rd = parse_reg(match.group(1))
+        imm = parse_imm(match.group(2))
+        rs1 = parse_reg(match.group(3))
+        return (0x3 << 12) | (rd << 9) | (rs1 << 6) | ((imm >> 3) << 3) | (imm & 0x7)
+
+    match = re.fullmatch(r"sw (x\d+), ([-+]?0x[0-9a-fA-F]+|[-+]?0b[01]+|[-+]?\d+)\((x\d+)\)", inst)
+    if match:
+        rs2 = parse_reg(match.group(1))
+        imm = parse_imm(match.group(2))
+        rs1 = parse_reg(match.group(3))
+        return (0xC << 12) | ((imm >> 3) << 9) | (rs1 << 6) | (rs2 << 3) | (imm & 0x7)
+
+    match = re.fullmatch(r"jal (x\d+), ([-+]?0x[0-9a-fA-F]+|[-+]?0b[01]+|[-+]?\d+)", inst)
+    if match:
+        rd = parse_reg(match.group(1))
+        target = parse_int(match.group(2))
+        imm = parse_imm(str(target - addr))
+        return (0xA << 12) | (rd << 9) | ((imm >> 3) << 3) | (imm & 0x7)
+
+    match = re.fullmatch(r"jr (x\d+)", inst)
+    if match:
+        rs1 = parse_reg(match.group(1))
+        return (0x9 << 12) | (rs1 << 6)
+
+    match = re.fullmatch(r"bne (x\d+), (x\d+), ([-+]?0x[0-9a-fA-F]+|[-+]?0b[01]+|[-+]?\d+)", inst)
+    if match:
+        rs1 = parse_reg(match.group(1))
+        rs2 = parse_reg(match.group(2))
+        target = parse_int(match.group(3))
+        imm = parse_imm(str(target - addr))
+        return (0x4 << 12) | ((imm >> 3) << 9) | (rs1 << 6) | (rs2 << 3) | (imm & 0x7)
+
+    raise ValueError(f"Could not assemble {inst!r}")
+
+def pickle_asm(line):
+    match = asm_re.match(line)
+    if not match:
+        return line
+
+    indent, addr_expr, inst, comment = match.groups()
+    addr_expr = addr_expr.strip()
+    if addr_expr == "end_addr":
+        encoded = encode_asm(0, inst)
+    else:
+        encoded = encode_asm(parse_int(addr_expr), inst)
+
+    suffix = f" // {comment.strip()}" if comment else ""
+    return f"{indent}data( {addr_expr}, 16'h{encoded:04x} ); // {inst}{suffix}\n"
+
+def resolve_include(name, current_dir):
+    candidates = [current_dir / name]
+    candidates.extend(include_dir / name for include_dir in include_dirs)
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate.resolve()
+    raise FileNotFoundError(f"Could not resolve include {name!r} from {current_dir}")
+
+def emit(path, out):
+    path = path.resolve()
+    if path in seen:
+        out.write(f"// Skipping duplicate include: {path}\n")
+        return
+    seen.add(path)
+
+    out.write(f"// ----- BEGIN {path.relative_to(Path.cwd().parent)} -----\n")
+    for line in path.read_text().splitlines(keepends=True):
+        match = include_re.match(line)
+        if match:
+            include_path = resolve_include(match.group(1), path.parent)
+            emit(include_path, out)
+        else:
+            out.write(pickle_asm(line))
+    out.write(f"\n// ----- END {path.relative_to(Path.cwd().parent)} -----\n")
+
+with out_path.open("w") as out:
+    emit(top, out)
+PY
+
+echo "CMD: verilator --binary --top Top -o Proc2 $PICKLED"
 verilator --quiet -Wall -Wno-DECLFILENAME \
   --timing --binary --top Top \
   -o Proc2 \
-  ../v/ref/* \
-  ../v/test/Proc2-test.v \
-  ../v/test/TestMemory.v | tee run.log
+  "$PICKLED" | tee run.log
 
+echo "CMD: ./obj_dir/Proc2"
 ./obj_dir/Proc2 | tee -a run.log
 
+if grep -Eq "num_test_cases_passed = +[1-9][0-9]*" run.log && \
+   grep -Eq "num_test_cases_failed = +0" run.log; then
+  echo -e ">>>> [ ${GREEN}passed${RESET} ] Proc2" | tee -a run.log
+else
+  echo -e ">>>> [ ${RED}FAILED${RESET} ] Proc2" | tee -a run.log
+  exit 1
+fi
