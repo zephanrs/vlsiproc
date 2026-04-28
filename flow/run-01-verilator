@@ -174,7 +174,7 @@ def emit(path, out, seen, skip_includes, pickle_asm_calls):
     out.write(f"\n// ----- END {path.relative_to(Path.cwd().parent)} -----\n")
 
 jobs = [
-    ("testbench", {"ref/Proc2.v"}, True),
+    ("testbench", {"test/test-utils.v", "ref/Proc2.v", "test/TestMemory.v"}, True),
     ("top",       {"ref/ProcCtrl2.v"}, False),
     ("ctrl",      set(), False),
 ]
@@ -184,10 +184,16 @@ for name, skip_includes, pickle_asm_calls in jobs:
         emit(srcs[name], out, set(), skip_includes, pickle_asm_calls)
 PY
 
-echo "CMD: verilator --binary --top Top -o Proc2 $TESTBENCH_PICKLED $TOP_PICKLED $CTRL_PICKLED"
+TEST_UTILS="../v/test/test-utils.v"
+TEST_MEMORY="../v/test/TestMemory.v"
+
+echo "CMD: verilator --binary --top Top -o Proc2 $TEST_UTILS $TEST_MEMORY $TESTBENCH_PICKLED $TOP_PICKLED $CTRL_PICKLED"
 verilator --quiet -Wall -Wno-DECLFILENAME \
+  -I../v \
   --timing --binary --top Top \
   -o Proc2 \
+  "$TEST_UTILS" \
+  "$TEST_MEMORY" \
   "$TESTBENCH_PICKLED" \
   "$TOP_PICKLED" \
   "$CTRL_PICKLED" | tee run.log

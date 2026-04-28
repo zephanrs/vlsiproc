@@ -18,11 +18,13 @@ cd "$RUNDIR"
 
 DESIGN_NAME="Proc2"
 TEST_NAME="proc2_vcs"
+TEST_UTILS="../v/test/test-utils.v"
+TEST_MEMORY="../v/test/TestMemory.v"
 TESTBENCH_PICKLED="Proc2-testbench-pickled.v"
 TOP_PICKLED="Proc2-top-pickled.v"
 CTRL_RTL="${CTRL_RTL:-ProcCtrl2-pickled.v}"
 
-for input in "$TESTBENCH_PICKLED" "$TOP_PICKLED" "$CTRL_RTL"; do
+for input in "$TEST_UTILS" "$TEST_MEMORY" "$TESTBENCH_PICKLED" "$TOP_PICKLED" "$CTRL_RTL"; do
   if [[ ! -f "$input" ]]; then
     echo "ERROR: $input not found. Run ./run-01-verilator first."
     exit 1
@@ -31,9 +33,13 @@ done
 
 rm -rf "$TEST_NAME" "$TEST_NAME.daidir" "$TEST_NAME.log" run.log
 
-echo "CMD: vcs -top Top -o $TEST_NAME $TESTBENCH_PICKLED $TOP_PICKLED $CTRL_RTL"
-vcs -sverilog -xprop=tmerge -override_timescale=1ns/1ps -top Top \
+echo "CMD: vcs -top Top -o $TEST_NAME $TEST_UTILS $TEST_MEMORY $TESTBENCH_PICKLED $TOP_PICKLED $CTRL_RTL"
+vcs -sverilog -xprop=tmerge -override_timescale=1ns/1ps \
+  +incdir+../v \
+  -top Top \
   -o "$TEST_NAME" \
+  "$TEST_UTILS" \
+  "$TEST_MEMORY" \
   "$TESTBENCH_PICKLED" \
   "$TOP_PICKLED" \
   "$CTRL_RTL" | tee "$TEST_NAME.log"

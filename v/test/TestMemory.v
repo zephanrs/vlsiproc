@@ -42,7 +42,7 @@ module TestMemory
   // Write Port
   //----------------------------------------------------------------------
 
-  always_ff @( posedge clk ) begin
+  always @( posedge clk ) begin
     if ( mem_val && (mem_type == 1) ) begin
       if (mem_addr[0] == 0) // Write lower byte
         m[mem_addr_idx][7:0] <= mem_wdata;
