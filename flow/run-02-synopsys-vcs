@@ -3,8 +3,7 @@
 # 02-synopsys-vcs
 #=========================================================================
 
-set -e
-trap 'echo "CMD: $BASH_COMMAND"' DEBUG
+set -euo pipefail
 
 # Colors
 
@@ -14,39 +13,46 @@ RESET="\e[0m"
 
 # Determine RUNDIR
 
-RUNDIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+RUNDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$RUNDIR"
 
-DESIGN_NAME="{{ design_name }}"
-TEST_NAME="top_test"
-GENERATED_TEST="../05-verilator-rtlsim/{{ design_name }}_test.v"
-TOP_RTL="../../../rtl/{{ design_name }}.v"
+DESIGN_NAME="Proc2"
+TEST_NAME="proc2_vcs"
+TESTBENCH_PICKLED="Proc2-testbench-pickled.v"
+TOP_PICKLED="Proc2-top-pickled.v"
+CTRL_RTL="${CTRL_RTL:-ProcCtrl2-pickled.v}"
 
-trap 'echo "CMD: $BASH_COMMAND"' DEBUG
+for input in "$TESTBENCH_PICKLED" "$TOP_PICKLED" "$CTRL_RTL"; do
+  if [[ ! -f "$input" ]]; then
+    echo "ERROR: $input not found. Run ./run-01-verilator first."
+    exit 1
+  fi
+done
 
-if [[ ! -f "$GENERATED_TEST" ]]; then
-  echo "ERROR: $GENERATED_TEST not found. Run 05-verilator-rtlsim first."
-  exit 1
-fi
+rm -rf "$TEST_NAME" "$TEST_NAME.daidir" "$TEST_NAME.log" run.log
 
-rm -rf "$TEST_NAME" "$TEST_NAME.daidir" "$TEST_NAME.log"
-
-vcs -sverilog -xprop=tmerge -override_timescale=1ns/1ps -top TopTestbench \
-  {{ "+vcs+dumpvars+top_test.vcd" if dump_vcd | default(false) }} \
+echo "CMD: vcs -top Top -o $TEST_NAME $TESTBENCH_PICKLED $TOP_PICKLED $CTRL_RTL"
+vcs -sverilog -xprop=tmerge -override_timescale=1ns/1ps -top Top \
   -o "$TEST_NAME" \
-  "$GENERATED_TEST" \
-  "$TOP_RTL" \
-  {{ input_dir }}/*.v | tee "$TEST_NAME.log"
+  "$TESTBENCH_PICKLED" \
+  "$TOP_PICKLED" \
+  "$CTRL_RTL" | tee "$TEST_NAME.log"
 
+echo "CMD: ./$TEST_NAME"
 ./"$TEST_NAME" | tee -a "$TEST_NAME.log"
 
-if grep "SUCCESS: All tests passed!" "$TEST_NAME.log" > /dev/null 2>&1; then
+test_status=0
+if grep -Eq "num_test_cases_passed = +[1-9][0-9]*" "$TEST_NAME.log" && \
+   grep -Eq "num_test_cases_failed = +0" "$TEST_NAME.log"; then
   echo -e ">>>> [ ${GREEN}passed${RESET} ] $TEST_NAME" >> "$TEST_NAME.log"
 else
   echo -e ">>>> [ ${RED}FAILED${RESET} ] $TEST_NAME" >> "$TEST_NAME.log"
+  test_status=1
 fi
 
 echo "" > run.log
 grep -h ">>>" "$TEST_NAME.log" | sed -e 's/>>>>//' >> run.log
 echo "" >> run.log
 cat run.log
+
+exit "$test_status"
