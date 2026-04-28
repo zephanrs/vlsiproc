@@ -1,9 +1,0 @@
-{"vcs1":{"timestamp_begin":1777347630.953204083, "rt":0.66, "ut":0.20, "st":0.10}}
-{"vcselab":{"timestamp_begin":1777347631.675384649, "rt":0.44, "ut":0.15, "st":0.08}}
-{"link":{"timestamp_begin":1777347632.163169219, "rt":0.30, "ut":0.08, "st":0.07}}
-{"SNPS_VCS_INTERNAL_ROOT_START_TIME": 1777347630.685012191}
-{"VCS_COMP_START_TIME": 1777347630.685012191}
-{"VCS_COMP_END_TIME": 1777347632.568854244}
-{"VCS_USER_OPTIONS": "-sverilog -xprop=tmerge -override_timescale=1ns/1ps +incdir+../v -top Top -o proc2_vcs ../v/test/test-utils.v ../v/test/TestMemory.v Proc2-testbench-pickled.v Proc2-top-pickled.v ProcCtrl2-pickled.v"}
-{"vcs1": {"peak_mem": 397252}}
-{"vcselab": {"peak_mem": 268936}}
