@@ -23,23 +23,35 @@ cd "$RUNDIR"
 
 rm -rf obj_dir run.log
 
-PICKLED="Proc2-test-pickled.v"
+TESTBENCH_PICKLED="Proc2-testbench-pickled.v"
+TOP_PICKLED="Proc2-top-pickled.v"
+CTRL_PICKLED="ProcCtrl2-pickled.v"
 
-echo "CMD: pickle ../v/test/Proc2-test.v -> $PICKLED"
-python3 - "$PICKLED" <<'PY'
+echo "CMD: pickle Proc2 testbench/top/control"
+python3 - "$TESTBENCH_PICKLED" "$TOP_PICKLED" "$CTRL_PICKLED" <<'PY'
 from pathlib import Path
 import re
 import sys
 
-out_path = Path(sys.argv[1])
-top = Path("../v/test/Proc2-test.v").resolve()
+out_paths = {
+    "testbench": Path(sys.argv[1]),
+    "top":       Path(sys.argv[2]),
+    "ctrl":      Path(sys.argv[3]),
+}
+
+srcs = {
+    "testbench": Path("../v/test/Proc2-test.v").resolve(),
+    "top":       Path("../v/ref/Proc2.v").resolve(),
+    "ctrl":      Path("../v/ref/ProcCtrl2.v").resolve(),
+}
+
 include_dirs = [
-    top.parent,
+    Path("../v/test").resolve(),
+    Path("../v/ref").resolve(),
     Path("../v").resolve(),
 ]
 include_re = re.compile(r'^\s*`include\s+"([^"]+)"\s*$')
 asm_re = re.compile(r'^(\s*)asm\(\s*([^,]+?)\s*,\s*"([^"]+)"\s*\);\s*(?://(.*))?$')
-seen = set()
 
 def parse_int(token):
     token = token.strip()
@@ -140,7 +152,7 @@ def resolve_include(name, current_dir):
             return candidate.resolve()
     raise FileNotFoundError(f"Could not resolve include {name!r} from {current_dir}")
 
-def emit(path, out):
+def emit(path, out, seen, skip_includes, pickle_asm_calls):
     path = path.resolve()
     if path in seen:
         out.write(f"// Skipping duplicate include: {path}\n")
@@ -151,21 +163,34 @@ def emit(path, out):
     for line in path.read_text().splitlines(keepends=True):
         match = include_re.match(line)
         if match:
-            include_path = resolve_include(match.group(1), path.parent)
-            emit(include_path, out)
+            include_name = match.group(1)
+            if include_name in skip_includes:
+                out.write(f"// External module include skipped: {include_name}\n")
+                continue
+            include_path = resolve_include(include_name, path.parent)
+            emit(include_path, out, seen, skip_includes, pickle_asm_calls)
         else:
-            out.write(pickle_asm(line))
+            out.write(pickle_asm(line) if pickle_asm_calls else line)
     out.write(f"\n// ----- END {path.relative_to(Path.cwd().parent)} -----\n")
 
-with out_path.open("w") as out:
-    emit(top, out)
+jobs = [
+    ("testbench", {"ref/Proc2.v"}, True),
+    ("top",       {"ref/ProcCtrl2.v"}, False),
+    ("ctrl",      set(), False),
+]
+
+for name, skip_includes, pickle_asm_calls in jobs:
+    with out_paths[name].open("w") as out:
+        emit(srcs[name], out, set(), skip_includes, pickle_asm_calls)
 PY
 
-echo "CMD: verilator --binary --top Top -o Proc2 $PICKLED"
+echo "CMD: verilator --binary --top Top -o Proc2 $TESTBENCH_PICKLED $TOP_PICKLED $CTRL_PICKLED"
 verilator --quiet -Wall -Wno-DECLFILENAME \
   --timing --binary --top Top \
   -o Proc2 \
-  "$PICKLED" | tee run.log
+  "$TESTBENCH_PICKLED" \
+  "$TOP_PICKLED" \
+  "$CTRL_PICKLED" | tee run.log
 
 echo "CMD: ./obj_dir/Proc2"
 ./obj_dir/Proc2 | tee -a run.log
