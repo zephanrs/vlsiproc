@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+#=========================================================================
+# 07-synopsys-dc-synth
+#=========================================================================
+
+# Stop on error and echo all commands
+
+set -e
+trap 'echo "CMD: $BASH_COMMAND"' DEBUG
+
+# Determine RUNDIR
+
+RUNDIR="$(dirname $(readlink -f "${BASH_SOURCE[0]}"))"
+cd $RUNDIR
+
+# Set alib
+rm -rf alib
+mkdir -p alib
+cp -srf ${TSMC_180NM}/stdcells.alib/* alib
+
+# Run DC
+dc_shell-xg-t -f run.tcl | tee run.log
