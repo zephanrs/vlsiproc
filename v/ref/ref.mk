@@ -16,7 +16,9 @@ ref_srcs = \
   Regfile.v \
   ProcDpath.v \
   ProcCtrl.v \
+  ProcCtrl2.v \
   Proc.v \
+  Proc2.v \
 
 ref_cell_tests = \
   FullAdder-test.v \
@@ -41,6 +43,13 @@ ref_proc_tests = \
   Proc-jal-test.v \
   Proc-jr-test.v \
   Proc-bne-test.v \
+  Proc-addi2-test.v \
+  Proc-add2-test.v \
+  Proc-lw2-test.v \
+  Proc-sw2-test.v \
+  Proc-jal2-test.v \
+  Proc-jr2-test.v \
+  Proc-bne2-test.v \
 
 ref_tests = $(ref_cell_tests) $(ref_blocks_tests) $(ref_proc_tests)
 
