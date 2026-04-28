@@ -1,22 +1,75 @@
 #!/usr/bin/env bash
 #=========================================================================
-# 07-synopsys-dc-synth
+# run-04-ffglsim
 #=========================================================================
 
 # Stop on error and echo all commands
 
-set -e
-trap 'echo "CMD: $BASH_COMMAND"' DEBUG
+set -euo pipefail
+
+# Colors
+
+RED="\e[31m"
+GREEN="\e[32m"
+RESET="\e[0m"
 
 # Determine RUNDIR
 
-RUNDIR="$(dirname $(readlink -f "${BASH_SOURCE[0]}"))"
-cd $RUNDIR
+RUNDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$RUNDIR"
 
-# Set alib
-rm -rf alib
-mkdir -p alib
-cp -srf ${TSMC_180NM}/stdcells.alib/* alib
+TEST_NAME="proc2_ffglsim"
+TEST_UTILS="../v/test/test-utils.v"
+TEST_MEMORY="../v/test/TestMemory.v"
+TESTBENCH_PICKLED="Proc2-testbench-pickled.v"
+TOP_PICKLED="Proc2-top-pickled.v"
+GATE_NETLIST="post-synth.v"
 
-# Run DC
-dc_shell-xg-t -f run.tcl | tee run.log
+if [[ -z "${TSMC_180NM:-}" ]]; then
+  echo "ERROR: TSMC_180NM is not set."
+  exit 1
+fi
+
+STDCELLS="${TSMC_180NM}/stdcells.v"
+
+for input in "$TEST_UTILS" "$TEST_MEMORY" "$TESTBENCH_PICKLED" \
+             "$TOP_PICKLED" "$GATE_NETLIST" "$STDCELLS"; do
+  if [[ ! -f "$input" ]]; then
+    echo "ERROR: $input not found. Run ./run-01-verilator and ./run-03-dc-synth first."
+    exit 1
+  fi
+done
+
+rm -rf "$TEST_NAME" "$TEST_NAME.daidir" "$TEST_NAME.log" run.log
+
+echo "CMD: vcs -top Top -o $TEST_NAME $TEST_UTILS $TEST_MEMORY $TESTBENCH_PICKLED $TOP_PICKLED $STDCELLS $GATE_NETLIST"
+vcs -sverilog -xprop=tmerge -override_timescale=1ns/1ps \
+  +delay_mode_zero \
+  +incdir+../v \
+  -top Top \
+  -o "$TEST_NAME" \
+  "$TEST_UTILS" \
+  "$TEST_MEMORY" \
+  "$TESTBENCH_PICKLED" \
+  "$TOP_PICKLED" \
+  "$STDCELLS" \
+  "$GATE_NETLIST" | tee "$TEST_NAME.log"
+
+echo "CMD: ./$TEST_NAME"
+./"$TEST_NAME" | tee -a "$TEST_NAME.log"
+
+test_status=0
+if grep -Eq "num_test_cases_passed = +[1-9][0-9]*" "$TEST_NAME.log" && \
+   grep -Eq "num_test_cases_failed = +0" "$TEST_NAME.log"; then
+  echo -e ">>>> [ ${GREEN}passed${RESET} ] $TEST_NAME" >> "$TEST_NAME.log"
+else
+  echo -e ">>>> [ ${RED}FAILED${RESET} ] $TEST_NAME" >> "$TEST_NAME.log"
+  test_status=1
+fi
+
+echo "" > run.log
+grep -h ">>>" "$TEST_NAME.log" | sed -e 's/>>>>//' >> run.log
+echo "" >> run.log
+cat run.log
+
+exit "$test_status"

@@ -1,14 +1,10 @@
 #=========================================================================
-# 07-synopsys-dc-synth/run.tcl
+# 03-synopsys-dc-synth/run.tcl
 #=========================================================================
 
 #-------------------------------------------------------------------------
 # Initial setup
 #-------------------------------------------------------------------------
-
-# Suppress warnings that we have decided are not relevant/waivable
-
-source "warnings.tcl"
 
 set_app_var target_library [list "$env(TSMC_180NM)/stdcells.db"]
 
@@ -35,9 +31,19 @@ set_svf -off
 # Inputs
 #-------------------------------------------------------------------------
 
-set top_file ../../../rtl/{{ design_name }}.v
-analyze -format sverilog $top_file
-elaborate {{ design_name }}
+set design_name  ProcCtrl2
+set clock_period 3.0
+set rtl_files [list \
+  "ProcCtrl2-pickled.v" \
+]
+
+foreach rtl_file $rtl_files {
+  analyze -format sverilog $rtl_file
+}
+
+elaborate $design_name
+current_design $design_name
+link
 
 #-------------------------------------------------------------------------
 # Timing/Operating constraints
@@ -50,9 +56,9 @@ elaborate {{ design_name }}
 
 # Set the max transition for any net in the design
 
-set_max_transition 0.250 {{ design_name }}
+set_max_transition 0.250 $design_name
 
-set_input_transition 0 [all_inputs]
+set_input_transition 0 [all_inputs -exclude_clock_ports]
 
 # Set the assumed load for all outputs
 
@@ -60,12 +66,12 @@ set_load 0.005 [all_outputs]
 
 # Clock period constraint
 
-create_clock -name ideal_clock1 -period {{ clock_period }}
+create_clock clk -name ideal_clock1 -period $clock_period
 
 # Set the assumed propagation and contamination delay for inputs
 
-set_input_delay -clock ideal_clock1 -max 0.050 [all_inputs]
-set_input_delay -clock ideal_clock1 -min 0     [all_inputs]
+set_input_delay -clock ideal_clock1 -max 0.050 [all_inputs -exclude_clock_ports]
+set_input_delay -clock ideal_clock1 -min 0     [all_inputs -exclude_clock_ports]
 
 # Set the assumed setup and hold time constraints for outputs
 
@@ -75,7 +81,7 @@ set_output_delay -clock ideal_clock1 -min 0     [all_outputs]
 # Constraint all feed-through paths (i.e., combinational paths from
 # inputs to outputs to take no longer than one clock cycle
 
-set_max_delay {{ clock_period }} -from [all_inputs] -to [all_outputs]
+set_max_delay $clock_period -from [all_inputs -exclude_clock_ports] -to [all_outputs]
 
 check_timing
 
@@ -85,7 +91,7 @@ check_timing
 
 check_design
 
-compile_ultra
+compile_ultra -no_autoungroup -gate_clock
 
 #-------------------------------------------------------------------------
 # Outputs
