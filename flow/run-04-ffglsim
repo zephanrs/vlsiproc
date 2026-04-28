@@ -13,14 +13,27 @@ RED="\e[31m"
 GREEN="\e[32m"
 RESET="\e[0m"
 
-# Determine RUNDIR
+# Determine RUNDIR and SRCDIR
 
 RUNDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$RUNDIR"
 
+if [[ -n "${PROC_SRC_DIR:-}" ]]; then
+  SRCDIR="$(cd "$PROC_SRC_DIR" && pwd)"
+elif [[ -f "$RUNDIR/.proc-src-dir" ]]; then
+  SRCDIR="$(cd "$(cat "$RUNDIR/.proc-src-dir")" && pwd)"
+elif [[ -d "$RUNDIR/../v" ]]; then
+  SRCDIR="$(cd "$RUNDIR/.." && pwd)"
+elif [[ -d "$RUNDIR/../../v" ]]; then
+  SRCDIR="$(cd "$RUNDIR/../.." && pwd)"
+else
+  echo "ERROR: Could not find source directory. Set PROC_SRC_DIR."
+  exit 1
+fi
+
 TEST_NAME="proc2_ffglsim"
-TEST_UTILS="../v/test/test-utils.v"
-TEST_MEMORY="../v/test/TestMemory.v"
+TEST_UTILS="$SRCDIR/v/test/test-utils.v"
+TEST_MEMORY="$SRCDIR/v/test/TestMemory.v"
 TESTBENCH_PICKLED="Proc2-testbench-pickled.v"
 TOP_PICKLED="Proc2-top-pickled.v"
 GATE_NETLIST="post-synth.v"
@@ -45,7 +58,7 @@ rm -rf "$TEST_NAME" "$TEST_NAME.daidir" "$TEST_NAME.log" run.log
 echo "CMD: vcs -top Top -o $TEST_NAME $TEST_UTILS $TEST_MEMORY $TESTBENCH_PICKLED $TOP_PICKLED $STDCELLS $GATE_NETLIST"
 vcs -sverilog -xprop=tmerge -override_timescale=1ns/1ps \
   +delay_mode_zero \
-  +incdir+../v \
+  +incdir+"$SRCDIR/v" \
   -top Top \
   -o "$TEST_NAME" \
   "$TEST_UTILS" \

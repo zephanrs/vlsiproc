@@ -14,10 +14,23 @@ GREEN="\e[32m"
 RESET="\e[0m"
 
 
-# Determine RUNDIR
+# Determine RUNDIR and SRCDIR
 
 RUNDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$RUNDIR"
+
+if [[ -n "${PROC_SRC_DIR:-}" ]]; then
+  SRCDIR="$(cd "$PROC_SRC_DIR" && pwd)"
+elif [[ -f "$RUNDIR/.proc-src-dir" ]]; then
+  SRCDIR="$(cd "$(cat "$RUNDIR/.proc-src-dir")" && pwd)"
+elif [[ -d "$RUNDIR/../v" ]]; then
+  SRCDIR="$(cd "$RUNDIR/.." && pwd)"
+elif [[ -d "$RUNDIR/../../v" ]]; then
+  SRCDIR="$(cd "$RUNDIR/../.." && pwd)"
+else
+  echo "ERROR: Could not find source directory. Set PROC_SRC_DIR."
+  exit 1
+fi
 
 # Run rtlsim
 
@@ -28,7 +41,7 @@ TOP_PICKLED="Proc2-top-pickled.v"
 CTRL_PICKLED="ProcCtrl2-pickled.v"
 
 echo "CMD: pickle Proc2 testbench/top/control"
-python3 - "$TESTBENCH_PICKLED" "$TOP_PICKLED" "$CTRL_PICKLED" <<'PY'
+python3 - "$TESTBENCH_PICKLED" "$TOP_PICKLED" "$CTRL_PICKLED" "$SRCDIR" <<'PY'
 from pathlib import Path
 import re
 import sys
@@ -39,16 +52,18 @@ out_paths = {
     "ctrl":      Path(sys.argv[3]),
 }
 
+srcdir = Path(sys.argv[4]).resolve()
+
 srcs = {
-    "testbench": Path("../v/test/Proc2-test.v").resolve(),
-    "top":       Path("../v/ref/Proc2.v").resolve(),
-    "ctrl":      Path("../v/ref/ProcCtrl2.v").resolve(),
+    "testbench": srcdir / "v/test/Proc2-test.v",
+    "top":       srcdir / "v/ref/Proc2.v",
+    "ctrl":      srcdir / "v/ref/ProcCtrl2.v",
 }
 
 include_dirs = [
-    Path("../v/test").resolve(),
-    Path("../v/ref").resolve(),
-    Path("../v").resolve(),
+    srcdir / "v/test",
+    srcdir / "v/ref",
+    srcdir / "v",
 ]
 include_re = re.compile(r'^\s*`include\s+"([^"]+)"\s*$')
 asm_re = re.compile(r'^(\s*)asm\(\s*([^,]+?)\s*,\s*"([^"]+)"\s*\);\s*(?://(.*))?$')
@@ -159,7 +174,8 @@ def emit(path, out, seen, skip_includes, pickle_asm_calls):
         return
     seen.add(path)
 
-    out.write(f"// ----- BEGIN {path.relative_to(Path.cwd().parent)} -----\n")
+    display_path = path.relative_to(srcdir)
+    out.write(f"// ----- BEGIN {display_path} -----\n")
     for line in path.read_text().splitlines(keepends=True):
         match = include_re.match(line)
         if match:
@@ -171,7 +187,7 @@ def emit(path, out, seen, skip_includes, pickle_asm_calls):
             emit(include_path, out, seen, skip_includes, pickle_asm_calls)
         else:
             out.write(pickle_asm(line) if pickle_asm_calls else line)
-    out.write(f"\n// ----- END {path.relative_to(Path.cwd().parent)} -----\n")
+    out.write(f"\n// ----- END {display_path} -----\n")
 
 jobs = [
     ("testbench", {"test/test-utils.v", "ref/Proc2.v", "test/TestMemory.v"}, True),
@@ -184,12 +200,12 @@ for name, skip_includes, pickle_asm_calls in jobs:
         emit(srcs[name], out, set(), skip_includes, pickle_asm_calls)
 PY
 
-TEST_UTILS="../v/test/test-utils.v"
-TEST_MEMORY="../v/test/TestMemory.v"
+TEST_UTILS="$SRCDIR/v/test/test-utils.v"
+TEST_MEMORY="$SRCDIR/v/test/TestMemory.v"
 
 echo "CMD: verilator --binary --top Top -o Proc2 $TEST_UTILS $TEST_MEMORY $TESTBENCH_PICKLED $TOP_PICKLED $CTRL_PICKLED"
 verilator --quiet -Wall -Wno-DECLFILENAME \
-  -I../v \
+  -I"$SRCDIR/v" \
   --timing --binary --top Top \
   -o Proc2 \
   "$TEST_UTILS" \

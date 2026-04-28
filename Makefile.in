@@ -22,6 +22,8 @@ default : all
 
 top_dir     := @srcdir@
 scripts_dir := $(top_dir)/scripts
+flow_src_dir := $(top_dir)/flow
+flow_dir     := $(CURDIR)/flow
 
 #-------------------------------------------------------------------------
 # Programs
@@ -37,6 +39,36 @@ VERILATOR_LINT   := @VERILATOR@ --lint-only $(VERILATOR_FLAGS)
 
 IVERILOG_FLAGS   := -Wall -Winfloop -Wno-timescale -g2012
 IVERILOG_COMPILE := $(WARN2ERR) @IVERILOG@ $(IVERILOG_FLAGS)
+
+#-------------------------------------------------------------------------
+# Flow build directory
+#-------------------------------------------------------------------------
+
+flow_run_scripts := \
+  run-01-verilator \
+  run-02-synopsys-vcs \
+  run-03-dc-synth \
+  run-04-ffglsim
+
+flow_tcl_scripts := \
+  run.tcl
+
+flow : $(flow_dir)/.proc-src-dir $(addprefix $(flow_dir)/,$(flow_run_scripts) $(flow_tcl_scripts))
+
+$(flow_dir) :
+	mkdir -p $@
+
+$(flow_dir)/.proc-src-dir : | $(flow_dir)
+	printf '%s\n' '$(top_dir)' > $@
+
+$(flow_dir)/run-% : $(flow_src_dir)/run-% | $(flow_dir)
+	cp $< $@
+	chmod +x $@
+
+$(flow_dir)/%.tcl : $(flow_src_dir)/%.tcl | $(flow_dir)
+	cp $< $@
+
+.PHONY : flow
 
 #-------------------------------------------------------------------------
 # check_part Helper Template

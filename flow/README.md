@@ -4,6 +4,10 @@ Running the flow
 ```bash
 % source setup-ece6745.sh
 % cd ~/processor
+% mkdir -p build-flow
+% cd build-flow
+% ../configure
+% cd flow
 % ./run-01-verilator
 % ./run-02-synopsys-vcs
 % ./run-03-dc-synth
