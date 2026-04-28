@@ -26,9 +26,10 @@ rm -rf obj_dir run.log
 
 verilator --quiet -Wall -Wno-DECLFILENAME \
   --timing --binary --top Top \
-  -o {{test}} \
-  {{top_dir}}/rtl/{{design_name}}.v \
-  {{top_dir}}/rtl/test/{{test}}.v | tee run.log
+  -o Proc2 \
+  ../v/ref/* \
+  ../v/test/Proc2-test.v \
+  ../v/test/TestMemory.v | tee run.log
 
-./obj_dir/{{test}} | tee -a run.log
+./obj_dir/Proc2 | tee -a run.log
 

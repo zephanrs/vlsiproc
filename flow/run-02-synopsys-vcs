@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+#=========================================================================
+# 02-synopsys-vcs
+#=========================================================================
+
+set -e
+trap 'echo "CMD: $BASH_COMMAND"' DEBUG
+
+# Colors
+
+RED="\e[31m"
+GREEN="\e[32m"
+RESET="\e[0m"
+
+# Determine RUNDIR
+
+RUNDIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+cd "$RUNDIR"
+
+DESIGN_NAME="{{ design_name }}"
+TEST_NAME="top_test"
+GENERATED_TEST="../05-verilator-rtlsim/{{ design_name }}_test.v"
+TOP_RTL="../../../rtl/{{ design_name }}.v"
+
+trap 'echo "CMD: $BASH_COMMAND"' DEBUG
+
+if [[ ! -f "$GENERATED_TEST" ]]; then
+  echo "ERROR: $GENERATED_TEST not found. Run 05-verilator-rtlsim first."
+  exit 1
+fi
+
+rm -rf "$TEST_NAME" "$TEST_NAME.daidir" "$TEST_NAME.log"
+
+vcs -sverilog -xprop=tmerge -override_timescale=1ns/1ps -top TopTestbench \
+  {{ "+vcs+dumpvars+top_test.vcd" if dump_vcd | default(false) }} \
+  -o "$TEST_NAME" \
+  "$GENERATED_TEST" \
+  "$TOP_RTL" \
+  {{ input_dir }}/*.v | tee "$TEST_NAME.log"
+
+./"$TEST_NAME" | tee -a "$TEST_NAME.log"
+
+if grep "SUCCESS: All tests passed!" "$TEST_NAME.log" > /dev/null 2>&1; then
+  echo -e ">>>> [ ${GREEN}passed${RESET} ] $TEST_NAME" >> "$TEST_NAME.log"
+else
+  echo -e ">>>> [ ${RED}FAILED${RESET} ] $TEST_NAME" >> "$TEST_NAME.log"
+fi
+
+echo "" > run.log
+grep -h ">>>" "$TEST_NAME.log" | sed -e 's/>>>>//' >> run.log
+echo "" >> run.log
+cat run.log
