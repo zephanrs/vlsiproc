@@ -26,3 +26,7 @@ cadence/*.log
 *.log.*
 logs*/
 *oacache*
+
+# Verilator flow generated files
+flow/obj_dir/
+flow/Proc2-test-pickled.v
