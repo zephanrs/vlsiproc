@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+#=========================================================================
+# run-01-verilator
+#=========================================================================
+
+# Stop on error and echo all commands
+
+set -e
+trap 'echo "CMD: $BASH_COMMAND"' DEBUG
+
+# Colors
+
+RED="\e[31m"
+GREEN="\e[32m"
+RESET="\e[0m"
+
+
+# Determine RUNDIR
+
+RUNDIR="$(dirname $(readlink -f "${BASH_SOURCE[0]}"))"
+cd $RUNDIR
+
+# Run rtlsim
+
+rm -rf obj_dir run.log
+
+verilator --quiet -Wall -Wno-DECLFILENAME \
+  --timing --binary --top Top \
+  -o {{test}} \
+  {{top_dir}}/rtl/{{design_name}}.v \
+  {{top_dir}}/rtl/test/{{test}}.v | tee run.log
+
+./obj_dir/{{test}} | tee -a run.log
+
