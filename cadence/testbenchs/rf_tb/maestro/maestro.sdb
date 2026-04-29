@@ -38,7 +38,7 @@
 						<value>1n</value>
 					</var>
 					<var>tdelay
-						<value>150p</value>
+						<value>250p</value>
 					</var>
 				</vars>
 				<outputs></outputs>
