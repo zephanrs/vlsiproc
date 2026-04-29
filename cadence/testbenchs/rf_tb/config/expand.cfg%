@@ -1,4 +1,4 @@
-//Revision 1
+//Revision 15
 //NOTE
 // Default template for spectre
 // Note:
@@ -12,6 +12,12 @@ liblist myLib;
 
 viewlist spectre, cmos_sch, \cmos.sch , schematic, veriloga, ahdl, pspice, dspf;
 stoplist spectre;
+
+
+cell processor.register_file binding :schematic;
+cell processor.read_decoder binding :av_extracted;
+cell processor.write_decoder binding :av_extracted;
+cell processor.RFslice binding :av_extracted;
 
 
 endconfig

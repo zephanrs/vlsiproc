@@ -32,8 +32,6 @@ log_file \
 output_db -type extracted_view \
 	 -cap_component "pcapacitor" \
 	 -cap_property_name "c" \
-	 -cdl_out_map_directory \
-		"/home/zrs29/processor/cadence/lvs" \
 	 -device_finger_delimiter "@" \
 	 -enable_cellview_check true \
 	 -include_cap_model "false" \
