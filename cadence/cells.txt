@@ -1,0 +1,18 @@
+# Manifest of Cadence schematic cells to export as Verilog.
+#
+# Format:  cadence_cell_name    verilog_module_name
+# Lines starting with # and blank lines are ignored.
+#
+# Used by:
+#   scripts/schematic2verilog  -- generates v/schematic/<verilog>.v
+#   scripts/gen-schem-tests    -- mirrors v/test/ to v/schematic-test/
+
+Adder_8b   Adder_8b
+FullAdder  FullAdder
+
+# Add more here as schematics stabilize:
+# imm_gen        ImmGen
+# Comparator_8b  EqComparator_8b
+# ALU            ALU_8b
+# register_file  Regfile
+# Sklansky_8b    Sklansky_8b
