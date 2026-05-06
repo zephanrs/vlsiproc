@@ -1,0 +1,167 @@
+#!/usr/bin/env python3
+"""
+check-pins -- report pin-name mismatches between schematic-derived modules,
+hand-written ref modules, and any testbench/parent instantiation.
+
+For each cell in the manifest, compares the schematic's module ports against
+the ref's ports and against every site that instantiates the cell. Anything
+that disagrees is printed so you know which Cadence symbol pins to rename.
+
+Run after `make verilog` (or against whatever v/schematic/*.v already exists).
+"""
+
+import argparse
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+COMMENT_RE = re.compile(r'//[^\n]*|/\*.*?\*/', re.DOTALL)
+
+PORT_NAME_RE = re.compile(
+    r'\b(?:input|output|inout)\b'   # direction
+    r'(?:\s+(?:logic|wire|reg))?'   # optional type
+    r'(?:\s*\[[^\]]*\])?'           # optional packed range
+    r'\s+(\w+)'                     # port name
+)
+
+INST_PIN_RE = re.compile(r'\.(\w+)\s*\(')
+
+
+def strip_comments(text):
+    return COMMENT_RE.sub('', text)
+
+
+def find_git_root():
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "--show-toplevel"], text=True,
+            stderr=subprocess.DEVNULL,
+        ).strip()
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return None
+
+
+def load_manifest(path):
+    if not os.path.isfile(path):
+        sys.exit(f"error: manifest not found: {path}")
+    cells = {}
+    for line in Path(path).read_text().splitlines():
+        line = line.split("#", 1)[0].strip()
+        if not line:
+            continue
+        parts = line.split()
+        cells[parts[0]] = parts[1]
+    return cells
+
+
+def module_ports(path, module):
+    """Return list of port names declared inside `module <module> ( ... );`."""
+    text = strip_comments(Path(path).read_text())
+    m = re.search(rf'\bmodule\s+{re.escape(module)}\b\s*\((.*?)\)\s*;', text, re.DOTALL)
+    if not m:
+        return None
+    return [pm.group(1) for pm in PORT_NAME_RE.finditer(m.group(1))]
+
+
+def instance_sites(path, module):
+    """Find every `<module> <inst> ( ... );` in path. Return list of pin name sets."""
+    text = strip_comments(Path(path).read_text())
+    sites = []
+    for m in re.finditer(
+        rf'\b{re.escape(module)}\s+\w+\s*\(([^;]*?)\)\s*;', text, re.DOTALL,
+    ):
+        pins = {pm.group(1) for pm in INST_PIN_RE.finditer(m.group(1))}
+        if pins:
+            sites.append(pins)
+    return sites
+
+
+def gather_instances(search_dirs, module, exclude=()):
+    out = []
+    excluded = {Path(p).resolve() for p in exclude}
+    for d in search_dirs:
+        for f in sorted(Path(d).rglob("*.v")):
+            if f.resolve() in excluded:
+                continue
+            for pins in instance_sites(f, module):
+                out.append((f, pins))
+    return out
+
+
+def main():
+    root = find_git_root()
+    p = argparse.ArgumentParser(description=__doc__.strip().splitlines()[0])
+    p.add_argument("-manifest", default=root and f"{root}/cadence/cells.txt", metavar="FILE")
+    p.add_argument("-schem",    default=root and f"{root}/v/schematic",       metavar="DIR")
+    p.add_argument("-ref",      default=root and f"{root}/v/ref",             metavar="DIR")
+    p.add_argument("-search",   action="append", default=None, metavar="DIR",
+                   help="dirs to scan for instance sites (default: v/test v/ref v/schematic v/eval)")
+    args = p.parse_args()
+
+    for k in ("manifest", "schem", "ref"):
+        if getattr(args, k) is None:
+            sys.exit(f"error: not in a git checkout -- pass -{k} explicitly")
+
+    if not args.search:
+        args.search = [f"{root}/v/test", f"{root}/v/ref",
+                       f"{root}/v/schematic", f"{root}/v/eval"]
+
+    manifest = load_manifest(args.manifest)
+
+    issues = 0
+    for _, vname in sorted(manifest.items(), key=lambda kv: kv[1]):
+        schem_path = Path(args.schem) / f"{vname}.v"
+        ref_path   = Path(args.ref)   / f"{vname}.v"
+
+        if not schem_path.is_file():
+            print(f"[{vname}] no v/schematic/{vname}.v -- run `make verilog`")
+            continue
+
+        schem_ports = module_ports(schem_path, vname)
+        if schem_ports is None:
+            print(f"[{vname}] no module declaration found in {schem_path}")
+            continue
+        schem_set = set(schem_ports)
+
+        sources = []
+        if ref_path.is_file():
+            rports = module_ports(ref_path, vname)
+            if rports is not None:
+                sources.append((f"ref/{vname}.v (module ports)", set(rports)))
+
+        # Don't double-count the schematic's own module declaration as a site.
+        for path, pins in gather_instances(args.search, vname, exclude=[schem_path]):
+            try:
+                rel = path.relative_to(root)
+            except ValueError:
+                rel = path
+            sources.append((f"{rel} (instantiation)", pins))
+
+        bad = [(label, s) for label, s in sources if s != schem_set]
+        if not bad:
+            continue
+
+        issues += 1
+        print(f"[{vname}]  schematic ports: {sorted(schem_set)}")
+        for label, s in bad:
+            missing = s - schem_set
+            extra   = schem_set - s
+            print(f"  vs {label}")
+            print(f"    consumer uses : {sorted(s)}")
+            if missing:
+                print(f"    consumer needs (rename TO):   {sorted(missing)}")
+            if extra:
+                print(f"    schematic-only (rename FROM): {sorted(extra)}")
+        print()
+
+    if issues == 0:
+        print("all cells: schematic ports match all consumers")
+        return 0
+    print(f"{issues} cell(s) need pin renaming in Cadence")
+    return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,18 +1,12 @@
 #!/usr/bin/env python3
 """
-schematic2verilog -- export a Cadence schematic cell to project-style Verilog
+schematic2verilog -- export Cadence schematic cells to project-style Verilog.
 
-Usage:
-    schematic2verilog -lib LIBRARY -cell CELL [-cell CELL ...] [-out DIR] [-ref DIR]
+Reads a manifest mapping cadence_cell -> verilog_module and emits one .v per
+cell. With no -cell argument, processes the whole manifest, skipping cells
+whose .v is newer than the schematic. All path defaults resolve from the
+git checkout root, so the script can run from anywhere in the tree.
 
-Options:
-    -lib  LIBRARY   Cadence library name
-    -cell CELL      Cell(s) to convert (may be repeated for a batch)
-    -out  DIR       Output directory for generated .v files  [default: ../v/schematic]
-    -ref  DIR       Directory with pre-built reference .v files [default: ../v/ref]
-    -cds  DIR       Directory containing cds.lib              [default: ../cadence]
-
-Must be run from the build directory (where ../cadence/cds.lib exists).
 SKILL extracts raw netlist data; Python generates the Verilog.
 """
 
@@ -94,10 +88,8 @@ MOS_CELLS = {"nmos4", "pmos4", "nmos1v", "pmos1v", "nmos", "pmos"}
 SUPPLY_NETS = {"vdd!", "gnd!", "vdd", "gnd"}
 
 def supply_name(n):
-    if n == "vdd!":
-        return "vdd"
-    if n == "gnd!":
-        return "gnd"
+    if n == "vdd!": return "vdd"
+    if n == "gnd!": return "gnd"
     return n
 
 def vlog_name(n):
@@ -113,6 +105,44 @@ def guard_name(cell):
 
 def pad(s, width):
     return s.ljust(width)
+
+# -----------------------------------------------------------------------
+# Git root + manifest helpers
+# -----------------------------------------------------------------------
+def find_git_root():
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "--show-toplevel"], text=True,
+            stderr=subprocess.DEVNULL,
+        ).strip()
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return None
+
+def load_manifest(path):
+    """Parse 'cadence_cell verilog_module' lines. Returns dict cadence -> verilog."""
+    if not os.path.isfile(path):
+        sys.exit(f"error: manifest not found: {path}")
+    cells = {}
+    with open(path) as f:
+        for lineno, line in enumerate(f, 1):
+            line = line.split("#", 1)[0].strip()
+            if not line:
+                continue
+            parts = line.split()
+            if len(parts) != 2:
+                sys.exit(f"error: {path}:{lineno}: expected 2 tokens, got: {line}")
+            cells[parts[0]] = parts[1]
+    return cells
+
+def is_stale(cad_cell, vname, cds_dir, out_dir):
+    """True if the cadence schematic is newer than the generated .v (or .v missing)."""
+    vlg = os.path.join(out_dir, vname + ".v")
+    if not os.path.isfile(vlg):
+        return True
+    sch = os.path.join(cds_dir, "processor", cad_cell, "schematic", "sch.oa")
+    if not os.path.isfile(sch):
+        return True   # let virtuoso surface the real error
+    return os.path.getmtime(sch) > os.path.getmtime(vlg)
 
 # -----------------------------------------------------------------------
 # Parse the tab-separated netlist file written by SKILL
@@ -135,6 +165,13 @@ def parse_netlist(path):
                 cell_name = parts[1]
             elif tag == "port":
                 _, name, direction, bits = parts
+                # Cadence sometimes reports bus terminals as singleBit with the
+                # range baked into the name (e.g. "in0<7:0>" with bits=1). Pull
+                # the range out so the port becomes a proper packed bus.
+                base, hi, lo = _parse_cadence_range(name)
+                if hi is not None:
+                    name = base
+                    bits = abs(hi - lo) + 1
                 ports.append((name, direction, int(bits)))
             elif tag == "net":
                 nets.append(parts[1])
@@ -172,7 +209,6 @@ def _expand_insts(insts):
             result.append((inst_name, cell, conns))
             continue
 
-        # Index ordering: Cadence arrays go hi-to-lo (left-to-right in schematic)
         if hi >= lo:
             indices = list(range(hi, lo - 1, -1))
         else:
@@ -198,19 +234,13 @@ def _expand_insts(insts):
 # -----------------------------------------------------------------------
 # Generate Verilog from parsed netlist
 # -----------------------------------------------------------------------
-def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_dir):
+def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_dir, manifest):
     guard = guard_name(cell_name)
 
-    # Verilog-notation set of no-connect nets
     noconn_vlog = {vlog_name(n) for n in noconn_nets}
-
-    # Unroll any array instances before further processing
     insts = _expand_insts(insts)
 
-    # --- direction map ---
-    dir_map = {"input": "input ", "output": "output", "inputOutput": "inout "}
-
-    # --- port net names (for exclusion from internal net declarations) ---
+    dir_map    = {"input": "input ", "output": "output", "inputOutput": "inout "}
     port_bases = {p[0] for p in ports}
 
     # --- includes: one per unique sub-cell, ref preferred ---
@@ -219,8 +249,9 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
     for _, cell, _ in insts:
         if cell in PRIMITIVES:
             continue
-        ref_file = os.path.join(ref_dir, cell + ".v")
-        inc = f"ref/{cell}.v" if os.path.isfile(ref_file) else f"schematic/{cell}.v"
+        vcell = manifest.get(cell, cell)
+        ref_file = os.path.join(ref_dir, vcell + ".v")
+        inc = f"ref/{vcell}.v" if os.path.isfile(ref_file) else f"schematic/{vcell}.v"
         if inc not in seen_incs:
             seen_incs.add(inc)
             includes.append(inc)
@@ -250,7 +281,6 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
             return m_bit.group(1), int(m_bit.group(2)), int(m_bit.group(2))
         return name, None, None
 
-    # Merge all raw nets referenced either in SKILL nets array or in instance connections
     all_raw_nets = set(nets)
     for _, _, conns in insts:
         for _, net in conns:
@@ -262,7 +292,6 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
     has_gnd = False
 
     for raw in all_raw_nets:
-        # Check supply dependencies 
         vn = supply_name(vlog_name(raw))
         if vn == "vdd": has_vdd = True
         if vn == "gnd": has_gnd = True
@@ -271,7 +300,6 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
         vbase = vlog_name(base)
         vnet  = vlog_name(raw)
 
-        # Ignore Ports, Supplies, and pure noConnect elements
         if base in port_bases or vbase in port_bases:
             continue
         if base in SUPPLY_NETS or vbase in SUPPLY_NETS:
@@ -279,13 +307,11 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
         if vnet in noconn_vlog:
             continue
 
-        # Keep track of the highest bit for every bus 
         if hi is not None:
             bus_max[vbase] = max(bus_max.get(vbase, -1), hi, lo)
         else:
             scalar_nets_set.add(vbase)
 
-    # Remove scalars that are just base names of detected buses
     scalar_nets = [n for n in scalar_nets_set if n not in bus_max]
 
     int_net_decls = [f"logic {n};" for n in sorted(scalar_nets)]
@@ -293,8 +319,8 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
         int_net_decls.append(f"logic [{hi}:0] {base};")
 
     # --- sub-cell instances ---
-    sub_insts  = []
-    mos_lines  = []
+    sub_insts = []
+    mos_lines = []
 
     for inst_name, cell, conns in insts:
         if cell in MOS_CELLS:
@@ -307,11 +333,12 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
         elif cell in PRIMITIVES:
             continue
         else:
+            vcell = manifest.get(cell, cell)
             vconns = []
             for p, n in conns:
                 vn = supply_name(vlog_name(n))
                 vconns.append((p, vn))
-            sub_insts.append((cell, inst_name, vconns))
+            sub_insts.append((vcell, inst_name, vconns))
 
     # ----------------------------------------------------------------
     # Write the file
@@ -342,7 +369,6 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
         h(f"  {pad(ts, max_type_len)} {vlog_name(name)}{comma}")
     h(");")
 
-    # Dynamic Supply Injection
     supply_lines = []
     if has_vdd and "vdd" not in port_bases:
         supply_lines.append("  supply1 vdd;")
@@ -408,16 +434,23 @@ def find_virtuoso():
 # Main
 # -----------------------------------------------------------------------
 def main():
-    parser = argparse.ArgumentParser(
-        description="Export Cadence schematic cell(s) to project-style Verilog."
+    root = find_git_root()
+    p = argparse.ArgumentParser(
+        description="Export Cadence schematic cells to project-style Verilog."
     )
-    parser.add_argument("-lib",  required=True,  metavar="LIBRARY")
-    parser.add_argument("-cell", required=True,  metavar="CELL",
-                        action="append", dest="cells")
-    parser.add_argument("-out",  default="../v/schematic", metavar="DIR")
-    parser.add_argument("-ref",  default="../v/ref",       metavar="DIR")
-    parser.add_argument("-cds",  default="../cadence",     metavar="DIR")
-    args = parser.parse_args()
+    p.add_argument("-lib",      default="processor", metavar="LIB")
+    p.add_argument("-cell",     action="append", dest="cells", metavar="CELL",
+                   help="filter to these cells (repeatable, bypasses stale check); "
+                        "default: every manifest cell whose schematic is newer than its .v")
+    p.add_argument("-manifest", default=root and f"{root}/cadence/cells.txt", metavar="FILE")
+    p.add_argument("-out",      default=root and f"{root}/v/schematic",       metavar="DIR")
+    p.add_argument("-ref",      default=root and f"{root}/v/ref",             metavar="DIR")
+    p.add_argument("-cds",      default=root and f"{root}/cadence",           metavar="DIR")
+    args = p.parse_args()
+
+    for k in ("manifest", "out", "ref", "cds"):
+        if getattr(args, k) is None:
+            sys.exit(f"error: not in a git checkout -- pass -{k} explicitly")
 
     cds_dir = os.path.realpath(args.cds)
     out_dir = os.path.realpath(args.out)
@@ -426,6 +459,20 @@ def main():
     if not os.path.isfile(os.path.join(cds_dir, "cds.lib")):
         sys.exit(f"error: no cds.lib in {cds_dir}")
 
+    manifest = load_manifest(args.manifest)
+
+    if args.cells:
+        unknown = [c for c in args.cells if c not in manifest]
+        if unknown:
+            sys.exit(f"error: not in manifest: {unknown}")
+        cells = list(args.cells)
+    else:
+        cells = [c for c in manifest if is_stale(c, manifest[c], cds_dir, out_dir)]
+
+    if not cells:
+        print("s2v: nothing to regenerate")
+        return
+
     os.makedirs(out_dir, exist_ok=True)
 
     virtuoso = find_virtuoso()
@@ -433,35 +480,26 @@ def main():
         sys.exit("error: cannot find 'virtuoso' -- add it to PATH")
 
     with tempfile.TemporaryDirectory() as tmp:
-        # Build SKILL: define extractor + one call per cell
-        calls = []
-        netlist_files = {}
-        for cell in args.cells:
-            nl = os.path.join(tmp, cell + ".netlist")
-            netlist_files[cell] = nl
-            calls.append(f's2v_extract( "{args.lib}" "{cell}" "{nl}" )')
-
+        netlist_files = {c: os.path.join(tmp, c + ".netlist") for c in cells}
+        calls = [f's2v_extract( "{args.lib}" "{c}" "{netlist_files[c]}" )' for c in cells]
         skill_input = SKILL_EXTRACT + "\n" + "\n".join(calls) + "\nexit()\n"
 
-        print(f"Running virtuoso -nograph  (cds: {cds_dir})")
+        print(f"s2v: running virtuoso for {len(cells)} cell(s) (cds: {cds_dir})")
         result = subprocess.run(
-            [virtuoso, "-nograph"],
-            input=skill_input,
-            text=True,
-            capture_output=False,
-            cwd=cds_dir,
+            [virtuoso, "-nograph"], input=skill_input, text=True, cwd=cds_dir,
         )
         if result.returncode != 0:
             sys.exit(f"virtuoso exited with code {result.returncode}")
 
-        # Generate Verilog from each extracted netlist
-        for cell in args.cells:
-            nl = netlist_files[cell]
+        for c in cells:
+            nl = netlist_files[c]
             if not os.path.isfile(nl):
-                print(f"warning: no netlist produced for {cell}", file=sys.stderr)
+                print(f"warning: no netlist produced for {c}", file=sys.stderr)
                 continue
             cell_name, ports, nets, insts, noconn_nets = parse_netlist(nl)
-            generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_dir)
+            cell_name = manifest.get(cell_name, cell_name)
+            generate_verilog(cell_name, ports, nets, insts, noconn_nets,
+                             ref_dir, out_dir, manifest)
 
 if __name__ == "__main__":
     main()

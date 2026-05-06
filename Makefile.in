@@ -71,6 +71,24 @@ $(flow_dir)/%.tcl : $(flow_src_dir)/%.tcl | $(flow_dir)
 .PHONY : flow
 
 #-------------------------------------------------------------------------
+# Schematic-to-Verilog
+#-------------------------------------------------------------------------
+
+SCHEM2V         := $(scripts_dir)/schematic2verilog
+GEN_SCHEM_TESTS := $(scripts_dir)/gen-schem-tests
+
+verilog :
+	$(SCHEM2V)
+	$(GEN_SCHEM_TESTS)
+
+verilog-clean :
+	rm -f $(top_dir)/v/schematic/*.v \
+	      $(top_dir)/v/schematic/schematic.mk \
+	      $(top_dir)/v/schematic-test/*.v
+
+.PHONY : verilog verilog-clean
+
+#-------------------------------------------------------------------------
 # check_part Helper Template
 #-------------------------------------------------------------------------
 
@@ -93,13 +111,15 @@ endef
 
 include $(top_dir)/v/ref/ref.mk
 include $(top_dir)/v/eval/eval.mk
+-include $(top_dir)/v/schematic/schematic.mk
 
-srcs  := $(ref_srcs)
-tests := $(ref_tests)
+srcs  := $(ref_srcs) $(schem_srcs)
+tests := $(ref_tests) $(schem_tests)
 
 VPATH := $(top_dir)/v/ref
 VPATH += $(top_dir)/v/schematic
 VPATH += $(top_dir)/v/test
+VPATH += $(top_dir)/v/schematic-test
 VPATH += $(top_dir)/v/eval
 
 #-------------------------------------------------------------------------
