@@ -16,8 +16,9 @@ ref_srcs = \
   Regfile.v \
   ProcDpath.v \
   ProcCtrl.v \
-  ProcCtrl2.v \
   Proc.v \
+  Proc2Dpath.v \
+  Proc2Ctrl.v \
   Proc2.v \
 
 ref_cell_tests = \

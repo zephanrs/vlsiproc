@@ -1,12 +1,12 @@
 //========================================================================
-// Proc
+// Proc2
 //========================================================================
 
-`ifndef PROC_V
-`define PROC_V
+`ifndef PROC2_V
+`define PROC2_V
 
-`include "ref/ProcDpath.v"
-`include "ref/ProcCtrl2.v"
+`include "ref/Proc2Dpath.v"
+`include "ref/Proc2Ctrl.v"
 
 module Proc2
 (
@@ -40,16 +40,16 @@ module Proc2
 
   // Instantiate/Connect Datapath and Control Unit
 
-  ProcDpath dpath
+  Proc2Dpath dpath
   (
     .*
   );
 
-  ProcCtrl2 ctrl
+  Proc2Ctrl ctrl
   (
     .*
   );
 
 endmodule
 
-`endif /* PROC_V */
+`endif /* PROC2_V */

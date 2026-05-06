@@ -9,17 +9,14 @@
 
 module Adder_8b
 (
-  input  logic in0[7:0],
-  input  logic in1[7:0],
-  output logic sum[7:0]
+  input  logic [7:0] in0,
+  input  logic [7:0] in1,
+  output logic [7:0] sum
 );
 
   supply0 gnd;
 
   logic [6:0] C;
-  logic [7:0] in0;
-  logic [7:0] in1;
-  logic [7:0] sum;
 
   FullAdder I3
   (
