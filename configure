@@ -68,7 +68,7 @@ sed \
   "${srcdir}/Makefile.in" > Makefile
 
 echo "Generating flow build scripts..."
-make flow >/dev/null
+make -B flow >/dev/null
 
 echo "Configuration complete. You can now run 'make check-ref'."
 echo "Flow scripts are in '${PWD}/flow'."
