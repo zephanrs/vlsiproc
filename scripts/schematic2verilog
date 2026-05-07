@@ -288,6 +288,56 @@ def _parse_cadence_range(name):
         return m.group(1), b, b
     return name, None, None
 
+def _reorient_mos(insts, input_port_bases):
+    """For each MOS transistor, decide which side should be SOURCE based on
+    BFS distance from supplies + input ports. iverilog's switch-level sim
+    propagates source->drain when the gate is on, so for a transmission gate
+    to resolve cleanly the source has to be the strongly-driven side. Cadence
+    schematics often label D/S consistently with physical layout (which
+    doesn't care about direction), so we re-orient in software."""
+    anchors = {"vdd", "gnd", "vdd!", "gnd!"} | set(input_port_bases)
+
+    def base(n):
+        b, _, _ = _parse_cadence_range(n) if n else (n, None, None)
+        return b
+
+    depth = {n: 0 for n in anchors}
+    changed = True
+    while changed:
+        changed = False
+        for inst_name, cell, conns in insts:
+            if cell not in MOS_CELLS:
+                continue
+            cd = dict(conns)
+            db, sb = base(cd.get("D", "")), base(cd.get("S", ""))
+            dd = depth.get(db) if db else None
+            sd = depth.get(sb) if sb else None
+            if dd is not None and sd is None and sb:
+                depth[sb] = dd + 1
+                changed = True
+            elif sd is not None and dd is None and db:
+                depth[db] = sd + 1
+                changed = True
+
+    result = []
+    for inst_name, cell, conns in insts:
+        if cell not in MOS_CELLS:
+            result.append((inst_name, cell, conns))
+            continue
+        cd = dict(conns)
+        db, sb = base(cd.get("D", "")), base(cd.get("S", ""))
+        dd = depth.get(db, float('inf'))
+        sd = depth.get(sb, float('inf'))
+        if dd < sd:
+            # Drain is closer to anchors -- swap D/S so it becomes source.
+            swap = {"D": "S", "S": "D"}
+            new_conns = [(swap.get(p, p), n) for p, n in conns]
+            result.append((inst_name, cell, new_conns))
+        else:
+            result.append((inst_name, cell, conns))
+    return result
+
+
 def _expand_concat_bits(net):
     """Flatten a Cadence concat / replication net expression into a flat list
     of single-bit references in MSB-first (left-to-right) order. Buses expand
@@ -396,6 +446,8 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
 
     noconn_vlog = {cad_net_to_verilog(n) for n in noconn_nets}
     insts = _expand_insts(insts)
+    input_port_bases = {name for name, direction, *_ in ports if direction == "input"}
+    insts = _reorient_mos(insts, input_port_bases)
 
     dir_map    = {"input": "input ", "output": "output", "inputOutput": "inout "}
     port_bases = {p[0] for p in ports}
