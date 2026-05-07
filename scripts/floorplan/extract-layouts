@@ -51,25 +51,13 @@ procedure( fpl_write_missing( fp libName cellName reason )
 )
 
 procedure( fpl_extract_cell( libName cellName fp "ttp" )
-  let( (cv coords term pin fig pc opened bb)
+  let( (cv coords term pin fig pc opened)
     ;; dbOpenCellViewByType returns nil when the layout view is absent inside
-    ;; a registered library, but raises when the *library* isn't registered.
-    ;; Wrap it so either case ends up as a MISSING line.
+    ;; a registered library, but raises when the *library* isn't registered
+    ;; (or when a PDK lazy-load clobbers poport mid-call). errset turns either
+    ;; case into a MISSING line via the cond below.
     cv = nil
-    ;; Opening a layout that pulls in gpdk045 triggers its libInit.il, which
-    ;; rebinds poport to a read-only banner file. The lazy-load happens DURING
-    ;; the dbOpenCellViewByType call, so an internal printf later in that
-    ;; same call throws -- we never reach a post-call poport reset.
-    ;; Workaround: catch the throw, reset poport, and retry. The PDK is
-    ;; already loaded after the first attempt, so the retry doesn't re-trigger
-    ;; the init and completes cleanly.
     opened = errset( cv = dbOpenCellViewByType( libName cellName "layout" "" "r" ) t )
-    when( null( opened )
-      poport = errport
-      fprintf( errport "fpl: retrying %s/%s after PDK lazy-load\n" libName cellName )
-      opened = errset( cv = dbOpenCellViewByType( libName cellName "layout" "" "r" ) t )
-    )
-    poport = errport
     cond(
       ( null( opened )
         fpl_write_missing( fp libName cellName "dbOpenCellViewByType raised" ))
@@ -116,6 +104,24 @@ procedure( fpl_dump_libs()
   )
 )
 
+procedure( fpl_warmup_pdk( cells )
+  ;; The first dbOpenCellViewByType against a PDK-using cell triggers the
+  ;; PDK's libInit.il, which rebinds poport to a read-only banner file --
+  ;; and an internal printf inside that same call then throws. We do that
+  ;; sacrificial open ONCE, up front, on whichever cell we like; errset eats
+  ;; the throw, gpdk is now fully loaded, and we restore poport. From then
+  ;; on every dbOpenCellViewByType succeeds and our extraction loop is clean.
+  let( (entry warmCv)
+    entry = car( cells )
+    fprintf( errport "fpl: warming up PDK via %s/%s (an *Error* below is expected)\n"
+             car(entry) cadr(entry) )
+    errset( warmCv = dbOpenCellViewByType( car(entry) cadr(entry) "layout" "" "r" ) t )
+    poport = errport
+    when( warmCv dbClose( warmCv ) )
+    fprintf( errport "fpl: PDK warmup complete, poport restored to errport\n" )
+  )
+)
+
 procedure( fpl_extract_all( cells outPath )
   let( (fp n)
     n = 0
@@ -123,6 +129,7 @@ procedure( fpl_extract_all( cells outPath )
     ;; isn't in this list, cds.lib didn't resolve (usually $ROOTDIR not set
     ;; in virtuoso's env, or virtuoso launched from a dir without a cds.lib).
     fpl_dump_libs()
+    fpl_warmup_pdk( cells )
     fp = outfile( outPath "w" )
     if( fp then
       ;; errset takes at most 2 args (form + okPrintError flag), so we wrap
