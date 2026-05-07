@@ -44,12 +44,16 @@ def find_git_root():
 
 
 def load_manifest(path):
+    """Returns dict cadence_cell -> verilog_module. [library] section headers
+    are skipped -- this script only checks port-name agreement."""
     if not os.path.isfile(path):
         sys.exit(f"error: manifest not found: {path}")
     cells = {}
     for line in Path(path).read_text().splitlines():
         line = line.split("#", 1)[0].strip()
         if not line:
+            continue
+        if line.startswith("[") and line.endswith("]"):
             continue
         parts = line.split()
         cells[parts[0]] = parts[1]

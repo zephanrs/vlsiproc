@@ -119,27 +119,39 @@ def find_git_root():
         return None
 
 def load_manifest(path):
-    """Parse 'cadence_cell verilog_module' lines. Returns dict cadence -> verilog."""
+    """Parse manifest with optional [library] section headers.
+    Returns list of (library, cadence_cell, verilog_module) tuples.
+    Default library is 'processor' if no header appears before the first entry."""
     if not os.path.isfile(path):
         sys.exit(f"error: manifest not found: {path}")
-    cells = {}
+    entries     = []
+    current_lib = "processor"
     with open(path) as f:
         for lineno, line in enumerate(f, 1):
             line = line.split("#", 1)[0].strip()
             if not line:
                 continue
+            if line.startswith("[") and line.endswith("]"):
+                current_lib = line[1:-1].strip()
+                if not current_lib:
+                    sys.exit(f"error: {path}:{lineno}: empty library name in section header")
+                continue
             parts = line.split()
             if len(parts) != 2:
                 sys.exit(f"error: {path}:{lineno}: expected 2 tokens, got: {line}")
-            cells[parts[0]] = parts[1]
-    return cells
+            entries.append((current_lib, parts[0], parts[1]))
+    return entries
 
-def is_stale(cad_cell, vname, cds_dir, out_dir):
+def manifest_dict(entries):
+    """cadence_cell -> verilog_module, used for sub-cell name resolution."""
+    return {cad: vname for _, cad, vname in entries}
+
+def is_stale(lib, cad_cell, vname, cds_dir, out_dir):
     """True if the cadence schematic is newer than the generated .v (or .v missing)."""
     vlg = os.path.join(out_dir, vname + ".v")
     if not os.path.isfile(vlg):
         return True
-    sch = os.path.join(cds_dir, "processor", cad_cell, "schematic", "sch.oa")
+    sch = os.path.join(cds_dir, lib, cad_cell, "schematic", "sch.oa")
     if not os.path.isfile(sch):
         return True   # let virtuoso surface the real error
     return os.path.getmtime(sch) > os.path.getmtime(vlg)
@@ -438,7 +450,6 @@ def main():
     p = argparse.ArgumentParser(
         description="Export Cadence schematic cells to project-style Verilog."
     )
-    p.add_argument("-lib",      default="processor", metavar="LIB")
     p.add_argument("-cell",     action="append", dest="cells", metavar="CELL",
                    help="filter to these cells (repeatable, bypasses stale check); "
                         "default: every manifest cell whose schematic is newer than its .v")
@@ -460,14 +471,17 @@ def main():
         sys.exit(f"error: no cds.lib in {cds_dir}")
 
     manifest = load_manifest(args.manifest)
+    mdict    = manifest_dict(manifest)
 
     if args.cells:
-        unknown = [c for c in args.cells if c not in manifest]
+        by_cad = {cad: (lib, vname) for lib, cad, vname in manifest}
+        unknown = [c for c in args.cells if c not in by_cad]
         if unknown:
             sys.exit(f"error: not in manifest: {unknown}")
-        cells = list(args.cells)
+        cells = [(by_cad[c][0], c, by_cad[c][1]) for c in args.cells]
     else:
-        cells = [c for c in manifest if is_stale(c, manifest[c], cds_dir, out_dir)]
+        cells = [(lib, cad, vname) for lib, cad, vname in manifest
+                 if is_stale(lib, cad, vname, cds_dir, out_dir)]
 
     if not cells:
         print("s2v: nothing to regenerate")
@@ -480,8 +494,9 @@ def main():
         sys.exit("error: cannot find 'virtuoso' -- add it to PATH")
 
     with tempfile.TemporaryDirectory() as tmp:
-        netlist_files = {c: os.path.join(tmp, c + ".netlist") for c in cells}
-        calls = [f's2v_extract( "{args.lib}" "{c}" "{netlist_files[c]}" )' for c in cells]
+        netlist_files = {cad: os.path.join(tmp, cad + ".netlist") for _, cad, _ in cells}
+        calls = [f's2v_extract( "{lib}" "{cad}" "{netlist_files[cad]}" )'
+                 for lib, cad, _ in cells]
         skill_input = SKILL_EXTRACT + "\n" + "\n".join(calls) + "\nexit()\n"
 
         print(f"s2v: running virtuoso for {len(cells)} cell(s) (cds: {cds_dir})")
@@ -491,15 +506,15 @@ def main():
         if result.returncode != 0:
             sys.exit(f"virtuoso exited with code {result.returncode}")
 
-        for c in cells:
-            nl = netlist_files[c]
+        for lib, cad, _ in cells:
+            nl = netlist_files[cad]
             if not os.path.isfile(nl):
-                print(f"warning: no netlist produced for {c}", file=sys.stderr)
+                print(f"warning: no netlist produced for {lib}/{cad}", file=sys.stderr)
                 continue
             cell_name, ports, nets, insts, noconn_nets = parse_netlist(nl)
-            cell_name = manifest.get(cell_name, cell_name)
+            cell_name = mdict.get(cell_name, cell_name)
             generate_verilog(cell_name, ports, nets, insts, noconn_nets,
-                             ref_dir, out_dir, manifest)
+                             ref_dir, out_dir, mdict)
 
 if __name__ == "__main__":
     main()
