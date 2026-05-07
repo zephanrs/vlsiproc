@@ -1,0 +1,2 @@
+#e1(07May2026:16:51:35): source ./xcelium.d/env.d/env.history.07May2026_16_51_35
+s1(07May2026:16:51:35):  xrun -compile verilog.v 

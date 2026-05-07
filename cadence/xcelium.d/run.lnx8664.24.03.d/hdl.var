@@ -1,0 +1,4 @@
+include ./hdlrun.var
+DEFINE RUNMODEDEFAULT 1
+DEFINE LIB_MAP (  => processor )
+DEFINE LIB_MAP ($LIB_MAP, + => worklib )
