@@ -121,17 +121,17 @@ def strip_pin_range(pin):
     """`.sel<1:0>` -> `sel`, `.out<7>` -> `out`, `clk` -> `clk`."""
     return re.sub(r'<\d+(?::\d+)?>$', '', pin)
 
-# Cadence broadcast/replication: `[*N]x` (with brackets, no space) or
-# `*N x` (with space, no brackets). Group 1 or 2 is N; group 3 is the inner.
-_BCAST_RE = re.compile(r'^(?:\[\*(\d+)\]|\*(\d+)\s+)\s*(.+)$')
+# Cadence broadcast/replication: '<*N>x' (Virtuoso's iteration notation) or
+# the rarer '[*N]x' / '*N x' forms. Group 1/2/3 holds N; the last group is the inner.
+_BCAST_RE = re.compile(r'^(?:<\*(\d+)>|\[\*(\d+)\]|\*(\d+)\s+)\s*(.+)$')
 
 def _convert_one(part):
-    """Convert one Cadence net atom: '[*N]x' or '*N x' -> '{N{x}}', '<>' -> '[]'."""
+    """Convert one Cadence net atom: '<*N>x' / '[*N]x' / '*N x' -> '{N{x}}', '<>' -> '[]'."""
     part = part.strip()
     m = _BCAST_RE.match(part)
     if m:
-        n = m.group(1) or m.group(2)
-        return "{" + n + "{" + vlog_name(m.group(3)) + "}}"
+        n = m.group(1) or m.group(2) or m.group(3)
+        return "{" + n + "{" + vlog_name(m.group(4)) + "}}"
     return vlog_name(part)
 
 def cad_net_to_verilog(net):
@@ -153,7 +153,7 @@ def extract_signals(net):
         part = part.strip()
         m = _BCAST_RE.match(part)
         if m:
-            part = m.group(3)
+            part = m.group(4)
         result.append(part)
     return result
 
@@ -312,7 +312,7 @@ def _expand_insts(insts):
                 # unrolled instance receives the bare net.
                 m = _BCAST_RE.match(net)
                 if m:
-                    net = m.group(3)
+                    net = m.group(4)
                 net_base, net_hi, net_lo = _parse_cadence_range(net)
                 if net_hi is not None:
                     if net_hi >= net_lo:
