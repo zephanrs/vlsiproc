@@ -5,10 +5,18 @@
 `ifndef INV_X4_V
 `define INV_X4_V
 
+/* verilator lint_off UNUSED */
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off UNDRIVEN */
+/* verilator lint_off WIDTH */
+/* verilator lint_off WIDTHCONCAT */
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
+
 module inv_x4
 (
-  input  logic in,
-  output logic out
+  input  wire in,
+  output wire out
 );
 
   supply1 vdd;
@@ -18,5 +26,13 @@ module inv_x4
   pmos PM0        ( out, vdd, in );
 
 endmodule
+
+/* verilator lint_on WIDTHTRUNC */
+/* verilator lint_on WIDTHEXPAND */
+/* verilator lint_on WIDTHCONCAT */
+/* verilator lint_on WIDTH */
+/* verilator lint_on UNDRIVEN */
+/* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on UNUSED */
 
 `endif /* INV_X4_V */

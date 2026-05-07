@@ -5,21 +5,29 @@
 `ifndef MUX2_V
 `define MUX2_V
 
+/* verilator lint_off UNUSED */
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off UNDRIVEN */
+/* verilator lint_off WIDTH */
+/* verilator lint_off WIDTHCONCAT */
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
+
 module Mux2
 (
-  input  logic in0,
-  input  logic in1,
-  output logic out,
-  input  logic sel,
-  input  logic sel_b
+  input  wire in0,
+  input  wire in1,
+  output wire out,
+  input  wire sel,
+  input  wire sel_b
 );
 
   supply1 vdd;
   supply0 gnd;
 
-  logic net1;
-  logic net2;
-  logic net4;
+  wire net1;
+  wire net2;
+  wire net4;
 
   nmos NM4        ( out, gnd, net2 );
   nmos NM3        ( net1, net2, sel );
@@ -33,5 +41,13 @@ module Mux2
   pmos PM0        ( net4, vdd, in0 );
 
 endmodule
+
+/* verilator lint_on WIDTHTRUNC */
+/* verilator lint_on WIDTHEXPAND */
+/* verilator lint_on WIDTHCONCAT */
+/* verilator lint_on WIDTH */
+/* verilator lint_on UNDRIVEN */
+/* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on UNUSED */
 
 `endif /* MUX2_V */

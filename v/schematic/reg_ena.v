@@ -9,19 +9,27 @@
 `include "schematic/inv_drive.v"
 `include "schematic/FF_std_2.v"
 
+/* verilator lint_off UNUSED */
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off UNDRIVEN */
+/* verilator lint_off WIDTH */
+/* verilator lint_off WIDTHCONCAT */
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
+
 module reg_ena
 (
-  output logic [7:0] Y,
-  input  logic       ena,
-  input  logic       clk_in,
-  input  logic [7:0] D
+  output wire [7:0] Y,
+  input  wire       ena,
+  input  wire       clk_in,
+  input  wire [7:0] D
 );
 
-  logic [*8]net5;
-  logic [*8]net7;
-  logic net5;
-  logic net6;
-  logic net7;
+  wire [*8]net5;
+  wire [*8]net7;
+  wire net5;
+  wire net6;
+  wire net7;
 
   clk_ena I8
   (
@@ -102,5 +110,13 @@ module reg_ena
   );
 
 endmodule
+
+/* verilator lint_on WIDTHTRUNC */
+/* verilator lint_on WIDTHEXPAND */
+/* verilator lint_on WIDTHCONCAT */
+/* verilator lint_on WIDTH */
+/* verilator lint_on UNDRIVEN */
+/* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on UNUSED */
 
 `endif /* REG_ENA_V */

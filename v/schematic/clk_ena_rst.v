@@ -5,26 +5,34 @@
 `ifndef CLK_ENA_RST_V
 `define CLK_ENA_RST_V
 
+/* verilator lint_off UNUSED */
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off UNDRIVEN */
+/* verilator lint_off WIDTH */
+/* verilator lint_off WIDTHCONCAT */
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
+
 module clk_ena_rst
 (
-  input  logic rst,
-  input  logic clk,
-  input  logic ena,
-  output logic ena_clk_b
+  input  wire rst,
+  input  wire clk,
+  input  wire ena,
+  output wire ena_clk_b
 );
 
   supply1 vdd;
   supply0 gnd;
 
-  logic ck;
-  logic ck_b;
-  logic net1;
-  logic net10;
-  logic net16;
-  logic net2;
-  logic net3;
-  logic net5;
-  logic net7;
+  wire ck;
+  wire ck_b;
+  wire net1;
+  wire net10;
+  wire net16;
+  wire net2;
+  wire net3;
+  wire net5;
+  wire net7;
 
   pmos PM24       ( ck, vdd, ck_b );
   pmos PM23       ( ck_b, vdd, clk );
@@ -48,5 +56,13 @@ module clk_ena_rst
   nmos NM10       ( net1, gnd, rst );
 
 endmodule
+
+/* verilator lint_on WIDTHTRUNC */
+/* verilator lint_on WIDTHEXPAND */
+/* verilator lint_on WIDTHCONCAT */
+/* verilator lint_on WIDTH */
+/* verilator lint_on UNDRIVEN */
+/* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on UNUSED */
 
 `endif /* CLK_ENA_RST_V */

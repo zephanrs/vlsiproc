@@ -8,18 +8,26 @@
 `include "schematic/Mux2.v"
 `include "schematic/inv_drive.v"
 
+/* verilator lint_off UNUSED */
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off UNDRIVEN */
+/* verilator lint_off WIDTH */
+/* verilator lint_off WIDTHCONCAT */
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
+
 module Mux2_8b
 (
-  input  logic [7:0] in0,
-  input  logic [7:0] in1,
-  input  logic       sel,
-  output logic [7:0] out
+  input  wire [7:0] in0,
+  input  wire [7:0] in1,
+  input  wire       sel,
+  output wire [7:0] out
 );
 
-  logic [*8]sel_b;
-  logic [*8]sel_int;
-  logic sel_b;
-  logic sel_int;
+  wire [*8]sel_b;
+  wire [*8]sel_int;
+  wire sel_b;
+  wire sel_int;
 
   Mux2 I0_7
   (
@@ -101,5 +109,13 @@ module Mux2_8b
   );
 
 endmodule
+
+/* verilator lint_on WIDTHTRUNC */
+/* verilator lint_on WIDTHEXPAND */
+/* verilator lint_on WIDTHCONCAT */
+/* verilator lint_on WIDTH */
+/* verilator lint_on UNDRIVEN */
+/* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on UNUSED */
 
 `endif /* MUX2_8B_V */

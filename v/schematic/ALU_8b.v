@@ -13,56 +13,64 @@
 `include "schematic/adder_gray_b.v"
 `include "ref/NAND2.v"
 
+/* verilator lint_off UNUSED */
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off UNDRIVEN */
+/* verilator lint_off WIDTH */
+/* verilator lint_off WIDTHCONCAT */
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
+
 module ALU_8b
 (
-  input  logic [7:0] in0,
-  input  logic [7:0] in1,
-  output logic       eq,
-  output logic [7:0] sum
+  input  wire [7:0] in0,
+  input  wire [7:0] in1,
+  output wire       eq,
+  output wire [7:0] sum
 );
 
-  logic G10;
-  logic G20;
-  logic G30;
-  logic G40;
-  logic G50;
-  logic G60;
-  logic net1;
-  logic net10;
-  logic net11;
-  logic net13;
-  logic net15;
-  logic net16;
-  logic net17;
-  logic net19;
-  logic net2;
-  logic net20;
-  logic net21;
-  logic net22;
-  logic net23;
-  logic net24;
-  logic net26;
-  logic net27;
-  logic net28;
-  logic net29;
-  logic net3;
-  logic net30;
-  logic net31;
-  logic net32;
-  logic net33;
-  logic net34;
-  logic net35;
-  logic net36;
-  logic net4;
-  logic net40;
-  logic net43;
-  logic net46;
-  logic net49;
-  logic net6;
-  logic net9;
-  logic [7:0] G;
-  logic [7:0] P;
-  logic [0:0] out;
+  wire G10;
+  wire G20;
+  wire G30;
+  wire G40;
+  wire G50;
+  wire G60;
+  wire net1;
+  wire net10;
+  wire net11;
+  wire net13;
+  wire net15;
+  wire net16;
+  wire net17;
+  wire net19;
+  wire net2;
+  wire net20;
+  wire net21;
+  wire net22;
+  wire net23;
+  wire net24;
+  wire net26;
+  wire net27;
+  wire net28;
+  wire net29;
+  wire net3;
+  wire net30;
+  wire net31;
+  wire net32;
+  wire net33;
+  wire net34;
+  wire net35;
+  wire net36;
+  wire net4;
+  wire net40;
+  wire net43;
+  wire net46;
+  wire net49;
+  wire net6;
+  wire net9;
+  wire [7:0] G;
+  wire [7:0] P;
+  wire [0:0] out;
 
   inv_x1 I70
   (
@@ -477,5 +485,13 @@ module ALU_8b
   );
 
 endmodule
+
+/* verilator lint_on WIDTHTRUNC */
+/* verilator lint_on WIDTHEXPAND */
+/* verilator lint_on WIDTHCONCAT */
+/* verilator lint_on WIDTH */
+/* verilator lint_on UNDRIVEN */
+/* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on UNUSED */
 
 `endif /* ALU_8B_V */
