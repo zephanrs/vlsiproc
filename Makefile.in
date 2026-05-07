@@ -37,7 +37,7 @@ VERILATOR_FLAGS  := --quiet --timing -Wall \
                       -Wno-DECLFILENAME -Wno-UNOPTFLAT -Wno-VARHIDDEN
 VERILATOR_LINT   := @VERILATOR@ --lint-only $(VERILATOR_FLAGS)
 
-IVERILOG_FLAGS   := -Wall -Winfloop -Wno-timescale -g2012
+IVERILOG_FLAGS   := -Wall -Winfloop -Wno-timescale -Wno-portbind -g2012
 IVERILOG_COMPILE := $(WARN2ERR) @IVERILOG@ $(IVERILOG_FLAGS)
 
 #-------------------------------------------------------------------------
