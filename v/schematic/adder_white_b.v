@@ -26,13 +26,16 @@ module adder_white_b
 
   wire net5;
   wire net7;
+  wire G_m_n_b_drv;
 
   nmos PM6        ( net7, gnd, G_kmin1_n );
-  nmos PM8        ( G_m_n_b, net7, P_m_k );
-  nmos PM7        ( G_m_n_b, gnd, G_m_k );
+  nmos PM8        ( G_m_n_b_drv, net7, P_m_k );
+  nmos PM7        ( G_m_n_b_drv, gnd, G_m_k );
   pmos NM8        ( net5, vdd, G_m_k );
-  pmos NM7        ( G_m_n_b, net5, P_m_k );
-  pmos NM6        ( G_m_n_b, net5, G_kmin1_n );
+  pmos NM7        ( G_m_n_b_drv, net5, P_m_k );
+  pmos NM6        ( G_m_n_b_drv, net5, G_kmin1_n );
+
+  assign G_m_n_b = G_m_n_b_drv;
 
 endmodule
 

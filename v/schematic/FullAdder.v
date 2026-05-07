@@ -37,9 +37,11 @@ module FullAdder
   wire net7;
   wire net8;
   wire net9;
+  wire cout_drv;
+  wire sum_drv;
 
-  pmos PM15       ( sum, vdd, net7 );
-  pmos PM14       ( cout, vdd, net12 );
+  pmos PM15       ( sum_drv, vdd, net7 );
+  pmos PM14       ( cout_drv, vdd, net12 );
   pmos PM13       ( net28, vdd, in0 );
   pmos PM12       ( net3, net28, in1 );
   pmos PM11       ( net7, net3, cin );
@@ -52,8 +54,8 @@ module FullAdder
   pmos PM2        ( net12, net8, cin );
   pmos PM3        ( net8, vdd, in0 );
   pmos PM4        ( net8, vdd, in1 );
-  nmos NM13       ( sum, gnd, net7 );
-  nmos NM12       ( cout, gnd, net12 );
+  nmos NM13       ( sum_drv, gnd, net7 );
+  nmos NM12       ( cout_drv, gnd, net12 );
   nmos NM11       ( net52, gnd, in0 );
   nmos NM10       ( net47, net52, in1 );
   nmos NM9        ( net7, net47, cin );
@@ -66,6 +68,9 @@ module FullAdder
   nmos NM2        ( net13, gnd, in1 );
   nmos NM1        ( net13, gnd, in0 );
   nmos NM0        ( net12, net13, cin );
+
+  assign cout = cout_drv;
+  assign sum = sum_drv;
 
 endmodule
 

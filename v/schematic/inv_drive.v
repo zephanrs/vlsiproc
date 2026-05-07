@@ -26,17 +26,22 @@ module inv_drive
   wire net10;
   wire net2;
   wire net7;
+  wire out_drv;
+  wire out_b_drv;
 
-  nmos NM5        ( out, gnd, net10 );
+  nmos NM5        ( out_drv, gnd, net10 );
   nmos NM4        ( net10, gnd, in );
-  nmos NM2        ( out_b, gnd, net2 );
+  nmos NM2        ( out_b_drv, gnd, net2 );
   nmos NM1        ( net2, gnd, net7 );
   nmos NM0        ( net7, gnd, in );
-  pmos PM5        ( out, vdd, net10 );
+  pmos PM5        ( out_drv, vdd, net10 );
   pmos PM4        ( net10, vdd, in );
-  pmos PM2        ( out_b, vdd, net2 );
+  pmos PM2        ( out_b_drv, vdd, net2 );
   pmos PM1        ( net2, vdd, net7 );
   pmos PM0        ( net7, vdd, in );
+
+  assign out = out_drv;
+  assign out_b = out_b_drv;
 
 endmodule
 

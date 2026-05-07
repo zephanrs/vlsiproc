@@ -41,6 +41,8 @@ module Regfile
   wire [7:0] net15;
   wire [7:0] rwen;
   wire [7:0] rwen_b;
+  wire [7:0] rdata0_drv;
+  wire [7:0] rdata1_drv;
 
   RFslice I0_7
   (
@@ -50,8 +52,8 @@ module Regfile
     .ren0   ([*8]net12[0]),
     .wen_b  ([*8]rwen_b[7:1]),
     .wen    ([*8]rwen[7:1]),
-    .rdata1 (rdata1[7]),
-    .rdata0 (rdata0[7]),
+    .rdata1 (rdata1_drv[7]),
+    .rdata0 (rdata0_drv[7]),
     .wdata  (wdata[7])
   );
 
@@ -63,8 +65,8 @@ module Regfile
     .ren0   ([*8]net12[1]),
     .wen_b  ([*8]rwen_b[7:1]),
     .wen    ([*8]rwen[7:1]),
-    .rdata1 (rdata1[6]),
-    .rdata0 (rdata0[6]),
+    .rdata1 (rdata1_drv[6]),
+    .rdata0 (rdata0_drv[6]),
     .wdata  (wdata[6])
   );
 
@@ -76,8 +78,8 @@ module Regfile
     .ren0   ([*8]net12[2]),
     .wen_b  ([*8]rwen_b[7:1]),
     .wen    ([*8]rwen[7:1]),
-    .rdata1 (rdata1[5]),
-    .rdata0 (rdata0[5]),
+    .rdata1 (rdata1_drv[5]),
+    .rdata0 (rdata0_drv[5]),
     .wdata  (wdata[5])
   );
 
@@ -89,8 +91,8 @@ module Regfile
     .ren0   ([*8]net12[3]),
     .wen_b  ([*8]rwen_b[7:1]),
     .wen    ([*8]rwen[7:1]),
-    .rdata1 (rdata1[4]),
-    .rdata0 (rdata0[4]),
+    .rdata1 (rdata1_drv[4]),
+    .rdata0 (rdata0_drv[4]),
     .wdata  (wdata[4])
   );
 
@@ -102,8 +104,8 @@ module Regfile
     .ren0   ([*8]net12[4]),
     .wen_b  ([*8]rwen_b[7:1]),
     .wen    ([*8]rwen[7:1]),
-    .rdata1 (rdata1[3]),
-    .rdata0 (rdata0[3]),
+    .rdata1 (rdata1_drv[3]),
+    .rdata0 (rdata0_drv[3]),
     .wdata  (wdata[3])
   );
 
@@ -115,8 +117,8 @@ module Regfile
     .ren0   ([*8]net12[5]),
     .wen_b  ([*8]rwen_b[7:1]),
     .wen    ([*8]rwen[7:1]),
-    .rdata1 (rdata1[2]),
-    .rdata0 (rdata0[2]),
+    .rdata1 (rdata1_drv[2]),
+    .rdata0 (rdata0_drv[2]),
     .wdata  (wdata[2])
   );
 
@@ -128,8 +130,8 @@ module Regfile
     .ren0   ([*8]net12[6]),
     .wen_b  ([*8]rwen_b[7:1]),
     .wen    ([*8]rwen[7:1]),
-    .rdata1 (rdata1[1]),
-    .rdata0 (rdata0[1]),
+    .rdata1 (rdata1_drv[1]),
+    .rdata0 (rdata0_drv[1]),
     .wdata  (wdata[1])
   );
 
@@ -141,8 +143,8 @@ module Regfile
     .ren0   ([*8]net12[7]),
     .wen_b  ([*8]rwen_b[7:1]),
     .wen    ([*8]rwen[7:1]),
-    .rdata1 (rdata1[0]),
-    .rdata0 (rdata0[0]),
+    .rdata1 (rdata1_drv[0]),
+    .rdata0 (rdata0_drv[0]),
     .wdata  (wdata[0])
   );
 
@@ -168,6 +170,9 @@ module Regfile
     .clk    (clk),
     .waddr  (waddr[2:0])
   );
+
+  assign rdata0 = rdata0_drv;
+  assign rdata1 = rdata1_drv;
 
 endmodule
 

@@ -25,13 +25,16 @@ module AND2
 
   wire net1;
   wire out_b;
+  wire out_drv;
 
-  nmos NM3        ( out, gnd, out_b );
+  nmos NM3        ( out_drv, gnd, out_b );
   nmos NM5        ( out_b, net1, in0 );
   nmos NM4        ( net1, gnd, in1 );
-  pmos PM3        ( out, vdd, out_b );
+  pmos PM3        ( out_drv, vdd, out_b );
   pmos PM6        ( out_b, vdd, in1 );
   pmos PM5        ( out_b, vdd, in0 );
+
+  assign out = out_drv;
 
 endmodule
 

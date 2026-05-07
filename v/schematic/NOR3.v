@@ -26,13 +26,16 @@ module NOR3
 
   wire net1;
   wire net4;
+  wire out_drv;
 
   pmos PM2        ( net1, vdd, in0 );
-  pmos PM1        ( out, net4, in2 );
+  pmos PM1        ( out_drv, net4, in2 );
   pmos PM0        ( net4, net1, in1 );
-  nmos NM2        ( out, gnd, in2 );
-  nmos NM1        ( out, gnd, in1 );
-  nmos NM0        ( out, gnd, in0 );
+  nmos NM2        ( out_drv, gnd, in2 );
+  nmos NM1        ( out_drv, gnd, in1 );
+  nmos NM0        ( out_drv, gnd, in0 );
+
+  assign out = out_drv;
 
 endmodule
 

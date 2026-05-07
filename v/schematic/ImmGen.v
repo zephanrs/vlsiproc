@@ -22,16 +22,17 @@ module ImmGen
 );
 
   wire [11:0] [*3]inst;
-  wire [2:0] [*3]inst[11],inst[10:9],inst;
-  wire [2:0] [*3]inst[5],inst[4:3],inst;
+  wire [7:0] imm_drv;
 
   Mux2_8b I0
   (
-    .out (imm[7:0]),
+    .out (imm_drv[7:0]),
     .in0 ({[*3]inst[11], inst[10:9], inst[2:0]}),
     .in1 ({[*3]inst[5], inst[4:3], inst[2:0]}),
     .sel (inst[13])
   );
+
+  assign imm = imm_drv;
 
 endmodule
 

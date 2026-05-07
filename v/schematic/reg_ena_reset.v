@@ -34,10 +34,11 @@ module reg_ena_reset
   wire net5;
   wire net6;
   wire net7;
+  wire [7:0] Y_drv;
 
   FF_reset I_0
   (
-    .Y       (Y[7]),
+    .Y       (Y_drv[7]),
     .D       (D[7]),
     .ck      ([*8]net5),
     .ck_b    ([*8]net7),
@@ -46,7 +47,7 @@ module reg_ena_reset
 
   FF_reset I_1
   (
-    .Y       (Y[6]),
+    .Y       (Y_drv[6]),
     .D       (D[6]),
     .ck      ([*8]net5),
     .ck_b    ([*8]net7),
@@ -55,7 +56,7 @@ module reg_ena_reset
 
   FF_reset I_2
   (
-    .Y       (Y[5]),
+    .Y       (Y_drv[5]),
     .D       (D[5]),
     .ck      ([*8]net5),
     .ck_b    ([*8]net7),
@@ -64,7 +65,7 @@ module reg_ena_reset
 
   FF_reset I_3
   (
-    .Y       (Y[4]),
+    .Y       (Y_drv[4]),
     .D       (D[4]),
     .ck      ([*8]net5),
     .ck_b    ([*8]net7),
@@ -73,7 +74,7 @@ module reg_ena_reset
 
   FF_reset I_4
   (
-    .Y       (Y[3]),
+    .Y       (Y_drv[3]),
     .D       (D[3]),
     .ck      ([*8]net5),
     .ck_b    ([*8]net7),
@@ -82,7 +83,7 @@ module reg_ena_reset
 
   FF_reset I_5
   (
-    .Y       (Y[2]),
+    .Y       (Y_drv[2]),
     .D       (D[2]),
     .ck      ([*8]net5),
     .ck_b    ([*8]net7),
@@ -91,7 +92,7 @@ module reg_ena_reset
 
   FF_reset I_6
   (
-    .Y       (Y[1]),
+    .Y       (Y_drv[1]),
     .D       (D[1]),
     .ck      ([*8]net5),
     .ck_b    ([*8]net7),
@@ -100,7 +101,7 @@ module reg_ena_reset
 
   FF_reset I_7
   (
-    .Y       (Y[0]),
+    .Y       (Y_drv[0]),
     .D       (D[0]),
     .ck      ([*8]net5),
     .ck_b    ([*8]net7),
@@ -127,6 +128,8 @@ module reg_ena_reset
     .out (net2),
     .in  (reset)
   );
+
+  assign Y = Y_drv;
 
 endmodule
 

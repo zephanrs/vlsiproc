@@ -33,11 +33,12 @@ module clk_ena_rst
   wire net3;
   wire net5;
   wire net7;
+  wire ena_clk_b_drv;
 
   pmos PM24       ( ck, vdd, ck_b );
   pmos PM23       ( ck_b, vdd, clk );
-  pmos PM17       ( ena_clk_b, vdd, ck );
-  pmos PM16       ( ena_clk_b, vdd, net2 );
+  pmos PM17       ( ena_clk_b_drv, vdd, ck );
+  pmos PM16       ( ena_clk_b_drv, vdd, net2 );
   pmos PM15       ( net2, vdd, net16 );
   pmos PM13       ( net3, vdd, net2 );
   pmos PM12       ( net16, net1, ck );
@@ -47,13 +48,15 @@ module clk_ena_rst
   nmos NM24       ( ck, gnd, ck_b );
   nmos NM23       ( ck_b, gnd, clk );
   nmos NM17       ( net10, gnd, ck );
-  nmos NM16       ( ena_clk_b, net10, net2 );
+  nmos NM16       ( ena_clk_b_drv, net10, net2 );
   nmos NM12       ( net1, net16, ck_b );
   nmos NM13       ( net7, gnd, net2 );
   nmos NM27       ( net1, gnd, ena );
   nmos NM28       ( net16, net7, ck_b );
   nmos NM15       ( net2, gnd, net16 );
   nmos NM10       ( net1, gnd, rst );
+
+  assign ena_clk_b = ena_clk_b_drv;
 
 endmodule
 

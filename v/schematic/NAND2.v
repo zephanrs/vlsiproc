@@ -24,11 +24,14 @@ module NAND2
   supply0 gnd;
 
   wire net2;
+  wire out_drv;
 
-  nmos NM5        ( out, net2, in0 );
+  nmos NM5        ( out_drv, net2, in0 );
   nmos NM4        ( net2, gnd, in1 );
-  pmos PM6        ( out, vdd, in1 );
-  pmos PM5        ( out, vdd, in0 );
+  pmos PM6        ( out_drv, vdd, in1 );
+  pmos PM5        ( out_drv, vdd, in0 );
+
+  assign out = out_drv;
 
 endmodule
 

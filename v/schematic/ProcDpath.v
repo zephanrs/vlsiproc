@@ -73,10 +73,22 @@ module ProcDpath
   wire [7:0] net7;
   wire [7:0] net8;
   wire [7:0] net9;
+  wire [7:0] A_reg_out_drv;
+  wire [7:0] PC_out_drv;
+  wire [7:0] alu_out_drv;
+  wire [7:0] idmem_addr_drv;
+  wire [7:0] idmem_wdata_drv;
+  wire [70:0] mux4_out_drv;
+  wire [7:0] op1_sel_out_drv;
+  wire [7:0] pc_old_out_drv;
+  wire [7:0] pc_sel_mux_out_drv;
+  wire [7:0] rdata0_out_drv;
+  wire [7:0] rdata1_out_drv;
+  wire [7:0] wb_sel_out_drv;
 
   reg_ena_reset PC
   (
-    .Y      (PC_out[7:0]),
+    .Y      (PC_out_drv[7:0]),
     .D      (net4[0:7]),
     .clk_in (pc_cllk),
     .ena    (pc_en),
@@ -85,32 +97,32 @@ module ProcDpath
 
   Mux2_8b Wb_sel
   (
-    .out (wb_sel_out[7:0]),
-    .in0 (alu_out[7:0]),
+    .out (wb_sel_out_drv[7:0]),
+    .in0 (alu_out_drv[7:0]),
     .in1 (net45[0:7]),
     .sel (wb_sel)
   );
 
   Mux2_8b I12
   (
-    .out (op1_sel_out[7:0]),
-    .in0 (A_reg_out[7:0]),
-    .in1 (pc_sel_mux_out[7:0]),
+    .out (op1_sel_out_drv[7:0]),
+    .in0 (A_reg_out_drv[7:0]),
+    .in1 (pc_sel_mux_out_drv[7:0]),
     .sel (op1_sel)
   );
 
   Mux2_8b I11
   (
-    .out (pc_sel_mux_out[7:0]),
-    .in0 (pc_old_out[7:0]),
-    .in1 (PC_out[7:0]),
+    .out (pc_sel_mux_out_drv[7:0]),
+    .in0 (pc_old_out_drv[7:0]),
+    .in1 (PC_out_drv[7:0]),
     .sel (pc_sel)
   );
 
   Mux2_8b I2
   (
-    .out (idmem_addr[7:0]),
-    .in0 (PC_out[7:0]),
+    .out (idmem_addr_drv[7:0]),
+    .in0 (PC_out_drv[7:0]),
     .in1 (net7[0:7]),
     .sel (addr_sel)
   );
@@ -118,7 +130,7 @@ module ProcDpath
   reg_ena Addr
   (
     .Y      (net7[0:7]),
-    .D      (alu_out[7:0]),
+    .D      (alu_out_drv[7:0]),
     .clk_in (addr_clk),
     .ena    (addr_ena)
   );
@@ -126,31 +138,31 @@ module ProcDpath
   reg_ena WD
   (
     .Y      (net25[0:7]),
-    .D      (wb_sel_out[7:0]),
+    .D      (wb_sel_out_drv[7:0]),
     .clk_in (wd_clk),
     .ena    (wd_ena)
   );
 
   reg_ena A
   (
-    .Y      (A_reg_out[7:0]),
-    .D      (rdata0_out[7:0]),
+    .Y      (A_reg_out_drv[7:0]),
+    .D      (rdata0_out_drv[7:0]),
     .clk_in (a_clk),
     .ena    (a_ena)
   );
 
   reg_ena B
   (
-    .Y      (idmem_wdata[7:0]),
-    .D      (rdata1_out[7:0]),
+    .Y      (idmem_wdata_drv[7:0]),
+    .D      (rdata1_out_drv[7:0]),
     .clk_in (b_clk),
     .ena    (b_ena)
   );
 
   reg_ena PC_old
   (
-    .Y      (pc_old_out[7:0]),
-    .D      (PC_out[7:0]),
+    .Y      (pc_old_out_drv[7:0]),
+    .D      (PC_out_drv[7:0]),
     .clk_in (pc_old_clk),
     .ena    (pc_old_ena)
   );
@@ -165,8 +177,8 @@ module ProcDpath
 
   Regfile rf
   (
-    .rdata0 (rdata0_out[7:0]),
-    .rdata1 (rdata1_out[7:0]),
+    .rdata0 (rdata0_out_drv[7:0]),
+    .rdata1 (rdata1_out_drv[7:0]),
     .clk    (rf_clk),
     .raddr0 (net34[0:2]),
     .raddr1 (net33[0:2]),
@@ -178,7 +190,7 @@ module ProcDpath
   Mux4_8b I15
   (
     .out ([*8]mux4_out[70]),
-    .in0 (idmem_wdata[7:0]),
+    .in0 (idmem_wdata_drv[7:0]),
     .in1 (net55[0:7]),
     .in2 (net54[0:7]),
     .in3 (net53[0:7]),
@@ -188,10 +200,23 @@ module ProcDpath
   ALU_8b ALU
   (
     .eq  (eq),
-    .out (alu_out[7:0]),
-    .in0 (op1_sel_out[7:0]),
+    .out (alu_out_drv[7:0]),
+    .in0 (op1_sel_out_drv[7:0]),
     .in1 ([*8]mux4_out[70])
   );
+
+  assign A_reg_out = A_reg_out_drv;
+  assign PC_out = PC_out_drv;
+  assign alu_out = alu_out_drv;
+  assign idmem_addr = idmem_addr_drv;
+  assign idmem_wdata = idmem_wdata_drv;
+  assign mux4_out = mux4_out_drv;
+  assign op1_sel_out = op1_sel_out_drv;
+  assign pc_old_out = pc_old_out_drv;
+  assign pc_sel_mux_out = pc_sel_mux_out_drv;
+  assign rdata0_out = rdata0_out_drv;
+  assign rdata1_out = rdata1_out_drv;
+  assign wb_sel_out = wb_sel_out_drv;
 
 endmodule
 

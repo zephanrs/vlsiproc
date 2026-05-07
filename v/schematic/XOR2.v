@@ -29,19 +29,22 @@ module XOR2
   wire net17;
   wire net3;
   wire net4;
+  wire out_drv;
 
   pmos PM7        ( net4, vdd, in1_b );
   pmos PM5        ( in1_b, vdd, in1 );
   pmos PM6        ( in0_b, vdd, in0 );
-  pmos PM3        ( out, net12, in1 );
+  pmos PM3        ( out_drv, net12, in1 );
   pmos PM2        ( net12, vdd, in0_b );
-  pmos PM8        ( out, net4, in0 );
+  pmos PM8        ( out_drv, net4, in0 );
   nmos NM5        ( in1_b, gnd, in1 );
   nmos NM6        ( in0_b, gnd, in0 );
   nmos NM11       ( net17, gnd, in1 );
-  nmos NM10       ( out, net3, in1_b );
+  nmos NM10       ( out_drv, net3, in1_b );
   nmos NM9        ( net3, gnd, in0_b );
-  nmos NM12       ( out, net17, in0 );
+  nmos NM12       ( out_drv, net17, in0 );
+
+  assign out = out_drv;
 
 endmodule
 

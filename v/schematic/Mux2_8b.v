@@ -28,10 +28,11 @@ module Mux2_8b
   wire [*8]sel_int;
   wire sel_b;
   wire sel_int;
+  wire [7:0] out_drv;
 
   Mux2 I0_7
   (
-    .out   (out[7]),
+    .out   (out_drv[7]),
     .in0   (in0[7]),
     .in1   (in1[7]),
     .sel   ([*8]sel_int),
@@ -40,7 +41,7 @@ module Mux2_8b
 
   Mux2 I0_6
   (
-    .out   (out[6]),
+    .out   (out_drv[6]),
     .in0   (in0[6]),
     .in1   (in1[6]),
     .sel   ([*8]sel_int),
@@ -49,7 +50,7 @@ module Mux2_8b
 
   Mux2 I0_5
   (
-    .out   (out[5]),
+    .out   (out_drv[5]),
     .in0   (in0[5]),
     .in1   (in1[5]),
     .sel   ([*8]sel_int),
@@ -58,7 +59,7 @@ module Mux2_8b
 
   Mux2 I0_4
   (
-    .out   (out[4]),
+    .out   (out_drv[4]),
     .in0   (in0[4]),
     .in1   (in1[4]),
     .sel   ([*8]sel_int),
@@ -67,7 +68,7 @@ module Mux2_8b
 
   Mux2 I0_3
   (
-    .out   (out[3]),
+    .out   (out_drv[3]),
     .in0   (in0[3]),
     .in1   (in1[3]),
     .sel   ([*8]sel_int),
@@ -76,7 +77,7 @@ module Mux2_8b
 
   Mux2 I0_2
   (
-    .out   (out[2]),
+    .out   (out_drv[2]),
     .in0   (in0[2]),
     .in1   (in1[2]),
     .sel   ([*8]sel_int),
@@ -85,7 +86,7 @@ module Mux2_8b
 
   Mux2 I0_1
   (
-    .out   (out[1]),
+    .out   (out_drv[1]),
     .in0   (in0[1]),
     .in1   (in1[1]),
     .sel   ([*8]sel_int),
@@ -94,7 +95,7 @@ module Mux2_8b
 
   Mux2 I0_0
   (
-    .out   (out[0]),
+    .out   (out_drv[0]),
     .in0   (in0[0]),
     .in1   (in1[0]),
     .sel   ([*8]sel_int),
@@ -107,6 +108,8 @@ module Mux2_8b
     .out   (sel_int),
     .out_b (sel_b)
   );
+
+  assign out = out_drv;
 
 endmodule
 
