@@ -356,9 +356,12 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
         return f"[{bits-1}:0]" if bits > 1 else ""
 
     def type_str(direction, bits):
+        # Use 'wire' (not 'logic') so iverilog allows multiple drivers --
+        # transistor-level cells often have pull-up and pull-down networks
+        # both driving the same node, and dynamic-logic nets get pre-charged.
         d = dir_map.get(direction, "inout ")
         w = width_str(bits)
-        return f"{d} logic {w}" if w else f"{d} logic"
+        return f"{d} wire {w}" if w else f"{d} wire"
 
     port_type_strs = [type_str(d, b) for _, d, b in ports]
     max_type_len   = max((len(s) for s in port_type_strs), default=0)
@@ -410,9 +413,9 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
 
     scalar_nets = [n for n in scalar_nets_set if n not in bus_max]
 
-    int_net_decls = [f"logic {n};" for n in sorted(scalar_nets)]
+    int_net_decls = [f"wire {n};" for n in sorted(scalar_nets)]
     for base, hi in sorted(bus_max.items()):
-        int_net_decls.append(f"logic [{hi}:0] {base};")
+        int_net_decls.append(f"wire [{hi}:0] {base};")
 
     # --- sub-cell instances ---
     sub_insts = []
