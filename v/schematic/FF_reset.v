@@ -15,11 +15,11 @@
 
 module FF_reset
 (
-  output wire Y,
-  input  wire reset_b,
-  input  wire D,
-  input  wire ck_b,
-  input  wire ck
+  output wire [-1:0] Y,
+  input  wire [-1:0] reset_b,
+  input  wire [-1:0] D,
+  input  wire [-1:0] ck_b,
+  input  wire [-1:0] ck
 );
 
   supply1 vdd;
@@ -35,7 +35,7 @@ module FF_reset
   wire net7;
   wire net8;
   wire net9;
-  wire Y_drv;
+  wire [-1:0] Y_drv;
 
   nmos NM17       ( net1, gnd, reset_b );
   nmos NM16       ( net10, net1, D );

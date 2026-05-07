@@ -15,14 +15,14 @@
 
 module inv_x1
 (
-  input  wire in,
-  output wire out
+  input  wire [-1:0] in,
+  output wire [-1:0] out
 );
 
   supply1 vdd;
   supply0 gnd;
 
-  wire out_drv;
+  wire [-1:0] out_drv;
 
   nmos NM0        ( out_drv, gnd, in );
   pmos PM0        ( out_drv, vdd, in );

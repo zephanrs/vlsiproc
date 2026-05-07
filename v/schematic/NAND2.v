@@ -15,16 +15,16 @@
 
 module NAND2
 (
-  output wire out,
-  input  wire in1,
-  input  wire in0
+  output wire [-1:0] out,
+  input  wire [-1:0] in1,
+  input  wire [-1:0] in0
 );
 
   supply1 vdd;
   supply0 gnd;
 
   wire net2;
-  wire out_drv;
+  wire [-1:0] out_drv;
 
   nmos NM5        ( out_drv, net2, in0 );
   nmos NM4        ( net2, gnd, in1 );

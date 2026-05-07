@@ -15,10 +15,10 @@
 
 module adder_white_b
 (
-  input  wire G_m_k,
-  input  wire P_m_k,
-  input  wire G_kmin1_n,
-  output wire G_m_n_b
+  input  wire [-1:0] G_m_k,
+  input  wire [-1:0] P_m_k,
+  input  wire [-1:0] G_kmin1_n,
+  output wire [-1:0] G_m_n_b
 );
 
   supply1 vdd;
@@ -26,7 +26,7 @@ module adder_white_b
 
   wire net5;
   wire net7;
-  wire G_m_n_b_drv;
+  wire [-1:0] G_m_n_b_drv;
 
   nmos PM6        ( net7, gnd, G_kmin1_n );
   nmos PM8        ( G_m_n_b_drv, net7, P_m_k );
