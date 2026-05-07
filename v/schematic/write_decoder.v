@@ -11,88 +11,100 @@
 `include "schematic/inv_x1.v"
 `include "schematic/inv_x4.v"
 
+/* verilator lint_off UNUSED */
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off UNDRIVEN */
+/* verilator lint_off WIDTH */
+/* verilator lint_off WIDTHCONCAT */
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
+
 module write_decoder
 (
-  input  logic [2:0] waddr,
-  output logic [6:0] wen_b,
-  input  logic       clk,
-  input  logic       rf_wen,
-  output logic [6:0] wen
+  input  wire [2:0] waddr,
+  output wire [7:0] wen_b,
+  input  wire       clk,
+  input  wire       rf_wen,
+  output wire [7:0] wen
 );
 
-  logic [*7]clk;
-  logic [*7]net6;
-  logic net5;
-  logic net6;
-  logic [1:0] [*2]waddr_a[1],[*2]waddr_b[1],[*2]waddr_a[1],waddr_b;
-  logic [2:0] [*4]waddr_a[2],[*3]waddr_b;
-  logic [6:0] net1;
-  logic [6:0] net3;
-  logic [2:0] waddr_a;
-  logic [0:0] waddr_a[0],waddr_b[0],waddr_a[0],waddr_b[0],waddr_a[0],waddr_b[0],waddr_a;
-  logic [2:0] waddr_b;
+  wire [*7]clk;
+  wire [*7]net6;
+  wire net5;
+  wire net6;
+  wire [1:0] [*2]waddr_a;
+  wire [1:0] [*2]waddr_a[1],[*2]waddr_b[1],[*2]waddr_a[1],waddr_b;
+  wire [1:0] [*2]waddr_b;
+  wire [2:0] [*3]waddr_b;
+  wire [2:0] [*4]waddr_a;
+  wire [2:0] [*4]waddr_a[2],[*3]waddr_b;
+  wire [6:0] net1;
+  wire [6:0] net3;
+  wire [2:0] waddr_a;
+  wire [0:0] waddr_a[0],waddr_b[0],waddr_a[0],waddr_b[0],waddr_a[0],waddr_b[0],waddr_a;
+  wire [2:0] waddr_b;
 
   AND4 I4_7
   (
-    .D   ([*4]waddr_a[2],[*3]waddr_b[2]),
+    .D   ({[*4]waddr_a[2], [*3]waddr_b[2]}),
     .out (net3[0]),
     .A   ([*7]net6),
-    .B   (waddr_a[0],waddr_b[0],waddr_a[0],waddr_b[0],waddr_a[0],waddr_b[0],waddr_a[0]),
-    .C   ([*2]waddr_a[1],[*2]waddr_b[1],[*2]waddr_a[1],waddr_b[1])
+    .B   ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
+    .C   ({[*2]waddr_a[1], [*2]waddr_b[1], [*2]waddr_a[1], waddr_b[1]})
   );
 
   AND4 I4_6
   (
-    .D   ([*4]waddr_a[2],[*3]waddr_b[2]),
+    .D   ({[*4]waddr_a[2], [*3]waddr_b[2]}),
     .out (net3[1]),
     .A   ([*7]net6),
-    .B   (waddr_a[0],waddr_b[0],waddr_a[0],waddr_b[0],waddr_a[0],waddr_b[0],waddr_a[0]),
-    .C   ([*2]waddr_a[1],[*2]waddr_b[1],[*2]waddr_a[1],waddr_b[1])
+    .B   ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
+    .C   ({[*2]waddr_a[1], [*2]waddr_b[1], [*2]waddr_a[1], waddr_b[1]})
   );
 
   AND4 I4_5
   (
-    .D   ([*4]waddr_a[2],[*3]waddr_b[2]),
+    .D   ({[*4]waddr_a[2], [*3]waddr_b[2]}),
     .out (net3[2]),
     .A   ([*7]net6),
-    .B   (waddr_a[0],waddr_b[0],waddr_a[0],waddr_b[0],waddr_a[0],waddr_b[0],waddr_a[0]),
-    .C   ([*2]waddr_a[1],[*2]waddr_b[1],[*2]waddr_a[1],waddr_b[1])
+    .B   ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
+    .C   ({[*2]waddr_a[1], [*2]waddr_b[1], [*2]waddr_a[1], waddr_b[1]})
   );
 
   AND4 I4_4
   (
-    .D   ([*4]waddr_a[2],[*3]waddr_b[2]),
+    .D   ({[*4]waddr_a[2], [*3]waddr_b[2]}),
     .out (net3[3]),
     .A   ([*7]net6),
-    .B   (waddr_a[0],waddr_b[0],waddr_a[0],waddr_b[0],waddr_a[0],waddr_b[0],waddr_a[0]),
-    .C   ([*2]waddr_a[1],[*2]waddr_b[1],[*2]waddr_a[1],waddr_b[1])
+    .B   ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
+    .C   ({[*2]waddr_a[1], [*2]waddr_b[1], [*2]waddr_a[1], waddr_b[1]})
   );
 
   AND4 I4_3
   (
-    .D   ([*4]waddr_a[2],[*3]waddr_b[2]),
+    .D   ({[*4]waddr_a[2], [*3]waddr_b[2]}),
     .out (net3[4]),
     .A   ([*7]net6),
-    .B   (waddr_a[0],waddr_b[0],waddr_a[0],waddr_b[0],waddr_a[0],waddr_b[0],waddr_a[0]),
-    .C   ([*2]waddr_a[1],[*2]waddr_b[1],[*2]waddr_a[1],waddr_b[1])
+    .B   ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
+    .C   ({[*2]waddr_a[1], [*2]waddr_b[1], [*2]waddr_a[1], waddr_b[1]})
   );
 
   AND4 I4_2
   (
-    .D   ([*4]waddr_a[2],[*3]waddr_b[2]),
+    .D   ({[*4]waddr_a[2], [*3]waddr_b[2]}),
     .out (net3[5]),
     .A   ([*7]net6),
-    .B   (waddr_a[0],waddr_b[0],waddr_a[0],waddr_b[0],waddr_a[0],waddr_b[0],waddr_a[0]),
-    .C   ([*2]waddr_a[1],[*2]waddr_b[1],[*2]waddr_a[1],waddr_b[1])
+    .B   ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
+    .C   ({[*2]waddr_a[1], [*2]waddr_b[1], [*2]waddr_a[1], waddr_b[1]})
   );
 
   AND4 I4_1
   (
-    .D   ([*4]waddr_a[2],[*3]waddr_b[2]),
+    .D   ({[*4]waddr_a[2], [*3]waddr_b[2]}),
     .out (net3[6]),
     .A   ([*7]net6),
-    .B   (waddr_a[0],waddr_b[0],waddr_a[0],waddr_b[0],waddr_a[0],waddr_b[0],waddr_a[0]),
-    .C   ([*2]waddr_a[1],[*2]waddr_b[1],[*2]waddr_a[1],waddr_b[1])
+    .B   ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
+    .C   ({[*2]waddr_a[1], [*2]waddr_b[1], [*2]waddr_a[1], waddr_b[1]})
   );
 
   inv_drive I3_7
@@ -227,5 +239,13 @@ module write_decoder
   );
 
 endmodule
+
+/* verilator lint_on WIDTHTRUNC */
+/* verilator lint_on WIDTHEXPAND */
+/* verilator lint_on WIDTHCONCAT */
+/* verilator lint_on WIDTH */
+/* verilator lint_on UNDRIVEN */
+/* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on UNUSED */
 
 `endif /* WRITE_DECODER_V */
