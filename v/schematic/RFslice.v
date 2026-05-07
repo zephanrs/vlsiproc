@@ -20,15 +20,15 @@
 
 module RFslice
 (
-  input  wire       wdata,
-  output wire       rdata0,
-  output wire       rdata1,
-  input  wire [7:0] ren0_b,
-  input  wire [7:0] ren0,
-  input  wire [7:0] ren1,
-  input  wire [7:0] ren1_b,
-  input  wire [7:0] wen,
-  input  wire [7:0] wen_b
+  input  wire [-1:0] wdata,
+  output wire [-1:0] rdata0,
+  output wire [-1:0] rdata1,
+  input  wire [7:0]  ren0_b,
+  input  wire [7:0]  ren0,
+  input  wire [7:0]  ren1,
+  input  wire [7:0]  ren1_b,
+  input  wire [7:1]  wen,
+  input  wire [7:1]  wen_b
 );
 
   wire net1;
@@ -37,8 +37,8 @@ module RFslice
   wire net6;
   wire rawdata0;
   wire rawdata1;
-  wire rdata0_drv;
-  wire rdata1_drv;
+  wire [-1:0] rdata0_drv;
+  wire [-1:0] rdata1_drv;
 
   RFReg I1_7
   (

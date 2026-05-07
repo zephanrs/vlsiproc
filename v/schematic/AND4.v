@@ -15,11 +15,11 @@
 
 module AND4
 (
-  input  wire in3,
-  input  wire in1,
-  input  wire in2,
-  output wire out,
-  input  wire in0
+  input  wire [-1:0] in3,
+  input  wire [-1:0] in1,
+  input  wire [-1:0] in2,
+  output wire [-1:0] out,
+  input  wire [-1:0] in0
 );
 
   supply1 vdd;
@@ -30,7 +30,7 @@ module AND4
   wire net12;
   wire net15;
   wire net16;
-  wire out_drv;
+  wire [-1:0] out_drv;
 
   pmos PM6        ( Y, vdd, in3 );
   pmos PM5        ( Y, vdd, in2 );

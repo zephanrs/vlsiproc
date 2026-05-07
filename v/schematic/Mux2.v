@@ -15,11 +15,11 @@
 
 module Mux2
 (
-  input  wire in0,
-  input  wire in1,
-  output wire out,
-  input  wire sel,
-  input  wire sel_b
+  input  wire [-1:0] in0,
+  input  wire [-1:0] in1,
+  output wire [-1:0] out,
+  input  wire [-1:0] sel,
+  input  wire [-1:0] sel_b
 );
 
   supply1 vdd;
@@ -28,7 +28,7 @@ module Mux2
   wire net1;
   wire net2;
   wire net4;
-  wire out_drv;
+  wire [-1:0] out_drv;
 
   nmos NM4        ( out_drv, gnd, net2 );
   nmos NM3        ( net1, net2, sel );
