@@ -117,6 +117,41 @@ def vlog_name(n):
     """Convert Cadence <> bus notation to Verilog []."""
     return n.replace("<", "[").replace(">", "]")
 
+def strip_pin_range(pin):
+    """`.sel<1:0>` -> `sel`, `.out<7>` -> `out`, `clk` -> `clk`."""
+    return re.sub(r'<\d+(?::\d+)?>$', '', pin)
+
+def _convert_one(part):
+    """Convert one Cadence net atom: '*N x' -> '{N{x}}', '<>' -> '[]'."""
+    part = part.strip()
+    m = re.match(r'^\*(\d+)\s+(.+)$', part)
+    if m:
+        return "{" + m.group(1) + "{" + vlog_name(m.group(2)) + "}}"
+    return vlog_name(part)
+
+def cad_net_to_verilog(net):
+    """Full Cadence net expression -> Verilog. Handles concat, replication, <>."""
+    if not net:
+        return ""
+    parts = [p.strip() for p in net.split(',')]
+    converted = [_convert_one(p) for p in parts]
+    return "{" + ", ".join(converted) + "}" if len(converted) > 1 else converted[0]
+
+def extract_signals(net):
+    """Underlying signal names referenced by a Cadence net expression
+    (for internal-net declaration tracking). Strips '*N ' broadcast prefix
+    and splits comma-separated concat parts."""
+    if not net:
+        return []
+    result = []
+    for part in net.split(','):
+        part = part.strip()
+        m = re.match(r'^\*\d+\s+(.+)$', part)
+        if m:
+            part = m.group(1)
+        result.append(part)
+    return result
+
 def guard_name(cell):
     """MyCell_8b -> MY_CELL_8B_V"""
     s = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", cell)
@@ -182,7 +217,7 @@ def is_stale(lib, cad_cell, vname, cds_dir, out_dir):
 # -----------------------------------------------------------------------
 def parse_netlist(path):
     cell_name   = None
-    ports       = []        # list of (name, direction, bits)
+    raw_ports   = []        # list of (base, direction, max_bit)
     nets        = []        # list of raw net names
     insts       = []        # list of (instName, cellName, [(pin, net), ...])
     noconn_nets = set()     # raw net names that terminate at a noConn marker
@@ -198,14 +233,14 @@ def parse_netlist(path):
                 cell_name = parts[1]
             elif tag == "port":
                 _, name, direction, bits = parts
-                # Cadence sometimes reports bus terminals as singleBit with the
-                # range baked into the name (e.g. "in0<7:0>" with bits=1). Pull
-                # the range out so the port becomes a proper packed bus.
+                # Pull a baked-in <hi:lo> or <N> out of the name and use the
+                # max bit index. Multiple bit-selected port labels for the same
+                # base get coalesced after the loop.
                 base, hi, lo = _parse_cadence_range(name)
                 if hi is not None:
-                    name = base
-                    bits = abs(hi - lo) + 1
-                ports.append((name, direction, int(bits)))
+                    raw_ports.append((base, direction, max(hi, lo)))
+                else:
+                    raw_ports.append((name, direction, int(bits) - 1))
             elif tag == "net":
                 nets.append(parts[1])
             elif tag == "noconn":
@@ -218,17 +253,35 @@ def parse_netlist(path):
                     conns.append((parts[i], parts[i+1]))
                 insts.append((inst_name, cell, conns))
 
+    ports = _coalesce_ports(raw_ports)
     return cell_name, ports, nets, insts, noconn_nets
 
 # -----------------------------------------------------------------------
 # Array-instance unrolling
 # -----------------------------------------------------------------------
 def _parse_cadence_range(name):
-    """'foo<6:1>' -> ('foo', 6, 1).  Anything else -> ('foo', None, None)."""
+    """'foo<6:1>' -> ('foo', 6, 1).  'foo<3>' -> ('foo', 3, 3).  Else ('foo', None, None)."""
     m = re.match(r'^(.+)<(\d+):(\d+)>$', name)
     if m:
         return m.group(1), int(m.group(2)), int(m.group(3))
+    m = re.match(r'^(.+)<(\d+)>$', name)
+    if m:
+        b = int(m.group(2))
+        return m.group(1), b, b
     return name, None, None
+
+def _coalesce_ports(raw_ports):
+    """Merge multiple bit-selected port labels (`inst<13>`, `inst<11:9>`, ...)
+    into one bus port spanning [max_hi:0]. Scalar ports pass through unchanged."""
+    grouped = {}    # base -> [direction, max_hi]
+    order   = []
+    for base, direction, hi in raw_ports:
+        if base in grouped:
+            grouped[base][1] = max(grouped[base][1], hi)
+        else:
+            grouped[base] = [direction, hi]
+            order.append(base)
+    return [(base, grouped[base][0], grouped[base][1] + 1) for base in order]
 
 def _expand_insts(insts):
     """
@@ -250,6 +303,11 @@ def _expand_insts(insts):
         for offset, idx in enumerate(indices):
             new_conns = []
             for pin, net in conns:
+                # Strip Cadence '*N ' broadcast prefix -- each unrolled
+                # instance receives the bare net.
+                m = re.match(r'^\*\d+\s+(.+)$', net)
+                if m:
+                    net = m.group(1)
                 net_base, net_hi, net_lo = _parse_cadence_range(net)
                 if net_hi is not None:
                     if net_hi >= net_lo:
@@ -274,7 +332,7 @@ def _expand_insts(insts):
 def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_dir, manifest):
     guard = guard_name(cell_name)
 
-    noconn_vlog = {vlog_name(n) for n in noconn_nets}
+    noconn_vlog = {cad_net_to_verilog(n) for n in noconn_nets}
     insts = _expand_insts(insts)
 
     dir_map    = {"input": "input ", "output": "output", "inputOutput": "inout "}
@@ -321,7 +379,8 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
     all_raw_nets = set(nets)
     for _, _, conns in insts:
         for _, net in conns:
-            if net: all_raw_nets.add(net)
+            for sig in extract_signals(net):
+                all_raw_nets.add(sig)
 
     bus_max = {}
     scalar_nets_set = set()
@@ -373,8 +432,9 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
             vcell = manifest.get(cell, cell)
             vconns = []
             for p, n in conns:
-                vn = supply_name(vlog_name(n))
-                vconns.append((p, vn))
+                vp = strip_pin_range(p)
+                vn = supply_name(cad_net_to_verilog(n))
+                vconns.append((vp, vn))
             sub_insts.append((vcell, inst_name, vconns))
 
     # ----------------------------------------------------------------
@@ -397,6 +457,13 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
         h()
         for inc in includes:
             h(f'`include "{inc}"')
+
+    # Schematic-derived structural Verilog routinely has dangling/unused nets
+    # and width quirks that are normal for a transistor-level netlist.
+    h()
+    for w in ("UNUSED", "UNUSEDSIGNAL", "UNDRIVEN",
+              "WIDTH", "WIDTHCONCAT", "WIDTHEXPAND", "WIDTHTRUNC"):
+        h(f"/* verilator lint_off {w} */")
 
     h()
     h(f"module {cell_name}")
@@ -442,6 +509,12 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
 
     h()
     h("endmodule")
+
+    h()
+    for w in ("WIDTHTRUNC", "WIDTHEXPAND", "WIDTHCONCAT", "WIDTH",
+              "UNDRIVEN", "UNUSEDSIGNAL", "UNUSED"):
+        h(f"/* verilator lint_on {w} */")
+
     h()
     h(f"`endif /* {guard} */")
 
