@@ -28,14 +28,8 @@ module write_decoder
   output wire [7:0] wen
 );
 
-  wire [*7]clk;
-  wire [*7]net6;
   wire net5;
   wire net6;
-  wire [1:0] [*2]waddr_a;
-  wire [1:0] [*2]waddr_b;
-  wire [2:0] [*3]waddr_b;
-  wire [2:0] [*4]waddr_a;
   wire [6:0] net1;
   wire [6:0] net3;
   wire [2:0] waddr_a;
@@ -45,65 +39,65 @@ module write_decoder
 
   AND4 I4_7
   (
-    .D   ({[*4]waddr_a[2], [*3]waddr_b[2]}),
+    .D   ({waddr_a[2], {3{waddr_b[2]}}}),
     .out (net3[0]),
-    .A   ([*7]net6),
+    .A   (net6),
     .B   ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
-    .C   ({[*2]waddr_a[1], [*2]waddr_b[1], [*2]waddr_a[1], waddr_b[1]})
+    .C   ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]})
   );
 
   AND4 I4_6
   (
-    .D   ({[*4]waddr_a[2], [*3]waddr_b[2]}),
+    .D   ({waddr_a[2], {3{waddr_b[2]}}}),
     .out (net3[1]),
-    .A   ([*7]net6),
+    .A   (net6),
     .B   ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
-    .C   ({[*2]waddr_a[1], [*2]waddr_b[1], [*2]waddr_a[1], waddr_b[1]})
+    .C   ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]})
   );
 
   AND4 I4_5
   (
-    .D   ({[*4]waddr_a[2], [*3]waddr_b[2]}),
+    .D   ({waddr_a[2], {3{waddr_b[2]}}}),
     .out (net3[2]),
-    .A   ([*7]net6),
+    .A   (net6),
     .B   ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
-    .C   ({[*2]waddr_a[1], [*2]waddr_b[1], [*2]waddr_a[1], waddr_b[1]})
+    .C   ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]})
   );
 
   AND4 I4_4
   (
-    .D   ({[*4]waddr_a[2], [*3]waddr_b[2]}),
+    .D   ({waddr_a[2], {3{waddr_b[2]}}}),
     .out (net3[3]),
-    .A   ([*7]net6),
+    .A   (net6),
     .B   ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
-    .C   ({[*2]waddr_a[1], [*2]waddr_b[1], [*2]waddr_a[1], waddr_b[1]})
+    .C   ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]})
   );
 
   AND4 I4_3
   (
-    .D   ({[*4]waddr_a[2], [*3]waddr_b[2]}),
+    .D   ({waddr_a[2], {3{waddr_b[2]}}}),
     .out (net3[4]),
-    .A   ([*7]net6),
+    .A   (net6),
     .B   ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
-    .C   ({[*2]waddr_a[1], [*2]waddr_b[1], [*2]waddr_a[1], waddr_b[1]})
+    .C   ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]})
   );
 
   AND4 I4_2
   (
-    .D   ({[*4]waddr_a[2], [*3]waddr_b[2]}),
+    .D   ({waddr_a[2], {3{waddr_b[2]}}}),
     .out (net3[5]),
-    .A   ([*7]net6),
+    .A   (net6),
     .B   ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
-    .C   ({[*2]waddr_a[1], [*2]waddr_b[1], [*2]waddr_a[1], waddr_b[1]})
+    .C   ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]})
   );
 
   AND4 I4_1
   (
-    .D   ({[*4]waddr_a[2], [*3]waddr_b[2]}),
+    .D   ({waddr_a[2], {3{waddr_b[2]}}}),
     .out (net3[6]),
-    .A   ([*7]net6),
+    .A   (net6),
     .B   ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
-    .C   ({[*2]waddr_a[1], [*2]waddr_b[1], [*2]waddr_a[1], waddr_b[1]})
+    .C   ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]})
   );
 
   inv_drive I3_7
@@ -179,49 +173,49 @@ module write_decoder
   clk_ena I2_7
   (
     .ena_clk_b (net1[0]),
-    .clk       ([*7]clk),
+    .clk       (clk),
     .ena       (net3[0])
   );
 
   clk_ena I2_6
   (
     .ena_clk_b (net1[1]),
-    .clk       ([*7]clk),
+    .clk       (clk),
     .ena       (net3[1])
   );
 
   clk_ena I2_5
   (
     .ena_clk_b (net1[2]),
-    .clk       ([*7]clk),
+    .clk       (clk),
     .ena       (net3[2])
   );
 
   clk_ena I2_4
   (
     .ena_clk_b (net1[3]),
-    .clk       ([*7]clk),
+    .clk       (clk),
     .ena       (net3[3])
   );
 
   clk_ena I2_3
   (
     .ena_clk_b (net1[4]),
-    .clk       ([*7]clk),
+    .clk       (clk),
     .ena       (net3[4])
   );
 
   clk_ena I2_2
   (
     .ena_clk_b (net1[5]),
-    .clk       ([*7]clk),
+    .clk       (clk),
     .ena       (net3[5])
   );
 
   clk_ena I2_1
   (
     .ena_clk_b (net1[6]),
-    .clk       ([*7]clk),
+    .clk       (clk),
     .ena       (net3[6])
   );
 

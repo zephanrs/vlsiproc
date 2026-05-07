@@ -60,7 +60,6 @@ module ProcDpath
   wire net32;
   wire net5;
   wire net6;
-  wire [70:0] [*8]mux4_out;
   wire [7:0] net25;
   wire [2:0] net31;
   wire [2:0] net33;
@@ -189,7 +188,7 @@ module ProcDpath
 
   Mux4_8b I15
   (
-    .out ([*8]mux4_out[70]),
+    .out ({8{mux4_out[70]}}),
     .in0 (idmem_wdata_drv[7:0]),
     .in1 (net55[0:7]),
     .in2 (net54[0:7]),
@@ -202,7 +201,7 @@ module ProcDpath
     .eq  (eq),
     .out (alu_out_drv[7:0]),
     .in0 (op1_sel_out_drv[7:0]),
-    .in1 ([*8]mux4_out[70])
+    .in1 ({8{mux4_out[70]}})
   );
 
   assign A_reg_out = A_reg_out_drv;

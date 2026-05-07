@@ -31,9 +31,6 @@ module RFslice
   input  wire [7:0] wen_b
 );
 
-  wire [*7]net6;
-  wire [*7]rawdata0;
-  wire [*7]rawdata1;
   wire net1;
   wire net2;
   wire net5;
@@ -49,9 +46,9 @@ module RFslice
     .ren0_b (ren0_b[7]),
     .ren1   (ren1[7]),
     .ren0   (ren0[7]),
-    .rdata0 ([*7]rawdata0),
-    .rdata1 ([*7]rawdata1),
-    .D      ([*7]net6),
+    .rdata0 (rawdata0),
+    .rdata1 (rawdata1),
+    .D      (net6),
     .clk    (wen[7]),
     .clk_b  (wen_b[7])
   );
@@ -62,9 +59,9 @@ module RFslice
     .ren0_b (ren0_b[6]),
     .ren1   (ren1[6]),
     .ren0   (ren0[6]),
-    .rdata0 ([*7]rawdata0),
-    .rdata1 ([*7]rawdata1),
-    .D      ([*7]net6),
+    .rdata0 (rawdata0),
+    .rdata1 (rawdata1),
+    .D      (net6),
     .clk    (wen[6]),
     .clk_b  (wen_b[6])
   );
@@ -75,9 +72,9 @@ module RFslice
     .ren0_b (ren0_b[5]),
     .ren1   (ren1[5]),
     .ren0   (ren0[5]),
-    .rdata0 ([*7]rawdata0),
-    .rdata1 ([*7]rawdata1),
-    .D      ([*7]net6),
+    .rdata0 (rawdata0),
+    .rdata1 (rawdata1),
+    .D      (net6),
     .clk    (wen[5]),
     .clk_b  (wen_b[5])
   );
@@ -88,9 +85,9 @@ module RFslice
     .ren0_b (ren0_b[4]),
     .ren1   (ren1[4]),
     .ren0   (ren0[4]),
-    .rdata0 ([*7]rawdata0),
-    .rdata1 ([*7]rawdata1),
-    .D      ([*7]net6),
+    .rdata0 (rawdata0),
+    .rdata1 (rawdata1),
+    .D      (net6),
     .clk    (wen[4]),
     .clk_b  (wen_b[4])
   );
@@ -101,9 +98,9 @@ module RFslice
     .ren0_b (ren0_b[3]),
     .ren1   (ren1[3]),
     .ren0   (ren0[3]),
-    .rdata0 ([*7]rawdata0),
-    .rdata1 ([*7]rawdata1),
-    .D      ([*7]net6),
+    .rdata0 (rawdata0),
+    .rdata1 (rawdata1),
+    .D      (net6),
     .clk    (wen[3]),
     .clk_b  (wen_b[3])
   );
@@ -114,9 +111,9 @@ module RFslice
     .ren0_b (ren0_b[2]),
     .ren1   (ren1[2]),
     .ren0   (ren0[2]),
-    .rdata0 ([*7]rawdata0),
-    .rdata1 ([*7]rawdata1),
-    .D      ([*7]net6),
+    .rdata0 (rawdata0),
+    .rdata1 (rawdata1),
+    .D      (net6),
     .clk    (wen[2]),
     .clk_b  (wen_b[2])
   );
@@ -127,9 +124,9 @@ module RFslice
     .ren0_b (ren0_b[1]),
     .ren1   (ren1[1]),
     .ren0   (ren0[1]),
-    .rdata0 ([*7]rawdata0),
-    .rdata1 ([*7]rawdata1),
-    .D      ([*7]net6),
+    .rdata0 (rawdata0),
+    .rdata1 (rawdata1),
+    .D      (net6),
     .clk    (wen[1]),
     .clk_b  (wen_b[1])
   );
