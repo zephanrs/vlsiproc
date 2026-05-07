@@ -15,6 +15,8 @@ ref_srcs = \
   EqComparator_8b.v \
   Mux2_8b.v \
   Mux4_8b.v \
+  Mux4_4b.v \
+  Incrementer_4b.v \
   Register_8b.v \
   Register_16b.v \
   ALU_8b.v \

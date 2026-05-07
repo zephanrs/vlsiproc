@@ -46,6 +46,7 @@ module Proc2Dpath
   // Predefine Signals
   logic [7:0] wb_val;
   logic [7:0] addr;
+  logic [7:0] alu_out;
 
   // PC Register
   logic [7:0] pc;
@@ -191,8 +192,6 @@ module Proc2Dpath
   );
 
   // ALU
-  logic [7:0] alu_out;
-
   ALU_8b alu
   (
     .in0 (op1_data),

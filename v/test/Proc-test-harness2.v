@@ -7,6 +7,7 @@
 `ifndef PROC_TEST_HARNESS_V
 `define PROC_TEST_HARNESS_V
 
+`define TINYRV1_V2
 `include "test/test-utils.v"
 `include "ref/Proc2.v"
 `include "test/TestMemory.v"
