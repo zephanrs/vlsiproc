@@ -70,7 +70,6 @@ module ALU_8b
   wire net9;
   wire [7:0] G;
   wire [7:1] P;
-  wire [0:0] out;
   wire eq_drv;
   wire [7:0] sum_drv;
 
@@ -342,7 +341,7 @@ module ALU_8b
   (
     .out (net49),
     .in0 (P[1]),
-    .in1 (out[0])
+    .in1 (sum_drv[0])
   );
 
   NOR2 I2
