@@ -235,8 +235,12 @@ def _expand_insts(insts):
                         net_bits = list(range(net_hi, net_lo - 1, -1))
                     else:
                         net_bits = list(range(net_hi, net_lo + 1))
-                    bit = net_bits[offset]
-                    new_conns.append((pin, f"{net_base}<{bit}>"))
+                    # Per-bit slice when net width matches array length;
+                    # otherwise broadcast (e.g. a 2-bit sel shared across 8 instances).
+                    if len(net_bits) == len(indices):
+                        new_conns.append((pin, f"{net_base}<{net_bits[offset]}>"))
+                    else:
+                        new_conns.append((pin, net))
                 else:
                     new_conns.append((pin, net))
             result.append((f"{base}_{idx}", cell, new_conns))
