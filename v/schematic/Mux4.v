@@ -34,6 +34,7 @@ module Mux4
   wire net4;
   wire net6;
   wire net7;
+  wire out_drv;
 
   pmos PM21       ( net2, net7, sel_b[1] );
   pmos PM17       ( net11, net1, sel_b[0] );
@@ -43,7 +44,7 @@ module Mux4
   pmos PM19       ( net7, net6, sel_b[0] );
   pmos PM15       ( net6, vdd, in3 );
   pmos PM20       ( net2, net11, sel[1] );
-  pmos PM3        ( out, vdd, net2 );
+  pmos PM3        ( out_drv, vdd, net2 );
   pmos PM16       ( net11, net4, sel[0] );
   pmos PM12       ( net4, vdd, in0 );
   nmos NM16       ( net11, net1, sel[0] );
@@ -53,10 +54,12 @@ module Mux4
   nmos NM20       ( net2, net7, sel[1] );
   nmos NM18       ( net7, net6, sel[0] );
   nmos NM14       ( net6, gnd, in3 );
-  nmos NM3        ( out, gnd, net2 );
+  nmos NM3        ( out_drv, gnd, net2 );
   nmos NM15       ( net11, net4, sel_b[0] );
   nmos NM11       ( net4, gnd, in0 );
   nmos NM19       ( net2, net11, sel_b[1] );
+
+  assign out = out_drv;
 
 endmodule
 

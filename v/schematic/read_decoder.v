@@ -25,14 +25,13 @@ module read_decoder
 
   wire [1:0] [*2]raddr_a;
   wire [1:0] [*2]raddr_b;
-  wire [1:0] [*2]raddr_b[1],[*2]raddr_a[1],[*2]raddr_b[1],[*2]raddr_a;
   wire [2:0] [*4]raddr_a;
   wire [2:0] [*4]raddr_b;
-  wire [2:0] [*4]raddr_b[2],[*4]raddr_a;
   wire [7:0] net1;
   wire [2:0] raddr_a;
   wire [2:0] raddr_b;
-  wire [0:0] raddr_b[0],raddr_a[0],raddr_b[0],raddr_a[0],raddr_b[0],raddr_a[0],raddr_b[0],raddr_a;
+  wire [7:0] ren_drv;
+  wire [7:0] ren_b_drv;
 
   NOR3 I1_7
   (
@@ -101,57 +100,57 @@ module read_decoder
   inv_drive I3_7
   (
     .in    (net1[0]),
-    .out   (ren[7]),
-    .out_b (ren_b[7])
+    .out   (ren_drv[7]),
+    .out_b (ren_b_drv[7])
   );
 
   inv_drive I3_6
   (
     .in    (net1[1]),
-    .out   (ren[6]),
-    .out_b (ren_b[6])
+    .out   (ren_drv[6]),
+    .out_b (ren_b_drv[6])
   );
 
   inv_drive I3_5
   (
     .in    (net1[2]),
-    .out   (ren[5]),
-    .out_b (ren_b[5])
+    .out   (ren_drv[5]),
+    .out_b (ren_b_drv[5])
   );
 
   inv_drive I3_4
   (
     .in    (net1[3]),
-    .out   (ren[4]),
-    .out_b (ren_b[4])
+    .out   (ren_drv[4]),
+    .out_b (ren_b_drv[4])
   );
 
   inv_drive I3_3
   (
     .in    (net1[4]),
-    .out   (ren[3]),
-    .out_b (ren_b[3])
+    .out   (ren_drv[3]),
+    .out_b (ren_b_drv[3])
   );
 
   inv_drive I3_2
   (
     .in    (net1[5]),
-    .out   (ren[2]),
-    .out_b (ren_b[2])
+    .out   (ren_drv[2]),
+    .out_b (ren_b_drv[2])
   );
 
   inv_drive I3_1
   (
     .in    (net1[6]),
-    .out   (ren[1]),
-    .out_b (ren_b[1])
+    .out   (ren_drv[1]),
+    .out_b (ren_b_drv[1])
   );
 
   inv_drive I3_0
   (
     .in    (net1[7]),
-    .out   (ren[0]),
-    .out_b (ren_b[0])
+    .out   (ren_drv[0]),
+    .out_b (ren_b_drv[0])
   );
 
   inv_drive I0_2
@@ -174,6 +173,9 @@ module read_decoder
     .out_b (raddr_b[0]),
     .in    (raddr[0])
   );
+
+  assign ren = ren_drv;
+  assign ren_b = ren_b_drv;
 
 endmodule
 

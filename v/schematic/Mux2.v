@@ -28,17 +28,20 @@ module Mux2
   wire net1;
   wire net2;
   wire net4;
+  wire out_drv;
 
-  nmos NM4        ( out, gnd, net2 );
+  nmos NM4        ( out_drv, gnd, net2 );
   nmos NM3        ( net1, net2, sel );
   nmos NM2        ( net4, net2, sel_b );
   nmos NM1        ( net1, gnd, in1 );
   nmos NM0        ( net4, gnd, in0 );
-  pmos PM4        ( out, vdd, net2 );
+  pmos PM4        ( out_drv, vdd, net2 );
   pmos PM3        ( net1, net2, sel_b );
   pmos PM2        ( net4, net2, sel );
   pmos PM1        ( net1, vdd, in1 );
   pmos PM0        ( net4, vdd, in0 );
+
+  assign out = out_drv;
 
 endmodule
 

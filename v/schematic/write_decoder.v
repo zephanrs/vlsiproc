@@ -33,16 +33,15 @@ module write_decoder
   wire net5;
   wire net6;
   wire [1:0] [*2]waddr_a;
-  wire [1:0] [*2]waddr_a[1],[*2]waddr_b[1],[*2]waddr_a[1],waddr_b;
   wire [1:0] [*2]waddr_b;
   wire [2:0] [*3]waddr_b;
   wire [2:0] [*4]waddr_a;
-  wire [2:0] [*4]waddr_a[2],[*3]waddr_b;
   wire [6:0] net1;
   wire [6:0] net3;
   wire [2:0] waddr_a;
-  wire [0:0] waddr_a[0],waddr_b[0],waddr_a[0],waddr_b[0],waddr_a[0],waddr_b[0],waddr_a;
   wire [2:0] waddr_b;
+  wire [7:0] wen_drv;
+  wire [7:0] wen_b_drv;
 
   AND4 I4_7
   (
@@ -110,50 +109,50 @@ module write_decoder
   inv_drive I3_7
   (
     .in    (net1[0]),
-    .out   (wen_b[7]),
-    .out_b (wen[7])
+    .out   (wen_b_drv[7]),
+    .out_b (wen_drv[7])
   );
 
   inv_drive I3_6
   (
     .in    (net1[1]),
-    .out   (wen_b[6]),
-    .out_b (wen[6])
+    .out   (wen_b_drv[6]),
+    .out_b (wen_drv[6])
   );
 
   inv_drive I3_5
   (
     .in    (net1[2]),
-    .out   (wen_b[5]),
-    .out_b (wen[5])
+    .out   (wen_b_drv[5]),
+    .out_b (wen_drv[5])
   );
 
   inv_drive I3_4
   (
     .in    (net1[3]),
-    .out   (wen_b[4]),
-    .out_b (wen[4])
+    .out   (wen_b_drv[4]),
+    .out_b (wen_drv[4])
   );
 
   inv_drive I3_3
   (
     .in    (net1[4]),
-    .out   (wen_b[3]),
-    .out_b (wen[3])
+    .out   (wen_b_drv[3]),
+    .out_b (wen_drv[3])
   );
 
   inv_drive I3_2
   (
     .in    (net1[5]),
-    .out   (wen_b[2]),
-    .out_b (wen[2])
+    .out   (wen_b_drv[2]),
+    .out_b (wen_drv[2])
   );
 
   inv_drive I3_1
   (
     .in    (net1[6]),
-    .out   (wen_b[1]),
-    .out_b (wen[1])
+    .out   (wen_b_drv[1]),
+    .out_b (wen_drv[1])
   );
 
   inv_drive I0_2
@@ -237,6 +236,9 @@ module write_decoder
     .out (net6),
     .in  (net5)
   );
+
+  assign wen = wen_drv;
+  assign wen_b = wen_b_drv;
 
 endmodule
 

@@ -34,10 +34,11 @@ module FF_std_2
   wire net5;
   wire net6;
   wire net7;
+  wire Y_drv;
 
   nmos NM18       ( net14, net10, ck_b );
   nmos NM16       ( net10, gnd, D );
-  nmos NM10       ( Y, gnd, net7 );
+  nmos NM10       ( Y_drv, gnd, net7 );
   nmos NM9        ( net2, gnd, net7 );
   nmos NM7        ( net7, gnd, net15 );
   nmos NM6        ( net15, net3, ck );
@@ -48,13 +49,15 @@ module FF_std_2
   pmos PM17       ( net14, net1, ck );
   pmos PM15       ( net1, vdd, D );
   pmos PM18       ( net14, net5, ck_b );
-  pmos PM9        ( Y, vdd, net7 );
+  pmos PM9        ( Y_drv, vdd, net7 );
   pmos PM8        ( net6, vdd, net7 );
   pmos PM6        ( net7, vdd, net15 );
   pmos PM5        ( net15, net3, ck_b );
   pmos PM4        ( net5, vdd, net3 );
   pmos PM19       ( net15, net6, ck );
   pmos PM2        ( net3, vdd, net14 );
+
+  assign Y = Y_drv;
 
 endmodule
 

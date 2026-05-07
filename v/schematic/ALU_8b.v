@@ -71,6 +71,8 @@ module ALU_8b
   wire [7:0] G;
   wire [7:0] P;
   wire [0:0] out;
+  wire eq_drv;
+  wire [7:0] sum_drv;
 
   inv_x1 I70
   (
@@ -226,14 +228,14 @@ module ALU_8b
 
   XOR2 I146
   (
-    .out (sum[0]),
+    .out (sum_drv[0]),
     .in0 (in0[0]),
     .in1 (in1[0])
   );
 
   XOR2 I63
   (
-    .out (sum[1]),
+    .out (sum_drv[1]),
     .in0 (P[1]),
     .in1 (G[0])
   );
@@ -247,7 +249,7 @@ module ALU_8b
 
   XOR2 I62
   (
-    .out (sum[2]),
+    .out (sum_drv[2]),
     .in0 (P[2]),
     .in1 (G10)
   );
@@ -261,7 +263,7 @@ module ALU_8b
 
   XOR2 I61
   (
-    .out (sum[3]),
+    .out (sum_drv[3]),
     .in0 (P[3]),
     .in1 (G20)
   );
@@ -275,7 +277,7 @@ module ALU_8b
 
   XOR2 I60
   (
-    .out (sum[4]),
+    .out (sum_drv[4]),
     .in0 (P[4]),
     .in1 (G30)
   );
@@ -289,7 +291,7 @@ module ALU_8b
 
   XOR2 I59
   (
-    .out (sum[5]),
+    .out (sum_drv[5]),
     .in0 (P[5]),
     .in1 (G40)
   );
@@ -303,7 +305,7 @@ module ALU_8b
 
   XOR2 I58
   (
-    .out (sum[6]),
+    .out (sum_drv[6]),
     .in0 (P[6]),
     .in1 (G50)
   );
@@ -317,7 +319,7 @@ module ALU_8b
 
   XOR2 I57
   (
-    .out (sum[7]),
+    .out (sum_drv[7]),
     .in0 (P[7]),
     .in1 (G60)
   );
@@ -331,7 +333,7 @@ module ALU_8b
 
   NOR2 I4
   (
-    .out (eq),
+    .out (eq_drv),
     .in0 (net33),
     .in1 (net19)
   );
@@ -483,6 +485,9 @@ module ALU_8b
     .in0 (net40),
     .in1 (net43)
   );
+
+  assign eq = eq_drv;
+  assign sum = sum_drv;
 
 endmodule
 

@@ -30,19 +30,22 @@ module AND4
   wire net12;
   wire net15;
   wire net16;
+  wire out_drv;
 
   pmos PM6        ( Y, vdd, in3 );
   pmos PM5        ( Y, vdd, in2 );
   pmos PM7        ( X, vdd, in1 );
   pmos PM4        ( net12, vdd, Y );
-  pmos PM3        ( out, net12, X );
+  pmos PM3        ( out_drv, net12, X );
   pmos PM8        ( X, vdd, in0 );
   nmos NM6        ( net15, gnd, in2 );
   nmos NM5        ( Y, net15, in3 );
-  nmos NM4        ( out, gnd, Y );
+  nmos NM4        ( out_drv, gnd, Y );
   nmos NM8        ( X, net16, in0 );
   nmos NM7        ( net16, gnd, in1 );
-  nmos NM3        ( out, gnd, X );
+  nmos NM3        ( out_drv, gnd, X );
+
+  assign out = out_drv;
 
 endmodule
 

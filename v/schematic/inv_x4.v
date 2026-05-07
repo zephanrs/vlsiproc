@@ -22,8 +22,12 @@ module inv_x4
   supply1 vdd;
   supply0 gnd;
 
-  nmos NM0        ( out, gnd, in );
-  pmos PM0        ( out, vdd, in );
+  wire out_drv;
+
+  nmos NM0        ( out_drv, gnd, in );
+  pmos PM0        ( out_drv, vdd, in );
+
+  assign out = out_drv;
 
 endmodule
 

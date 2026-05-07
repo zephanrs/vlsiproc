@@ -35,11 +35,12 @@ module FF_reset
   wire net7;
   wire net8;
   wire net9;
+  wire Y_drv;
 
   nmos NM17       ( net1, gnd, reset_b );
   nmos NM16       ( net10, net1, D );
   nmos NM20       ( net8, net4, ck_b );
-  nmos NM10       ( Y, gnd, net7 );
+  nmos NM10       ( Y_drv, gnd, net7 );
   nmos NM21       ( net4, gnd, net7 );
   nmos NM7        ( net7, gnd, net8 );
   nmos NM6        ( net8, net3, ck );
@@ -49,7 +50,7 @@ module FF_reset
   nmos NM2        ( net6, net10, ck_b );
   pmos PM16       ( net10, vdd, reset_b );
   pmos PM15       ( net10, vdd, D );
-  pmos PM9        ( Y, vdd, net7 );
+  pmos PM9        ( Y_drv, vdd, net7 );
   pmos PM20       ( net9, vdd, net7 );
   pmos PM19       ( net8, net9, ck );
   pmos PM6        ( net7, vdd, net8 );
@@ -58,6 +59,8 @@ module FF_reset
   pmos PM18       ( net6, net5, ck_b );
   pmos PM2        ( net3, vdd, net6 );
   pmos PM1        ( net6, net10, ck );
+
+  assign Y = Y_drv;
 
 endmodule
 

@@ -40,6 +40,8 @@ module RFslice
   wire net6;
   wire rawdata0;
   wire rawdata1;
+  wire rdata0_drv;
+  wire rdata1_drv;
 
   RFReg I1_7
   (
@@ -166,15 +168,18 @@ module RFslice
 
   inv_x4 I8
   (
-    .out (rdata1),
+    .out (rdata1_drv),
     .in  (net2)
   );
 
   inv_x4 I7
   (
-    .out (rdata0),
+    .out (rdata0_drv),
     .in  (net1)
   );
+
+  assign rdata0 = rdata0_drv;
+  assign rdata1 = rdata1_drv;
 
 endmodule
 

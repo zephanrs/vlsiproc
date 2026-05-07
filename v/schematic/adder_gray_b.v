@@ -29,17 +29,22 @@ module adder_gray_b
   wire net1;
   wire net2;
   wire net4;
+  wire G_m_n_b_drv;
+  wire P_m_n_b_drv;
 
   nmos NM5        ( net4, gnd, P_kmin1_n );
-  nmos NM4        ( P_m_n_b, net4, P_m_k );
-  nmos PM8        ( G_m_n_b, net2, P_m_k );
+  nmos NM4        ( P_m_n_b_drv, net4, P_m_k );
+  nmos PM8        ( G_m_n_b_drv, net2, P_m_k );
   nmos NM0        ( net2, gnd, G_kmin1_n );
-  nmos PM7        ( G_m_n_b, gnd, G_m_k );
-  pmos PM6        ( P_m_n_b, vdd, P_m_k );
-  pmos PM5        ( P_m_n_b, vdd, P_kmin1_n );
-  pmos NM6        ( G_m_n_b, net1, G_kmin1_n );
-  pmos NM7        ( G_m_n_b, net1, P_m_k );
+  nmos PM7        ( G_m_n_b_drv, gnd, G_m_k );
+  pmos PM6        ( P_m_n_b_drv, vdd, P_m_k );
+  pmos PM5        ( P_m_n_b_drv, vdd, P_kmin1_n );
+  pmos NM6        ( G_m_n_b_drv, net1, G_kmin1_n );
+  pmos NM7        ( G_m_n_b_drv, net1, P_m_k );
   pmos NM8        ( net1, vdd, G_m_k );
+
+  assign G_m_n_b = G_m_n_b_drv;
+  assign P_m_n_b = P_m_n_b_drv;
 
 endmodule
 

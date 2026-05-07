@@ -24,11 +24,14 @@ module NOR2
   supply0 gnd;
 
   wire net5;
+  wire out_drv;
 
   pmos PM0        ( net5, vdd, in0 );
-  pmos PM1        ( out, net5, in1 );
-  nmos NM1        ( out, gnd, in1 );
-  nmos NM0        ( out, gnd, in0 );
+  pmos PM1        ( out_drv, net5, in1 );
+  nmos NM1        ( out_drv, gnd, in1 );
+  nmos NM0        ( out_drv, gnd, in0 );
+
+  assign out = out_drv;
 
 endmodule
 
