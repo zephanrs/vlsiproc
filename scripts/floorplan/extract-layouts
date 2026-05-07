@@ -107,11 +107,19 @@ procedure( fpl_extract_all( cells outPath )
     fpl_dump_libs()
     fp = outfile( outPath "w" )
     if( fp then
-      ;; Per-cell errset so one bad cell doesn't abort the rest.
+      ;; Per-cell errset so one bad cell doesn't abort the rest. We capture
+      ;; the errset result so we can announce which cell threw mid-extract.
       foreach( entry cells
-        errset(
-          ok = fpl_extract_cell( car(entry) cadr(entry) fp )
-          if( ok then n = n + 1 )
+        let( (res)
+          fprintf( errport "fpl: extracting %s/%s\n" car(entry) cadr(entry) )
+          res = errset(
+            ok = fpl_extract_cell( car(entry) cadr(entry) fp )
+            if( ok then n = n + 1 )
+            t
+          )
+          when( null( res )
+            fprintf( errport "fpl:   ^ aborted with an error (see virtuoso log above)\n" )
+          )
         )
       )
       close( fp )
