@@ -1,0 +1,60 @@
+# Manifest of Cadence schematic cells to export as Verilog.
+#
+# Format:
+#   [library_name]                    -- section header (default: processor)
+#   cadence_cell    verilog_module    -- one cell per line
+#
+# Lines starting with # and blank lines are ignored.
+#
+# Used by:
+#   scripts/schematic2verilog  -- generates v/schematic/<verilog>.v
+#   scripts/gen-schem-tests    -- mirrors v/test/ to v/schematic-test/
+#   scripts/check-pins         -- reports pin-name mismatches
+#
+# Only list cells with a matching v/ref/<verilog>.v -- otherwise there's nothing
+# to test against. To add a new cell, write the ref + testbench first, then
+# uncomment (or add) the manifest line.
+
+[processor]
+Adder_8b        Adder_8b
+ALU             ALU_8b
+Comparator_8b   EqComparator_8b
+imm_gen         ImmGen
+Mux2_8b         Mux2_8b
+Mux4_8b         Mux4_8b
+ProcDpath       ProcDpath
+register_file   Regfile
+
+[standard_cells]
+AND2            AND2
+AND4            AND4
+FullAdder       FullAdder
+NAND2           NAND2
+NOR2            NOR2
+NOR3            NOR3
+XOR2            XOR2
+
+# No ref yet -- write v/ref/<name>.v + v/test/<name>-test.v, then enable:
+#
+# [processor]
+# read_decoder    read_decoder
+# reg_ena         reg_ena
+# reg_ena_reset   reg_ena_reset
+# RFslice         RFslice
+# Sklansky_8b     Sklansky_8b
+# write_decoder   write_decoder
+#
+# [standard_cells]
+# clk_ena         clk_ena
+# clk_ena_rst     clk_ena_rst
+# FF_reset        FF_reset
+# FF_std          FF_std
+# FF_std_2        FF_std_2
+# inv_x1          inv_x1
+# inv_x4          inv_x4
+# inv_drive       inv_drive
+# Mux2            Mux2
+# Mux4            Mux4
+# RFReg           RFReg
+# RFzero          RFzero
+# buf             Buf      (rename: collides with Verilog primitive)

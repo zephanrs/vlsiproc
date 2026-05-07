@@ -3,6 +3,12 @@
 #=========================================================================
 
 ref_srcs = \
+  AND2.v \
+  AND4.v \
+  NAND2.v \
+  NOR2.v \
+  NOR3.v \
+  XOR2.v \
   FullAdder.v \
   DFFRE.v \
   Adder_8b.v \
@@ -16,11 +22,18 @@ ref_srcs = \
   Regfile.v \
   ProcDpath.v \
   ProcCtrl.v \
-  ProcCtrl2.v \
   Proc.v \
+  Proc2Dpath.v \
+  Proc2Ctrl.v \
   Proc2.v \
 
 ref_cell_tests = \
+  AND2-test.v \
+  AND4-test.v \
+  NAND2-test.v \
+  NOR2-test.v \
+  NOR3-test.v \
+  XOR2-test.v \
   FullAdder-test.v \
   DFFRE-test.v \
 
