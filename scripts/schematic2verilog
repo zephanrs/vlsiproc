@@ -113,8 +113,15 @@ def supply_name(n):
     if n == "gnd!": return "gnd"
     return n
 
+_RANGE_RE = re.compile(r'<(\d+):(\d+)>')
+
 def vlog_name(n):
-    """Convert Cadence <> bus notation to Verilog []."""
+    """Convert Cadence <> bus notation to Verilog [], normalizing ascending
+    ranges (<lo:hi>) to descending ([hi:lo]) so slices match [N:0] declarations."""
+    def fix(m):
+        a, b = int(m.group(1)), int(m.group(2))
+        return f"[{max(a, b)}:{min(a, b)}]"
+    n = _RANGE_RE.sub(fix, n)
     return n.replace("<", "[").replace(">", "]")
 
 def strip_pin_range(pin):
