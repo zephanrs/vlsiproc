@@ -1,0 +1,6 @@
+#!/bin/sh -f
+#--------------------------------------------------------------------------------------
+# THE RUN FILE created by Cadence Extraction Quantus UI Version 23.1.1-p051
+#--------------------------------------------------------------------------------------
+
+qrc  -log_file /home/ljl97/processor/cadence/lvs/svdb/qrc.reg_ena.log -cmd /home/ljl97/processor/cadence/lvs/svdb/qrc.reg_ena.ccl 
