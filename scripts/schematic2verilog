@@ -23,6 +23,8 @@ import tempfile
 # No string manipulation, regex, or formatting -- just data extraction.
 # -----------------------------------------------------------------------
 SKILL_EXTRACT = r"""
+s2v_prims = '("nmos4" "pmos4" "nmos" "pmos" "nmos1v" "pmos1v" "ipin" "opin" "iopin" "vdd!" "gnd!" "vdd" "gnd" "noConn")
+
 ; Emit one cell's netlist to fp.
 procedure( s2v_emit( cv fp cellName )
   let( (bits)
@@ -78,10 +80,10 @@ procedure( s2v_walk( libName cellName outDir skipList done )
     done = cons( cellName done )
     foreach( inst cv~>instances
       subCell = inst~>cellName
-      when( subCell &&
-            inst~>master &&
-            !( member( subCell '("nmos4" "pmos4" "nmos" "pmos" "nmos1v" "pmos1v" "ipin" "opin" "iopin" "vdd!" "gnd!" "vdd" "gnd" "noConn") ) ) &&
-            !( member( subCell skipList ) )
+      when( and( subCell
+                 inst~>master
+                 null( member( subCell s2v_prims ) )
+                 null( member( subCell skipList ) ) )
         done = s2v_walk( inst~>master~>libName subCell outDir skipList done )
       )
     )
