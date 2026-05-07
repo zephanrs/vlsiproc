@@ -23,10 +23,6 @@ module read_decoder
   input  wire [2:0] raddr
 );
 
-  wire [1:0] [*2]raddr_a;
-  wire [1:0] [*2]raddr_b;
-  wire [2:0] [*4]raddr_a;
-  wire [2:0] [*4]raddr_b;
   wire [7:0] net1;
   wire [2:0] raddr_a;
   wire [2:0] raddr_b;
@@ -37,64 +33,64 @@ module read_decoder
   (
     .out (net1[0]),
     .A   ({raddr_b[0], raddr_a[0], raddr_b[0], raddr_a[0], raddr_b[0], raddr_a[0], raddr_b[0], raddr_a[0]}),
-    .B   ({[*2]raddr_b[1], [*2]raddr_a[1], [*2]raddr_b[1], [*2]raddr_a[1]}),
-    .C   ({[*4]raddr_b[2], [*4]raddr_a[2]})
+    .B   ({raddr_b[1], {2{raddr_a[1]}}, {2{raddr_b[1]}}, {2{raddr_a[1]}}}),
+    .C   ({raddr_b[2], {4{raddr_a[2]}}})
   );
 
   NOR3 I1_6
   (
     .out (net1[1]),
     .A   ({raddr_b[0], raddr_a[0], raddr_b[0], raddr_a[0], raddr_b[0], raddr_a[0], raddr_b[0], raddr_a[0]}),
-    .B   ({[*2]raddr_b[1], [*2]raddr_a[1], [*2]raddr_b[1], [*2]raddr_a[1]}),
-    .C   ({[*4]raddr_b[2], [*4]raddr_a[2]})
+    .B   ({raddr_b[1], {2{raddr_a[1]}}, {2{raddr_b[1]}}, {2{raddr_a[1]}}}),
+    .C   ({raddr_b[2], {4{raddr_a[2]}}})
   );
 
   NOR3 I1_5
   (
     .out (net1[2]),
     .A   ({raddr_b[0], raddr_a[0], raddr_b[0], raddr_a[0], raddr_b[0], raddr_a[0], raddr_b[0], raddr_a[0]}),
-    .B   ({[*2]raddr_b[1], [*2]raddr_a[1], [*2]raddr_b[1], [*2]raddr_a[1]}),
-    .C   ({[*4]raddr_b[2], [*4]raddr_a[2]})
+    .B   ({raddr_b[1], {2{raddr_a[1]}}, {2{raddr_b[1]}}, {2{raddr_a[1]}}}),
+    .C   ({raddr_b[2], {4{raddr_a[2]}}})
   );
 
   NOR3 I1_4
   (
     .out (net1[3]),
     .A   ({raddr_b[0], raddr_a[0], raddr_b[0], raddr_a[0], raddr_b[0], raddr_a[0], raddr_b[0], raddr_a[0]}),
-    .B   ({[*2]raddr_b[1], [*2]raddr_a[1], [*2]raddr_b[1], [*2]raddr_a[1]}),
-    .C   ({[*4]raddr_b[2], [*4]raddr_a[2]})
+    .B   ({raddr_b[1], {2{raddr_a[1]}}, {2{raddr_b[1]}}, {2{raddr_a[1]}}}),
+    .C   ({raddr_b[2], {4{raddr_a[2]}}})
   );
 
   NOR3 I1_3
   (
     .out (net1[4]),
     .A   ({raddr_b[0], raddr_a[0], raddr_b[0], raddr_a[0], raddr_b[0], raddr_a[0], raddr_b[0], raddr_a[0]}),
-    .B   ({[*2]raddr_b[1], [*2]raddr_a[1], [*2]raddr_b[1], [*2]raddr_a[1]}),
-    .C   ({[*4]raddr_b[2], [*4]raddr_a[2]})
+    .B   ({raddr_b[1], {2{raddr_a[1]}}, {2{raddr_b[1]}}, {2{raddr_a[1]}}}),
+    .C   ({raddr_b[2], {4{raddr_a[2]}}})
   );
 
   NOR3 I1_2
   (
     .out (net1[5]),
     .A   ({raddr_b[0], raddr_a[0], raddr_b[0], raddr_a[0], raddr_b[0], raddr_a[0], raddr_b[0], raddr_a[0]}),
-    .B   ({[*2]raddr_b[1], [*2]raddr_a[1], [*2]raddr_b[1], [*2]raddr_a[1]}),
-    .C   ({[*4]raddr_b[2], [*4]raddr_a[2]})
+    .B   ({raddr_b[1], {2{raddr_a[1]}}, {2{raddr_b[1]}}, {2{raddr_a[1]}}}),
+    .C   ({raddr_b[2], {4{raddr_a[2]}}})
   );
 
   NOR3 I1_1
   (
     .out (net1[6]),
     .A   ({raddr_b[0], raddr_a[0], raddr_b[0], raddr_a[0], raddr_b[0], raddr_a[0], raddr_b[0], raddr_a[0]}),
-    .B   ({[*2]raddr_b[1], [*2]raddr_a[1], [*2]raddr_b[1], [*2]raddr_a[1]}),
-    .C   ({[*4]raddr_b[2], [*4]raddr_a[2]})
+    .B   ({raddr_b[1], {2{raddr_a[1]}}, {2{raddr_b[1]}}, {2{raddr_a[1]}}}),
+    .C   ({raddr_b[2], {4{raddr_a[2]}}})
   );
 
   NOR3 I1_0
   (
     .out (net1[7]),
     .A   ({raddr_b[0], raddr_a[0], raddr_b[0], raddr_a[0], raddr_b[0], raddr_a[0], raddr_b[0], raddr_a[0]}),
-    .B   ({[*2]raddr_b[1], [*2]raddr_a[1], [*2]raddr_b[1], [*2]raddr_a[1]}),
-    .C   ({[*4]raddr_b[2], [*4]raddr_a[2]})
+    .B   ({raddr_b[1], {2{raddr_a[1]}}, {2{raddr_b[1]}}, {2{raddr_a[1]}}}),
+    .C   ({raddr_b[2], {4{raddr_a[2]}}})
   );
 
   inv_drive I3_7

@@ -17,18 +17,17 @@
 
 module ImmGen
 (
-  input  wire [13:0] inst,
-  output wire [7:0]  imm
+  output wire [7:0]  imm,
+  input  wire [15:0] inst
 );
 
-  wire [11:0] [*3]inst;
   wire [7:0] imm_drv;
 
   Mux2_8b I0
   (
     .out (imm_drv[7:0]),
-    .in0 ({[*3]inst[11], inst[10:9], inst[2:0]}),
-    .in1 ({[*3]inst[5], inst[4:3], inst[2:0]}),
+    .in0 ({{3{inst[11]}}, inst[10:9], inst[2:0]}),
+    .in1 ({{3{inst[5]}}, inst[4:3], inst[2:0]}),
     .sel (inst[13])
   );
 

@@ -26,8 +26,6 @@ module Mux4_8b
   input  wire [7:0] in3
 );
 
-  wire [1:0] [*8]sel_b;
-  wire [1:0] [*8]sel_int;
   wire [1:0] sel_b;
   wire [1:0] sel_int;
   wire [7:0] out_drv;
@@ -50,8 +48,8 @@ module Mux4_8b
   (
     .in2   (in2[7]),
     .in3   (in3[7]),
-    .sel   ([*8]sel_int[1:0]),
-    .sel_b ([*8]sel_b[1:0]),
+    .sel   (sel_int[1:0]),
+    .sel_b (sel_b[1:0]),
     .out   (out_drv[7]),
     .in0   (in0[7]),
     .in1   (in1[7])
@@ -61,8 +59,8 @@ module Mux4_8b
   (
     .in2   (in2[6]),
     .in3   (in3[6]),
-    .sel   ([*8]sel_int[1:0]),
-    .sel_b ([*8]sel_b[1:0]),
+    .sel   (sel_int[1:0]),
+    .sel_b (sel_b[1:0]),
     .out   (out_drv[6]),
     .in0   (in0[6]),
     .in1   (in1[6])
@@ -72,8 +70,8 @@ module Mux4_8b
   (
     .in2   (in2[5]),
     .in3   (in3[5]),
-    .sel   ([*8]sel_int[1:0]),
-    .sel_b ([*8]sel_b[1:0]),
+    .sel   (sel_int[1:0]),
+    .sel_b (sel_b[1:0]),
     .out   (out_drv[5]),
     .in0   (in0[5]),
     .in1   (in1[5])
@@ -83,8 +81,8 @@ module Mux4_8b
   (
     .in2   (in2[4]),
     .in3   (in3[4]),
-    .sel   ([*8]sel_int[1:0]),
-    .sel_b ([*8]sel_b[1:0]),
+    .sel   (sel_int[1:0]),
+    .sel_b (sel_b[1:0]),
     .out   (out_drv[4]),
     .in0   (in0[4]),
     .in1   (in1[4])
@@ -94,8 +92,8 @@ module Mux4_8b
   (
     .in2   (in2[3]),
     .in3   (in3[3]),
-    .sel   ([*8]sel_int[1:0]),
-    .sel_b ([*8]sel_b[1:0]),
+    .sel   (sel_int[1:0]),
+    .sel_b (sel_b[1:0]),
     .out   (out_drv[3]),
     .in0   (in0[3]),
     .in1   (in1[3])
@@ -105,8 +103,8 @@ module Mux4_8b
   (
     .in2   (in2[2]),
     .in3   (in3[2]),
-    .sel   ([*8]sel_int[1:0]),
-    .sel_b ([*8]sel_b[1:0]),
+    .sel   (sel_int[1:0]),
+    .sel_b (sel_b[1:0]),
     .out   (out_drv[2]),
     .in0   (in0[2]),
     .in1   (in1[2])
@@ -116,8 +114,8 @@ module Mux4_8b
   (
     .in2   (in2[1]),
     .in3   (in3[1]),
-    .sel   ([*8]sel_int[1:0]),
-    .sel_b ([*8]sel_b[1:0]),
+    .sel   (sel_int[1:0]),
+    .sel_b (sel_b[1:0]),
     .out   (out_drv[1]),
     .in0   (in0[1]),
     .in1   (in1[1])
@@ -127,8 +125,8 @@ module Mux4_8b
   (
     .in2   (in2[0]),
     .in3   (in3[0]),
-    .sel   ([*8]sel_int[1:0]),
-    .sel_b ([*8]sel_b[1:0]),
+    .sel   (sel_int[1:0]),
+    .sel_b (sel_b[1:0]),
     .out   (out_drv[0]),
     .in0   (in0[0]),
     .in1   (in1[0])
