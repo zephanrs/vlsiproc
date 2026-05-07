@@ -88,7 +88,7 @@ module ProcDpath
   reg_ena_reset PC
   (
     .Y      (PC_out_drv[7:0]),
-    .D      (net4[0:7]),
+    .D      (net4[7:0]),
     .clk_in (pc_cllk),
     .ena    (pc_en),
     .reset  (pc_rst)
@@ -98,7 +98,7 @@ module ProcDpath
   (
     .out (wb_sel_out_drv[7:0]),
     .in0 (alu_out_drv[7:0]),
-    .in1 (net45[0:7]),
+    .in1 (net45[7:0]),
     .sel (wb_sel)
   );
 
@@ -122,13 +122,13 @@ module ProcDpath
   (
     .out (idmem_addr_drv[7:0]),
     .in0 (PC_out_drv[7:0]),
-    .in1 (net7[0:7]),
+    .in1 (net7[7:0]),
     .sel (addr_sel)
   );
 
   reg_ena Addr
   (
-    .Y      (net7[0:7]),
+    .Y      (net7[7:0]),
     .D      (alu_out_drv[7:0]),
     .clk_in (addr_clk),
     .ena    (addr_ena)
@@ -136,7 +136,7 @@ module ProcDpath
 
   reg_ena WD
   (
-    .Y      (net25[0:7]),
+    .Y      (net25[7:0]),
     .D      (wb_sel_out_drv[7:0]),
     .clk_in (wd_clk),
     .ena    (wd_ena)
@@ -168,8 +168,8 @@ module ProcDpath
 
   reg_ena I4
   (
-    .Y      (net9[0:7]),
-    .D      (net8[0:7]),
+    .Y      (net9[7:0]),
+    .D      (net8[7:0]),
     .clk_in (net6),
     .ena    (net5)
   );
@@ -179,20 +179,20 @@ module ProcDpath
     .rdata0 (rdata0_out_drv[7:0]),
     .rdata1 (rdata1_out_drv[7:0]),
     .clk    (rf_clk),
-    .raddr0 (net34[0:2]),
-    .raddr1 (net33[0:2]),
+    .raddr0 (net34[2:0]),
+    .raddr1 (net33[2:0]),
     .rf_wen (net32),
-    .waddr  (net31[0:2]),
-    .wdata  (net25[0:7])
+    .waddr  (net31[2:0]),
+    .wdata  (net25[7:0])
   );
 
   Mux4_8b I15
   (
     .out ({8{mux4_out[70]}}),
     .in0 (idmem_wdata_drv[7:0]),
-    .in1 (net55[0:7]),
-    .in2 (net54[0:7]),
-    .in3 (net53[0:7]),
+    .in1 (net55[7:0]),
+    .in2 (net54[7:0]),
+    .in3 (net53[7:0]),
     .sel (op2_sel[1:0])
   );
 
