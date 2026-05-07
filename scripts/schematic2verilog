@@ -60,7 +60,6 @@ procedure( s2v_emit( cv fp cellName )
 procedure( s2v_walk( libName cellName outDir skipList done )
   prog( (cv fp outFile subCell)
     when( member( cellName done ) return( done ) )
-    when( member( cellName skipList ) return( done ) )
     cv = dbOpenCellViewByType( libName cellName "schematic" "" "r" )
     unless( cv
       fprintf( errport "s2v: WARNING cannot open %s/%s schematic\n" libName cellName )
@@ -81,7 +80,8 @@ procedure( s2v_walk( libName cellName outDir skipList done )
       subCell = inst~>cellName
       when( subCell &&
             inst~>master &&
-            !( member( subCell '("nmos4" "pmos4" "nmos" "pmos" "nmos1v" "pmos1v" "ipin" "opin" "iopin" "vdd!" "gnd!" "vdd" "gnd" "noConn") ) )
+            !( member( subCell '("nmos4" "pmos4" "nmos" "pmos" "nmos1v" "pmos1v" "ipin" "opin" "iopin" "vdd!" "gnd!" "vdd" "gnd" "noConn") ) ) &&
+            !( member( subCell skipList ) )
         done = s2v_walk( inst~>master~>libName subCell outDir skipList done )
       )
     )
