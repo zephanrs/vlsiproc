@@ -7,11 +7,11 @@
 
 module FullAdder
 (
-  input  logic A,
-  input  logic B,
-  input  logic Cin,
-  output logic Cout,
-  output logic S
+  input  logic in1,
+  input  logic cin,
+  output logic sum,
+  output logic cout,
+  input  logic in0
 );
 
   supply1 vdd;
@@ -30,34 +30,34 @@ module FullAdder
   logic net8;
   logic net9;
 
-  pmos PM15       ( S, vdd, net7 );
-  pmos PM14       ( Cout, vdd, net12 );
-  pmos PM13       ( net28, vdd, A );
-  pmos PM12       ( net3, net28, B );
-  pmos PM11       ( net7, net3, Cin );
-  pmos PM10       ( net1, vdd, Cin );
-  pmos PM9        ( net1, vdd, B );
-  pmos PM8        ( net1, vdd, A );
+  pmos PM15       ( sum, vdd, net7 );
+  pmos PM14       ( cout, vdd, net12 );
+  pmos PM13       ( net28, vdd, in0 );
+  pmos PM12       ( net3, net28, in1 );
+  pmos PM11       ( net7, net3, cin );
+  pmos PM10       ( net1, vdd, cin );
+  pmos PM9        ( net1, vdd, in1 );
+  pmos PM8        ( net1, vdd, in0 );
   pmos PM7        ( net7, net1, net12 );
-  pmos PM6        ( net24, vdd, B );
-  pmos PM5        ( net12, net24, A );
-  pmos PM2        ( net12, net8, Cin );
-  pmos PM3        ( net8, vdd, A );
-  pmos PM4        ( net8, vdd, B );
-  nmos NM13       ( S, gnd, net7 );
-  nmos NM12       ( Cout, gnd, net12 );
-  nmos NM11       ( net52, gnd, A );
-  nmos NM10       ( net47, net52, B );
-  nmos NM9        ( net7, net47, Cin );
-  nmos NM8        ( net9, gnd, Cin );
-  nmos NM7        ( net9, gnd, B );
-  nmos NM6        ( net9, gnd, A );
+  pmos PM6        ( net24, vdd, in1 );
+  pmos PM5        ( net12, net24, in0 );
+  pmos PM2        ( net12, net8, cin );
+  pmos PM3        ( net8, vdd, in0 );
+  pmos PM4        ( net8, vdd, in1 );
+  nmos NM13       ( sum, gnd, net7 );
+  nmos NM12       ( cout, gnd, net12 );
+  nmos NM11       ( net52, gnd, in0 );
+  nmos NM10       ( net47, net52, in1 );
+  nmos NM9        ( net7, net47, cin );
+  nmos NM8        ( net9, gnd, cin );
+  nmos NM7        ( net9, gnd, in1 );
+  nmos NM6        ( net9, gnd, in0 );
   nmos NM5        ( net7, net9, net12 );
-  nmos NM4        ( net32, gnd, B );
-  nmos NM3        ( net12, net32, A );
-  nmos NM2        ( net13, gnd, B );
-  nmos NM1        ( net13, gnd, A );
-  nmos NM0        ( net12, net13, Cin );
+  nmos NM4        ( net32, gnd, in1 );
+  nmos NM3        ( net12, net32, in0 );
+  nmos NM2        ( net13, gnd, in1 );
+  nmos NM1        ( net13, gnd, in0 );
+  nmos NM0        ( net12, net13, cin );
 
 endmodule
 
