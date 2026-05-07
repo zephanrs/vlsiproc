@@ -288,48 +288,67 @@ def _parse_cadence_range(name):
         return m.group(1), b, b
     return name, None, None
 
+_NMOS_PRIMS = {"nmos4", "nmos1v", "nmos"}
+_PMOS_PRIMS = {"pmos4", "pmos1v", "pmos"}
+
 def _reorient_mos(insts, input_port_bases):
-    """For each MOS transistor, decide which side should be SOURCE based on
-    BFS distance from supplies + input ports. iverilog's switch-level sim
-    propagates source->drain when the gate is on, so for a transmission gate
-    to resolve cleanly the source has to be the strongly-driven side. Cadence
-    schematics often label D/S consistently with physical layout (which
-    doesn't care about direction), so we re-orient in software."""
-    anchors = {"vdd", "gnd", "vdd!", "gnd!"} | set(input_port_bases)
+    """Only re-orient transmission-gate pairs (one nmos + one pmos sharing the
+    same two endpoints). For each TG, source should be the 'strong' endpoint:
+    a rail (vdd/gnd), an input port, or a CMOS-driven net (one that has both
+    an nmos-to-gnd pull and a pmos-to-vdd pull elsewhere). All other
+    transistors -- inverters, NAND/NOR pull-up/pull-down stacks, series
+    chains -- get left alone since their D/S labeling is already meaningful."""
+    rails = {"vdd", "gnd", "vdd!", "gnd!"}
 
     def base(n):
         b, _, _ = _parse_cadence_range(n) if n else (n, None, None)
         return b
 
-    depth = {n: 0 for n in anchors}
-    changed = True
-    while changed:
-        changed = False
-        for inst_name, cell, conns in insts:
-            if cell not in MOS_CELLS:
-                continue
-            cd = dict(conns)
-            db, sb = base(cd.get("D", "")), base(cd.get("S", ""))
-            dd = depth.get(db) if db else None
-            sd = depth.get(sb) if sb else None
-            if dd is not None and sd is None and sb:
-                depth[sb] = dd + 1
-                changed = True
-            elif sd is not None and dd is None and db:
-                depth[db] = sd + 1
-                changed = True
+    nmos_pulls = set()   # net is the drain of an nmos whose source is gnd
+    pmos_pulls = set()   # net is the drain of a pmos whose source is vdd
+    for _, cell, conns in insts:
+        if cell not in MOS_CELLS:
+            continue
+        cd = dict(conns)
+        d, s = base(cd.get("D", "")), base(cd.get("S", ""))
+        if cell in _NMOS_PRIMS:
+            if s in {"gnd", "gnd!"}: nmos_pulls.add(d)
+            if d in {"gnd", "gnd!"}: nmos_pulls.add(s)
+        elif cell in _PMOS_PRIMS:
+            if s in {"vdd", "vdd!"}: pmos_pulls.add(d)
+            if d in {"vdd", "vdd!"}: pmos_pulls.add(s)
+    strong = (nmos_pulls & pmos_pulls) | rails | set(input_port_bases)
+
+    # Index transistors by their endpoint set so we can find TG complements.
+    by_ends = {}        # frozenset({d, s}) -> list of (idx, cell)
+    for i, (_, cell, conns) in enumerate(insts):
+        if cell not in MOS_CELLS:
+            continue
+        cd = dict(conns)
+        d, s = base(cd.get("D", "")), base(cd.get("S", ""))
+        if d and s:
+            by_ends.setdefault(frozenset([d, s]), []).append((i, cell))
 
     result = []
-    for inst_name, cell, conns in insts:
+    for i, (inst_name, cell, conns) in enumerate(insts):
         if cell not in MOS_CELLS:
             result.append((inst_name, cell, conns))
             continue
         cd = dict(conns)
-        db, sb = base(cd.get("D", "")), base(cd.get("S", ""))
-        dd = depth.get(db, float('inf'))
-        sd = depth.get(sb, float('inf'))
-        if dd < sd:
-            # Drain is closer to anchors -- swap D/S so it becomes source.
+        d, s = base(cd.get("D", "")), base(cd.get("S", ""))
+        peers = by_ends.get(frozenset([d, s]), [])
+        is_tg = any(
+            j != i and (
+                (cell in _NMOS_PRIMS and pcell in _PMOS_PRIMS) or
+                (cell in _PMOS_PRIMS and pcell in _NMOS_PRIMS)
+            )
+            for j, pcell in peers
+        )
+        if not is_tg:
+            result.append((inst_name, cell, conns))
+            continue
+        # TG pair. If drain is strong and source isn't, swap so source = strong.
+        if d in strong and s not in strong:
             swap = {"D": "S", "S": "D"}
             new_conns = [(swap.get(p, p), n) for p, n in conns]
             result.append((inst_name, cell, new_conns))
