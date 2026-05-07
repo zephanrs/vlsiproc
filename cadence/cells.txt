@@ -16,7 +16,6 @@
 # uncomment (or add) the manifest line.
 
 [processor]
-Adder_8b        Adder_8b
 ALU             ALU_8b
 imm_gen         ImmGen
 Mux2_8b         Mux2_8b
