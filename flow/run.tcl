@@ -32,7 +32,7 @@ set_svf -off
 #-------------------------------------------------------------------------
 
 set design_name  ProcCtrl2
-set clock_period 3.0
+set clock_period 0.5
 set rtl_files [list \
   "ProcCtrl2-pickled.v" \
 ]
