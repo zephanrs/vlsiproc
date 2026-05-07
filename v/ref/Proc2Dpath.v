@@ -1,0 +1,248 @@
+//========================================================================
+// Proc2Dpath
+//========================================================================
+
+`ifndef PROC2_DPATH_V
+`define PROC2_DPATH_V
+
+`include "ref/tinyrv1_v2.v"
+`include "ref/Register_8b.v"
+`include "ref/Register_16b.v"
+`include "ref/Adder_8b.v"
+`include "ref/Regfile.v"
+`include "ref/ALU_8b.v"
+`include "ref/ImmGen.v"
+`include "ref/Mux2_8b.v"
+`include "ref/Mux4_8b.v"
+
+module Proc2Dpath
+(
+  input  logic        clk,
+  input  logic        rst,
+
+  // Memory Interface
+  output logic [7:0]  idmem_addr,
+  output logic [7:0]  idmem_wdata,
+  input  logic [15:0] idmem_rdata,
+
+  // Control Signals (Control Unit -> Datapath)
+  input  logic        pc_en,
+  input  logic        addr_sel,
+  input  logic        fetch_en,
+  input  logic        ab_en,
+  input  logic        pc_sel,
+  input  logic        op1_sel,
+  input  logic [1:0]  op2_sel,
+  input  logic        addr_en,
+  input  logic        wd_en,
+  input  logic        rf_wen,
+  input  logic        imm_type,
+
+  // Status Signals (Datapath -> Control Unit)
+  output logic [15:0] inst,
+  output logic        eq
+);
+
+  // Predefine Signals
+  logic [7:0] wb_val;
+  logic [7:0] addr;
+
+  // PC Register
+  logic [7:0] pc;
+
+  Register_8b pc_reg
+  (
+    .clk (clk),
+    .rst (rst),
+    .en  (pc_en),
+    .d   (alu_out),
+    .q   (pc)
+  );
+
+  // Address Mux
+  Mux2_8b addr_mux
+  (
+    .in0 (pc),
+    .in1 (addr),
+    .sel (addr_sel),
+    .out (idmem_addr)
+  );
+
+  // Instruction Register
+  Register_16b IR
+  (
+    .clk (clk),
+    .rst (rst),
+    .en  (fetch_en),
+    .d   (idmem_rdata),
+    .q   (inst)
+  );
+
+  // Extract instruction fields
+  logic [`TINYRV1_INST_RS1_NBITS-1:0] rs1;
+  logic [`TINYRV1_INST_RS2_NBITS-1:0] rs2;
+  logic [`TINYRV1_INST_RD_NBITS-1:0]  rd;
+
+  assign rs1 = inst[`TINYRV1_INST_RS1];
+  assign rs2 = inst[`TINYRV1_INST_RS2];
+  assign rd  = inst[`TINYRV1_INST_RD];
+
+  // Register File
+  logic [7:0] rf_wdata;
+  logic [7:0] rf_rdata0;
+  logic [7:0] rf_rdata1;
+
+  Regfile rf
+  (
+    .clk    (clk),
+
+    .wen    (rf_wen),
+    .waddr  (rd),
+    .wdata  (rf_wdata),
+
+    .raddr0 (rs1),
+    .rdata0 (rf_rdata0),
+
+    .raddr1 (rs2),
+    .rdata1 (rf_rdata1)
+  );
+
+  // A Reg
+  logic [7:0] a;
+
+  Register_8b A_reg
+  (
+    .clk (clk),
+    .rst (rst),
+    .en  (ab_en),
+    .d   (rf_rdata0),
+    .q   (a)
+  );
+
+  // B Reg
+  logic [7:0] b;
+
+  Register_8b B_reg
+  (
+    .clk (clk),
+    .rst (rst),
+    .en  (ab_en),
+    .d   (rf_rdata1),
+    .q   (b)
+  );
+
+  assign idmem_wdata = b;
+
+  // Immediate Generation
+  logic [7:0] immgen_imm;
+
+  ImmGen immgen
+  (
+    .inst     (inst),
+    .imm_type (imm_type),
+    .imm      (immgen_imm)
+  );
+
+  // Old PC Register
+  logic [7:0] oldpc;
+
+  Register_8b oldpc_reg
+  (
+    .clk (clk),
+    .rst (rst),
+    .en  (fetch_en),
+    .d   (pc),
+    .q   (oldpc)
+  );
+
+  // PC Mux
+  logic [7:0] op_pc;
+
+  Mux2_8b pc_mux
+  (
+    .in0 (oldpc),
+    .in1 (pc),
+    .sel (pc_sel),
+    .out (op_pc)
+  );
+
+  // Op1 Mux
+  logic [7:0] op1_data;
+
+  Mux2_8b op1_mux
+  (
+    .in0 (a),
+    .in1 (op_pc),
+    .sel (op1_sel),
+    .out (op1_data)
+  );
+
+  // Op2 Mux
+  logic [7:0] op2_data;
+
+  Mux4_8b op2_mux
+  (
+    .in0 (b),
+    .in1 (8'b0),
+    .in2 (immgen_imm),
+    .in3 (8'd2),
+    .sel (op2_sel),
+    .out (op2_data)
+  );
+
+  // ALU
+  logic [7:0] alu_out;
+
+  ALU_8b alu
+  (
+    .in0 (op1_data),
+    .in1 (op2_data),
+    .sum (alu_out),
+    .eq  (eq)
+  );
+
+  // Address Register
+  Register_8b addr_reg
+  (
+    .clk (clk),
+    .rst (rst),
+    .en  (addr_en),
+    .d   (alu_out),
+    .q   (addr)
+  );
+
+  // Read Data Byte Select Mux
+  logic [7:0] rdata_byte;
+
+  Mux2_8b rdata_mux
+  (
+    .in0 (idmem_rdata[7:0]),
+    .in1 (idmem_rdata[15:8]),
+    .sel (addr[0]),
+    .out (rdata_byte)
+  );
+
+  // Writeback Mux — sel comes directly from inst[12]
+  // (LW=1011 uniquely identified among wd-en instructions; ADDI=1000,
+  //  ADD=0000, JAL=1110 all have inst[12]=0)
+  Mux2_8b wb_mux
+  (
+    .in0 (alu_out),
+    .in1 (rdata_byte),
+    .sel (inst[12]),
+    .out (wb_val)
+  );
+
+  // Writeback Register
+  Register_8b WD
+  (
+    .clk (clk),
+    .rst (rst),
+    .en  (wd_en),
+    .d   (wb_val),
+    .q   (rf_wdata)
+  );
+
+endmodule
+
+`endif /* PROC2_DPATH_V */

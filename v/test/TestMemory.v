@@ -7,7 +7,11 @@
 `ifndef TEST_MEMORY_V
 `define TEST_MEMORY_V
 
-`include "ref/tinyrv1.v"
+`ifdef TINYRV1_V2
+  `include "ref/tinyrv1_v2.v"
+`else
+  `include "ref/tinyrv1.v"
+`endif
 
 module TestMemory
 (
@@ -66,7 +70,11 @@ module TestMemory
   // Test Interface
   //----------------------------------------------------------------------
 
+`ifdef TINYRV1_V2
+  TinyRV1_v2 tinyrv1();
+`else
   TinyRV1 tinyrv1();
+`endif
 
   /* verilator lint_off UNUSEDSIGNAL */
   task write( input logic [7:0] addr, input logic [15:0] wdata );

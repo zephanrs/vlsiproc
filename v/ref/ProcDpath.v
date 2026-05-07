@@ -138,8 +138,9 @@ module ProcDpath
 
   ImmGen immgen
   (
-    .inst (inst),
-    .imm  (immgen_imm)
+    .inst     (inst),
+    .imm_type (inst[13]),
+    .imm      (immgen_imm)
   );
 
   // Old PC Register
