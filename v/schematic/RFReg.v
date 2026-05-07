@@ -51,7 +51,7 @@ module RFReg
   pmos PM8        ( net14, vdd, net12 );
   pmos PM7        ( net3, net14, clk );
   pmos PM6        ( net12, vdd, net3 );
-  pmos PM5        ( net17, net3, clk_b );
+  pmos PM5        ( net3, net17, clk_b );
   pmos PM4        ( net21, vdd, net17 );
   pmos PM3        ( net4, net21, clk_b );
   pmos PM2        ( net17, vdd, net4 );
@@ -64,7 +64,7 @@ module RFReg
   nmos NM8        ( net16, gnd, net12 );
   nmos NM7        ( net3, net16, clk_b );
   nmos NM6        ( net12, gnd, net3 );
-  nmos NM5        ( net17, net3, clk );
+  nmos NM5        ( net3, net17, clk );
   nmos NM4        ( net15, gnd, net17 );
   nmos NM3        ( net4, net15, clk );
   nmos NM2        ( net17, gnd, net4 );
