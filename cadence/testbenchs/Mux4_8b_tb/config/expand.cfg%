@@ -1,4 +1,4 @@
-//Revision 3
+//Revision 12
 //NOTE
 // Default template for spectre
 // Note:
@@ -14,7 +14,9 @@ viewlist spectre, cmos_sch, \cmos.sch , schematic, veriloga, ahdl, pspice, dspf;
 stoplist spectre;
 
 
-cell standard_cells.Mux4 binding :av_extracted;
+cell standard_cells.Mux4 binding :schematic;
+
+cell processor.Mux4_8b binding :av_extracted;
 
 
 endconfig
