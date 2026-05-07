@@ -29,10 +29,14 @@ if [[ "${cmd_exit_status}" != "0" ]]; then
 fi
 
 # Otherwise, grep the temp file for any warnings, and if we found one
-# then exit with error code 1
+# then exit with error code 1. Port-width padding warnings (iverilog's
+# "expects N bits, got M" / "Padding ... high bits") are informational and
+# expected for schematic-derived modules with H-tree clock fanouts, etc.
 
-grep -q " warning:" ${tmp_file}
-if [[ $? == 0 ]]; then
+real_warnings=$(grep " warning:" "${tmp_file}" \
+  | grep -vE "expects [0-9]+ bits, got|Padding [0-9]+ high bits|Pruning [0-9]+ high bits" \
+  | wc -l)
+if [[ "${real_warnings}" -gt 0 ]]; then
   echo "Warnings are treated as errors!"
   rm -rf "${tmp_file}"
   exit 1
