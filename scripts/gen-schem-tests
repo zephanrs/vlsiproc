@@ -138,11 +138,19 @@ def main():
     for f in Path(args.schem_test).glob("*.v"):
         f.unlink()  # wipe stale entries (manifest may have shrunk)
 
+    # Schematic-derived modules often have width quirks (extra fanout pins,
+    # 7-clock H-trees, structural concats) -- wrap each schem-test file with
+    # lint-off pragmas so the testbench's narrower signals can pad/expand.
+    LINT = ("UNUSED", "UNUSEDSIGNAL", "UNDRIVEN",
+            "WIDTH", "WIDTHCONCAT", "WIDTHEXPAND", "WIDTHTRUNC")
+    prefix = "".join(f"/* verilator lint_off {w} */\n" for w in LINT)
+    suffix = "".join(f"/* verilator lint_on {w} */\n" for w in reversed(LINT))
+
     to_copy = find_files_to_copy(args.test, vlog_names)
     for name in sorted(to_copy):
         text = Path(args.test, name).read_text()
         out  = Path(args.schem_test, schem_basename(name))
-        out.write_text(rewrite(text, vlog_names, to_copy))
+        out.write_text(prefix + rewrite(text, vlog_names, to_copy) + suffix)
         print(f"gen-schem-tests: wrote {out}")
 
     mk_path = Path(args.schem, "schematic.mk")
