@@ -8,7 +8,8 @@
 `ifndef PROC2_CTRL_V
 `define PROC2_CTRL_V
 
-`include "ref/Mux4_8b.v"
+`include "ref/Mux4_4b.v"
+`include "ref/Incrementer_4b.v"
 
 module Proc2Ctrl
 (
@@ -66,7 +67,11 @@ module Proc2Ctrl
   //----------------------------------------------------------------------
 
   logic [3:0] state_inc;
-  assign state_inc = state + 4'b0001;
+  Incrementer_4b state_incrementer
+  (
+    .in  (state),
+    .out (state_inc)
+  );
 
   logic [1:0] ns_sel;
 
@@ -82,19 +87,15 @@ module Proc2Ctrl
                    | (  state[2] &  state[1] &  state[0] )
                    | (  state[2] &  state[3] &  state[0] );
 
-  // 4-bit mux via Mux4_8b (upper 4 bits unused)
-  logic [7:0] ns_mux_out;
-  Mux4_8b ns_mux
+  Mux4_4b ns_mux
   (
-    .in0 ( {4'b0, 4'b0101} ),       // F0
-    .in1 ( {4'b0, 4'b0001} ),       // WB
-    .in2 ( {4'b0, state_inc} ),
-    .in3 ( {4'b0, inst[15:12]} ),
+    .in0 ( 4'b0101 ),         // F0
+    .in1 ( 4'b0001 ),         // WB
+    .in2 ( state_inc ),
+    .in3 ( inst[15:12] ),
     .sel ( ns_sel ),
-    .out ( ns_mux_out )
+    .out ( next_state )
   );
-
-  assign next_state = ns_mux_out[3:0];
 
   //----------------------------------------------------------------------
   // Sel signals (critical path — depth 1)
