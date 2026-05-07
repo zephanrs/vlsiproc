@@ -58,7 +58,7 @@ procedure( s2v_emit( cv fp cellName )
 ; in skipList (cells with a hand-written ref Verilog) or in done (already
 ; extracted this run). Returns the updated done list.
 procedure( s2v_walk( libName cellName outDir skipList done )
-  let( (cv fp outFile subCell)
+  prog( (cv fp outFile subCell)
     when( member( cellName done ) return( done ) )
     when( member( cellName skipList ) return( done ) )
     cv = dbOpenCellViewByType( libName cellName "schematic" "" "r" )
@@ -70,7 +70,8 @@ procedure( s2v_walk( libName cellName outDir skipList done )
     fp = outfile( outFile "w" )
     unless( fp
       fprintf( errport "s2v: ERROR cannot write %s\n" outFile )
-      dbClose( cv ) return( done )
+      dbClose( cv )
+      return( done )
     )
     s2v_emit( cv fp cellName )
     close( fp )
@@ -85,7 +86,7 @@ procedure( s2v_walk( libName cellName outDir skipList done )
       )
     )
     dbClose( cv )
-    done
+    return( done )
   )
 )
 """
