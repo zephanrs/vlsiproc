@@ -86,7 +86,7 @@ procedure( fpl_extract_cell( libName cellName fp "ttp" )
 ;; Status messages always go to errport: some PDK init scripts (e.g. gpdk045's
 ;; libInit.il) leave poport bound to a read-only file, which makes plain
 ;; printf() raise a "cannot send output to an input port" error.
-procedure( fpl_dump_libs ()
+procedure( fpl_dump_libs()
   let( (libs n)
     libs = ddGetLibList()
     n = length( libs )
