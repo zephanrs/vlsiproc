@@ -31,10 +31,10 @@ set_svf -off
 # Inputs
 #-------------------------------------------------------------------------
 
-set design_name  ProcCtrl2
+set design_name  Proc2Ctrl
 set clock_period 0.5
 set rtl_files [list \
-  "ProcCtrl2-pickled.v" \
+  "Proc2Ctrl-pickled.v" \
 ]
 
 foreach rtl_file $rtl_files {

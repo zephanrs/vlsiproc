@@ -35,7 +35,7 @@ TEST_UTILS="$SRCDIR/v/test/test-utils.v"
 TEST_MEMORY="$SRCDIR/v/test/TestMemory.v"
 TESTBENCH_PICKLED="Proc2-testbench-pickled.v"
 TOP_PICKLED="Proc2-top-pickled.v"
-CTRL_RTL="${CTRL_RTL:-ProcCtrl2-pickled.v}"
+CTRL_RTL="${CTRL_RTL:-Proc2Ctrl-pickled.v}"
 
 for input in "$TEST_UTILS" "$TEST_MEMORY" "$TESTBENCH_PICKLED" "$TOP_PICKLED" "$CTRL_RTL"; do
   if [[ ! -f "$input" ]]; then

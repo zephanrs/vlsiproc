@@ -1,13 +1,13 @@
 //========================================================================
-// ProcCtrl2
+// Proc2Ctrl
 //========================================================================
 
-`ifndef PROC_CTRL2_V
-`define PROC_CTRL2_V
+`ifndef PROC2_CTRL_V
+`define PROC2_CTRL_V
 
 `include "ref/tinyrv1.v"
 
-module ProcCtrl2
+module Proc2Ctrl
 (
   input  logic        clk,
   input  logic        rst,
@@ -171,4 +171,4 @@ module ProcCtrl2
 
 endmodule
 
-`endif /* PROC_CTRL2_V */
+`endif /* PROC2_CTRL_V */
