@@ -44,16 +44,19 @@ IVERILOG_COMPILE := $(WARN2ERR) @IVERILOG@ $(IVERILOG_FLAGS)
 # Flow build directory
 #-------------------------------------------------------------------------
 
-flow_run_scripts := \
-  run-01-verilator \
-  run-02-synopsys-vcs \
-  run-03-dc-synth \
-  run-04-ffglsim
+flow_run_scripts := $(notdir $(wildcard $(flow_src_dir)/run-*))
+
+flow_verilog_files := $(notdir $(wildcard $(flow_src_dir)/*.v))
+
+flow_subdir_verilog_files := \
+  $(patsubst $(flow_src_dir)/%,$(flow_dir)/%,$(wildcard $(flow_src_dir)/*/*.v))
 
 flow_tcl_scripts := \
   run.tcl
 
-flow : $(flow_dir)/.proc-src-dir $(addprefix $(flow_dir)/,$(flow_run_scripts) $(flow_tcl_scripts))
+flow : $(flow_dir)/.proc-src-dir \
+       $(addprefix $(flow_dir)/,$(flow_run_scripts) $(flow_tcl_scripts) $(flow_verilog_files)) \
+       $(flow_subdir_verilog_files)
 
 $(flow_dir) :
 	mkdir -p $@
@@ -66,6 +69,10 @@ $(flow_dir)/run-% : $(flow_src_dir)/run-% | $(flow_dir)
 	chmod +x $@
 
 $(flow_dir)/%.tcl : $(flow_src_dir)/%.tcl | $(flow_dir)
+	cp $< $@
+
+$(flow_dir)/%.v : $(flow_src_dir)/%.v | $(flow_dir)
+	mkdir -p $(dir $@)
 	cp $< $@
 
 .PHONY : flow
