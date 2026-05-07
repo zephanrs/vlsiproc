@@ -1,0 +1,181 @@
+#!/usr/bin/env python3
+"""
+extract-layouts -- export Cadence layout BBOX + pin x positions for floorplan.
+
+Drives virtuoso headlessly: pipes SKILL into `virtuoso -nograph`, which walks
+each cell in cell_map.CELL_MAP, opens its layout view, and writes one record
+per cell to layouts.txt. The Python floorplanner consumes that file via
+load_layouts() in floorplan_core.py.
+
+Output format (one record per cell, "MISSING <lib> <cell>" if no layout view):
+  CELL <lib> <cell>
+  BBOX <xMin> <yMin> <xMax> <yMax>
+  PIN  <name> <xMin> <yMin> <xMax> <yMax>
+  PIN  ...
+  ENDCELL
+
+Path defaults resolve from the git checkout root, so this can run anywhere.
+"""
+
+import argparse
+import importlib.util
+import os
+import shutil
+import subprocess
+import sys
+
+# -----------------------------------------------------------------------
+# SKILL: dump bbox + pin shapes for each (lib, cell) in cellList.
+# Pin <name> is the terminal name; multi-figure pins (e.g. one shape per
+# metal layer, one per bus bit) emit one PIN line each so the Python loader's
+# average reflects all of them.
+# -----------------------------------------------------------------------
+SKILL_EXTRACT = r"""
+procedure( fpl_box( bbox )
+  list( xCoord( lowerLeft( bbox ) )  yCoord( lowerLeft( bbox ) )
+        xCoord( upperRight( bbox ) ) yCoord( upperRight( bbox ) ) )
+)
+
+procedure( fpl_extract_cell( libName cellName fp "ttp" )
+  let( (cv coords term pin fig pc)
+    cv = dbOpenCellViewByType( libName cellName "layout" "" "r" )
+    if( cv then
+      coords = fpl_box( cv~>bBox )
+      fprintf( fp "CELL %s %s\n" libName cellName )
+      fprintf( fp "BBOX %f %f %f %f\n"
+               nth(0 coords) nth(1 coords) nth(2 coords) nth(3 coords) )
+      foreach( term cv~>terminals
+        foreach( pin term~>pins
+          foreach( fig pin~>figs
+            when( fig~>bBox
+              pc = fpl_box( fig~>bBox )
+              fprintf( fp "PIN %s %f %f %f %f\n" term~>name
+                       nth(0 pc) nth(1 pc) nth(2 pc) nth(3 pc) )
+            )
+          )
+        )
+      )
+      fprintf( fp "ENDCELL\n\n" )
+      dbClose( cv )
+      t
+    else
+      fprintf( fp "MISSING %s %s\n\n" libName cellName )
+      printf( "fpl: warning, no layout view for %s/%s\n" libName cellName )
+      nil
+    )
+  )
+)
+
+procedure( fpl_extract_all( cells outPath )
+  let( (fp ok n)
+    n = 0
+    fp = outfile( outPath "w" )
+    if( fp then
+      foreach( entry cells
+        ok = fpl_extract_cell( car(entry) cadr(entry) fp )
+        if( ok then n = n + 1 )
+      )
+      close( fp )
+      printf( "fpl: wrote %d/%d cells to %s\n" n length(cells) outPath )
+      t
+    else
+      fprintf( errport "fpl: ERROR cannot open %s for writing\n" outPath )
+      nil
+    )
+  )
+)
+"""
+
+
+def find_git_root():
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "--show-toplevel"], text=True,
+            stderr=subprocess.DEVNULL,
+        ).strip()
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return None
+
+
+def find_virtuoso():
+    v = shutil.which("virtuoso")
+    if v:
+        return v
+    for p in [
+        "/cadence/installs/IC618/bin/virtuoso",
+        "/cadence/installs/IC617/bin/virtuoso",
+        "/opt/cadence/IC618/bin/virtuoso",
+        "/opt/cadence/IC617/bin/virtuoso",
+    ]:
+        if os.path.isfile(p):
+            return p
+    return None
+
+
+def load_cell_map(path):
+    spec = importlib.util.spec_from_file_location("cell_map", path)
+    if not spec or not spec.loader:
+        sys.exit(f"error: cannot import cell map from {path}")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    cells = sorted(set(getattr(mod, "CELL_MAP", {}).values()))
+    if not cells:
+        sys.exit(f"error: {path} has empty CELL_MAP")
+    return cells
+
+
+def main():
+    root = find_git_root()
+    p = argparse.ArgumentParser(
+        description="Extract Cadence layout BBOX + pin positions for the floorplanner."
+    )
+    p.add_argument("-out", default=root and f"{root}/scripts/floorplan/layouts.txt",
+                   metavar="FILE",
+                   help="output file (absolute path; default: $ROOT/scripts/floorplan/layouts.txt)")
+    p.add_argument("-cds", default=root and f"{root}/cadence",
+                   metavar="DIR",
+                   help="directory containing cds.lib")
+    p.add_argument("-cell-map", dest="cell_map",
+                   default=root and f"{root}/scripts/floorplan/cell_map.py",
+                   metavar="FILE",
+                   help="Python module exporting CELL_MAP")
+    args = p.parse_args()
+
+    for k, label in (("out", "out"), ("cds", "cds"), ("cell_map", "cell-map")):
+        if getattr(args, k) is None:
+            sys.exit(f"error: not in a git checkout -- pass -{label} explicitly")
+
+    cds_dir = os.path.realpath(args.cds)
+    out_path = os.path.realpath(args.out)
+
+    if not os.path.isfile(os.path.join(cds_dir, "cds.lib")):
+        sys.exit(f"error: no cds.lib in {cds_dir}")
+
+    cells = load_cell_map(args.cell_map)
+
+    virtuoso = find_virtuoso()
+    if not virtuoso:
+        sys.exit("error: cannot find 'virtuoso' -- add it to PATH")
+
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+
+    skill_cells = "'(" + " ".join(f'("{lib}" "{cell}")' for lib, cell in cells) + ")"
+    skill_input = (
+        SKILL_EXTRACT
+        + f'\nfpl_extract_all( {skill_cells} "{out_path}" )\nexit()\n'
+    )
+
+    print(f"fpl: extracting {len(cells)} cells -> {out_path}")
+    print(f"fpl: running virtuoso (cds: {cds_dir})")
+    result = subprocess.run(
+        [virtuoso, "-nograph"], input=skill_input, text=True, cwd=cds_dir,
+    )
+    if result.returncode != 0:
+        sys.exit(f"virtuoso exited with code {result.returncode}")
+    if not os.path.isfile(out_path):
+        sys.exit("fpl: virtuoso did not produce the output file")
+    print(f"fpl: wrote {out_path}")
+
+
+if __name__ == "__main__":
+    main()
