@@ -38,7 +38,7 @@ rm -rf obj_dir run.log
 
 TESTBENCH_PICKLED="Proc2-testbench-pickled.v"
 TOP_PICKLED="Proc2-top-pickled.v"
-CTRL_PICKLED="ProcCtrl2-pickled.v"
+CTRL_PICKLED="Proc2Ctrl-pickled.v"
 
 echo "CMD: pickle Proc2 testbench/top/control"
 python3 - "$TESTBENCH_PICKLED" "$TOP_PICKLED" "$CTRL_PICKLED" "$SRCDIR" <<'PY'
@@ -57,7 +57,7 @@ srcdir = Path(sys.argv[4]).resolve()
 srcs = {
     "testbench": srcdir / "v/test/Proc2-test.v",
     "top":       srcdir / "v/ref/Proc2.v",
-    "ctrl":      srcdir / "v/ref/ProcCtrl2.v",
+    "ctrl":      srcdir / "v/ref/Proc2Ctrl.v",
 }
 
 include_dirs = [
@@ -191,7 +191,7 @@ def emit(path, out, seen, skip_includes, pickle_asm_calls):
 
 jobs = [
     ("testbench", {"test/test-utils.v", "ref/Proc2.v", "test/TestMemory.v"}, True),
-    ("top",       {"ref/ProcCtrl2.v"}, False),
+    ("top",       {"ref/Proc2Ctrl.v"}, False),
     ("ctrl",      set(), False),
 ]
 
@@ -204,7 +204,7 @@ TEST_UTILS="$SRCDIR/v/test/test-utils.v"
 TEST_MEMORY="$SRCDIR/v/test/TestMemory.v"
 
 echo "CMD: verilator --binary --top Top -o Proc2 $TEST_UTILS $TEST_MEMORY $TESTBENCH_PICKLED $TOP_PICKLED $CTRL_PICKLED"
-verilator --quiet -Wall -Wno-DECLFILENAME \
+verilator --quiet -Wall -Wno-DECLFILENAME -Wno-REDEFMACRO \
   -I"$SRCDIR/v" \
   --timing --binary --top Top \
   -o Proc2 \

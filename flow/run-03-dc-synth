@@ -12,7 +12,7 @@ set -euo pipefail
 RUNDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$RUNDIR"
 
-RTL_FILE="ProcCtrl2-pickled.v"
+RTL_FILE="Proc2Ctrl-pickled.v"
 
 if [[ ! -f "$RTL_FILE" ]]; then
   echo "ERROR: $RTL_FILE not found. Run ./run-01-verilator first."
