@@ -5,22 +5,30 @@
 `ifndef XOR2_V
 `define XOR2_V
 
+/* verilator lint_off UNUSED */
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off UNDRIVEN */
+/* verilator lint_off WIDTH */
+/* verilator lint_off WIDTHCONCAT */
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
+
 module XOR2
 (
-  output logic out,
-  input  logic in0,
-  input  logic in1
+  output wire out,
+  input  wire in0,
+  input  wire in1
 );
 
   supply1 vdd;
   supply0 gnd;
 
-  logic in0_b;
-  logic in1_b;
-  logic net12;
-  logic net17;
-  logic net3;
-  logic net4;
+  wire in0_b;
+  wire in1_b;
+  wire net12;
+  wire net17;
+  wire net3;
+  wire net4;
 
   pmos PM7        ( net4, vdd, in1_b );
   pmos PM5        ( in1_b, vdd, in1 );
@@ -36,5 +44,13 @@ module XOR2
   nmos NM12       ( out, net17, in0 );
 
 endmodule
+
+/* verilator lint_on WIDTHTRUNC */
+/* verilator lint_on WIDTHEXPAND */
+/* verilator lint_on WIDTHCONCAT */
+/* verilator lint_on WIDTH */
+/* verilator lint_on UNDRIVEN */
+/* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on UNUSED */
 
 `endif /* XOR2_V */

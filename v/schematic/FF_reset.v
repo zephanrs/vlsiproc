@@ -5,28 +5,36 @@
 `ifndef FF_RESET_V
 `define FF_RESET_V
 
+/* verilator lint_off UNUSED */
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off UNDRIVEN */
+/* verilator lint_off WIDTH */
+/* verilator lint_off WIDTHCONCAT */
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
+
 module FF_reset
 (
-  output logic Y,
-  input  logic reset_b,
-  input  logic D,
-  input  logic ck_b,
-  input  logic ck
+  output wire Y,
+  input  wire reset_b,
+  input  wire D,
+  input  wire ck_b,
+  input  wire ck
 );
 
   supply1 vdd;
   supply0 gnd;
 
-  logic net1;
-  logic net10;
-  logic net12;
-  logic net3;
-  logic net4;
-  logic net5;
-  logic net6;
-  logic net7;
-  logic net8;
-  logic net9;
+  wire net1;
+  wire net10;
+  wire net12;
+  wire net3;
+  wire net4;
+  wire net5;
+  wire net6;
+  wire net7;
+  wire net8;
+  wire net9;
 
   nmos NM17       ( net1, gnd, reset_b );
   nmos NM16       ( net10, net1, D );
@@ -52,5 +60,13 @@ module FF_reset
   pmos PM1        ( net6, net10, ck );
 
 endmodule
+
+/* verilator lint_on WIDTHTRUNC */
+/* verilator lint_on WIDTHEXPAND */
+/* verilator lint_on WIDTHCONCAT */
+/* verilator lint_on WIDTH */
+/* verilator lint_on UNDRIVEN */
+/* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on UNUSED */
 
 `endif /* FF_RESET_V */

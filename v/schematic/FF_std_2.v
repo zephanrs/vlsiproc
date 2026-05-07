@@ -5,27 +5,35 @@
 `ifndef FF_STD_2_V
 `define FF_STD_2_V
 
+/* verilator lint_off UNUSED */
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off UNDRIVEN */
+/* verilator lint_off WIDTH */
+/* verilator lint_off WIDTHCONCAT */
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
+
 module FF_std_2
 (
-  output logic Y,
-  input  logic ck_b,
-  input  logic D,
-  input  logic ck
+  output wire Y,
+  input  wire ck_b,
+  input  wire D,
+  input  wire ck
 );
 
   supply1 vdd;
   supply0 gnd;
 
-  logic net1;
-  logic net10;
-  logic net11;
-  logic net14;
-  logic net15;
-  logic net2;
-  logic net3;
-  logic net5;
-  logic net6;
-  logic net7;
+  wire net1;
+  wire net10;
+  wire net11;
+  wire net14;
+  wire net15;
+  wire net2;
+  wire net3;
+  wire net5;
+  wire net6;
+  wire net7;
 
   nmos NM18       ( net14, net10, ck_b );
   nmos NM16       ( net10, gnd, D );
@@ -49,5 +57,13 @@ module FF_std_2
   pmos PM2        ( net3, vdd, net14 );
 
 endmodule
+
+/* verilator lint_on WIDTHTRUNC */
+/* verilator lint_on WIDTHEXPAND */
+/* verilator lint_on WIDTHCONCAT */
+/* verilator lint_on WIDTH */
+/* verilator lint_on UNDRIVEN */
+/* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on UNUSED */
 
 `endif /* FF_STD_2_V */

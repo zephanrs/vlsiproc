@@ -5,19 +5,27 @@
 `ifndef NOR3_V
 `define NOR3_V
 
+/* verilator lint_off UNUSED */
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off UNDRIVEN */
+/* verilator lint_off WIDTH */
+/* verilator lint_off WIDTHCONCAT */
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
+
 module NOR3
 (
-  input  logic in1,
-  input  logic in2,
-  output logic out,
-  input  logic in0
+  input  wire in1,
+  input  wire in2,
+  output wire out,
+  input  wire in0
 );
 
   supply1 vdd;
   supply0 gnd;
 
-  logic net1;
-  logic net4;
+  wire net1;
+  wire net4;
 
   pmos PM2        ( net1, vdd, in0 );
   pmos PM1        ( out, net4, in2 );
@@ -27,5 +35,13 @@ module NOR3
   nmos NM0        ( out, gnd, in0 );
 
 endmodule
+
+/* verilator lint_on WIDTHTRUNC */
+/* verilator lint_on WIDTHEXPAND */
+/* verilator lint_on WIDTHCONCAT */
+/* verilator lint_on WIDTH */
+/* verilator lint_on UNDRIVEN */
+/* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on UNUSED */
 
 `endif /* NOR3_V */

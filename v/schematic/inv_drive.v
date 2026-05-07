@@ -5,19 +5,27 @@
 `ifndef INV_DRIVE_V
 `define INV_DRIVE_V
 
+/* verilator lint_off UNUSED */
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off UNDRIVEN */
+/* verilator lint_off WIDTH */
+/* verilator lint_off WIDTHCONCAT */
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
+
 module inv_drive
 (
-  input  logic in,
-  output logic out,
-  output logic out_b
+  input  wire in,
+  output wire out,
+  output wire out_b
 );
 
   supply1 vdd;
   supply0 gnd;
 
-  logic net10;
-  logic net2;
-  logic net7;
+  wire net10;
+  wire net2;
+  wire net7;
 
   nmos NM5        ( out, gnd, net10 );
   nmos NM4        ( net10, gnd, in );
@@ -31,5 +39,13 @@ module inv_drive
   pmos PM0        ( net7, vdd, in );
 
 endmodule
+
+/* verilator lint_on WIDTHTRUNC */
+/* verilator lint_on WIDTHEXPAND */
+/* verilator lint_on WIDTHCONCAT */
+/* verilator lint_on WIDTH */
+/* verilator lint_on UNDRIVEN */
+/* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on UNUSED */
 
 `endif /* INV_DRIVE_V */

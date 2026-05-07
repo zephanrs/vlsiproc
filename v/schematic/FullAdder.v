@@ -5,30 +5,38 @@
 `ifndef FULL_ADDER_V
 `define FULL_ADDER_V
 
+/* verilator lint_off UNUSED */
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off UNDRIVEN */
+/* verilator lint_off WIDTH */
+/* verilator lint_off WIDTHCONCAT */
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
+
 module FullAdder
 (
-  input  logic in1,
-  input  logic cin,
-  output logic sum,
-  output logic cout,
-  input  logic in0
+  input  wire in1,
+  input  wire cin,
+  output wire sum,
+  output wire cout,
+  input  wire in0
 );
 
   supply1 vdd;
   supply0 gnd;
 
-  logic net1;
-  logic net12;
-  logic net13;
-  logic net24;
-  logic net28;
-  logic net3;
-  logic net32;
-  logic net47;
-  logic net52;
-  logic net7;
-  logic net8;
-  logic net9;
+  wire net1;
+  wire net12;
+  wire net13;
+  wire net24;
+  wire net28;
+  wire net3;
+  wire net32;
+  wire net47;
+  wire net52;
+  wire net7;
+  wire net8;
+  wire net9;
 
   pmos PM15       ( sum, vdd, net7 );
   pmos PM14       ( cout, vdd, net12 );
@@ -60,5 +68,13 @@ module FullAdder
   nmos NM0        ( net12, net13, cin );
 
 endmodule
+
+/* verilator lint_on WIDTHTRUNC */
+/* verilator lint_on WIDTHEXPAND */
+/* verilator lint_on WIDTHCONCAT */
+/* verilator lint_on WIDTH */
+/* verilator lint_on UNDRIVEN */
+/* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on UNUSED */
 
 `endif /* FULL_ADDER_V */

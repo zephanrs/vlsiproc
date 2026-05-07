@@ -5,22 +5,30 @@
 `ifndef ADDER_GRAY_B_V
 `define ADDER_GRAY_B_V
 
+/* verilator lint_off UNUSED */
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off UNDRIVEN */
+/* verilator lint_off WIDTH */
+/* verilator lint_off WIDTHCONCAT */
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
+
 module adder_gray_b
 (
-  input  logic G_m_k,
-  input  logic P_m_k,
-  input  logic G_kmin1_n,
-  output logic P_m_n_b,
-  input  logic P_kmin1_n,
-  output logic G_m_n_b
+  input  wire G_m_k,
+  input  wire P_m_k,
+  input  wire G_kmin1_n,
+  output wire P_m_n_b,
+  input  wire P_kmin1_n,
+  output wire G_m_n_b
 );
 
   supply1 vdd;
   supply0 gnd;
 
-  logic net1;
-  logic net2;
-  logic net4;
+  wire net1;
+  wire net2;
+  wire net4;
 
   nmos NM5        ( net4, gnd, P_kmin1_n );
   nmos NM4        ( P_m_n_b, net4, P_m_k );
@@ -34,5 +42,13 @@ module adder_gray_b
   pmos NM8        ( net1, vdd, G_m_k );
 
 endmodule
+
+/* verilator lint_on WIDTHTRUNC */
+/* verilator lint_on WIDTHEXPAND */
+/* verilator lint_on WIDTHCONCAT */
+/* verilator lint_on WIDTH */
+/* verilator lint_on UNDRIVEN */
+/* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on UNUSED */
 
 `endif /* ADDER_GRAY_B_V */

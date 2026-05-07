@@ -7,26 +7,40 @@
 
 `include "ref/Mux2_8b.v"
 
+/* verilator lint_off UNUSED */
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off UNDRIVEN */
+/* verilator lint_off WIDTH */
+/* verilator lint_off WIDTHCONCAT */
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
+
 module ImmGen
 (
-  input  logic [2:0] inst,
-  input  logic       inst[13],
-  input  logic [2:0] inst,
-  input  logic [2:0] inst,
-  output logic [7:0] imm
+  input  wire [13:0] inst,
+  output wire [7:0]  imm
 );
 
-  logic [2:0] [*3]inst[11],inst[10:9],inst;
-  logic [2:0] [*3]inst[5],inst[4:3],inst;
+  wire [11:0] [*3]inst;
+  wire [2:0] [*3]inst[11],inst[10:9],inst;
+  wire [2:0] [*3]inst[5],inst[4:3],inst;
 
   Mux2_8b I0
   (
-    .out<7:0> (imm[7:0]),
-    .in0<7:0> ([*3]inst[11],inst[10:9],inst[2:0]),
-    .in1<7:0> ([*3]inst[5],inst[4:3],inst[2:0]),
-    .sel      (inst[13])
+    .out (imm[7:0]),
+    .in0 ({[*3]inst[11], inst[10:9], inst[2:0]}),
+    .in1 ({[*3]inst[5], inst[4:3], inst[2:0]}),
+    .sel (inst[13])
   );
 
 endmodule
+
+/* verilator lint_on WIDTHTRUNC */
+/* verilator lint_on WIDTHEXPAND */
+/* verilator lint_on WIDTHCONCAT */
+/* verilator lint_on WIDTH */
+/* verilator lint_on UNDRIVEN */
+/* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on UNUSED */
 
 `endif /* IMM_GEN_V */

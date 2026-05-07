@@ -12,65 +12,72 @@
 `include "ref/Mux4_8b.v"
 `include "ref/ALU_8b.v"
 
+/* verilator lint_off UNUSED */
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off UNDRIVEN */
+/* verilator lint_off WIDTH */
+/* verilator lint_off WIDTHCONCAT */
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
+
 module ProcDpath
 (
-  output logic [7:0]  PC_out,
-  input  logic        addr_sel,
-  output logic [7:0]  idmem_addr,
-  input  logic [16:0] idmem_rdata,
-  output logic [7:0]  idmem_wdata,
-  input  logic        pc_sel,
-  input  logic [1:0]  op2_sel,
-  input  logic        op1_sel,
-  input  logic        eq,
-  output logic [7:0]  rdata0_out,
-  output logic [7:0]  rdata1_out,
-  output logic [7:0]  A_reg_out,
-  output logic [7:0]  wb_sel_out,
-  output logic [7:0]  pc_sel_mux_out,
-  input  logic        pc_rst,
-  input  logic        pc_en,
-  input  logic        pc_cllk,
-  input  logic        pc_old_ena,
-  input  logic        pc_old_clk,
-  output logic [7:0]  pc_old_out,
-  output logic        mux4_out[70],
-  output logic [7:0]  op1_sel_out,
-  output logic [7:0]  alu_out,
-  input  logic        rf_clk,
-  input  logic        a_ena,
-  input  logic        a_clk,
-  input  logic        b_ena,
-  input  logic        b_clk,
-  input  logic        addr_ena,
-  input  logic        addr_clk,
-  input  logic        wd_ena,
-  input  logic        wd_clk,
-  input  logic        wb_sel
+  output wire [7:0]  PC_out,
+  input  wire        addr_sel,
+  output wire [7:0]  idmem_addr,
+  input  wire [16:0] idmem_rdata,
+  output wire [7:0]  idmem_wdata,
+  input  wire        pc_sel,
+  input  wire [1:0]  op2_sel,
+  input  wire        op1_sel,
+  input  wire        eq,
+  output wire [7:0]  rdata0_out,
+  output wire [7:0]  rdata1_out,
+  output wire [7:0]  A_reg_out,
+  output wire [7:0]  wb_sel_out,
+  output wire [7:0]  pc_sel_mux_out,
+  input  wire        pc_rst,
+  input  wire        pc_en,
+  input  wire        pc_cllk,
+  input  wire        pc_old_ena,
+  input  wire        pc_old_clk,
+  output wire [7:0]  pc_old_out,
+  output wire [70:0] mux4_out,
+  output wire [7:0]  op1_sel_out,
+  output wire [7:0]  alu_out,
+  input  wire        rf_clk,
+  input  wire        a_ena,
+  input  wire        a_clk,
+  input  wire        b_ena,
+  input  wire        b_clk,
+  input  wire        addr_ena,
+  input  wire        addr_clk,
+  input  wire        wd_ena,
+  input  wire        wd_clk,
+  input  wire        wb_sel
 );
 
-  logic net32;
-  logic net5;
-  logic net6;
-  logic [70:0] [*8]mux4_out;
-  logic [70:0] mux4_out;
-  logic [7:0] net25;
-  logic [2:0] net31;
-  logic [2:0] net33;
-  logic [2:0] net34;
-  logic [7:0] net4;
-  logic [7:0] net45;
-  logic [7:0] net53;
-  logic [7:0] net54;
-  logic [7:0] net55;
-  logic [7:0] net7;
-  logic [7:0] net8;
-  logic [7:0] net9;
+  wire net32;
+  wire net5;
+  wire net6;
+  wire [70:0] [*8]mux4_out;
+  wire [7:0] net25;
+  wire [2:0] net31;
+  wire [2:0] net33;
+  wire [2:0] net34;
+  wire [7:0] net4;
+  wire [7:0] net45;
+  wire [7:0] net53;
+  wire [7:0] net54;
+  wire [7:0] net55;
+  wire [7:0] net7;
+  wire [7:0] net8;
+  wire [7:0] net9;
 
   reg_ena_reset PC
   (
-    .Y<7:0> (PC_out[7:0]),
-    .D<7:0> (net4[0:7]),
+    .Y      (PC_out[7:0]),
+    .D      (net4[0:7]),
     .clk_in (pc_cllk),
     .ena    (pc_en),
     .reset  (pc_rst)
@@ -78,114 +85,122 @@ module ProcDpath
 
   Mux2_8b Wb_sel
   (
-    .out<7:0> (wb_sel_out[7:0]),
-    .in0<7:0> (alu_out[7:0]),
-    .in1<7:0> (net45[0:7]),
-    .sel      (wb_sel)
+    .out (wb_sel_out[7:0]),
+    .in0 (alu_out[7:0]),
+    .in1 (net45[0:7]),
+    .sel (wb_sel)
   );
 
   Mux2_8b I12
   (
-    .out<7:0> (op1_sel_out[7:0]),
-    .in0<7:0> (A_reg_out[7:0]),
-    .in1<7:0> (pc_sel_mux_out[7:0]),
-    .sel      (op1_sel)
+    .out (op1_sel_out[7:0]),
+    .in0 (A_reg_out[7:0]),
+    .in1 (pc_sel_mux_out[7:0]),
+    .sel (op1_sel)
   );
 
   Mux2_8b I11
   (
-    .out<7:0> (pc_sel_mux_out[7:0]),
-    .in0<7:0> (pc_old_out[7:0]),
-    .in1<7:0> (PC_out[7:0]),
-    .sel      (pc_sel)
+    .out (pc_sel_mux_out[7:0]),
+    .in0 (pc_old_out[7:0]),
+    .in1 (PC_out[7:0]),
+    .sel (pc_sel)
   );
 
   Mux2_8b I2
   (
-    .out<7:0> (idmem_addr[7:0]),
-    .in0<7:0> (PC_out[7:0]),
-    .in1<7:0> (net7[0:7]),
-    .sel      (addr_sel)
+    .out (idmem_addr[7:0]),
+    .in0 (PC_out[7:0]),
+    .in1 (net7[0:7]),
+    .sel (addr_sel)
   );
 
   reg_ena Addr
   (
-    .Y<7:0> (net7[0:7]),
-    .D<7:0> (alu_out[7:0]),
+    .Y      (net7[0:7]),
+    .D      (alu_out[7:0]),
     .clk_in (addr_clk),
     .ena    (addr_ena)
   );
 
   reg_ena WD
   (
-    .Y<7:0> (net25[0:7]),
-    .D<7:0> (wb_sel_out[7:0]),
+    .Y      (net25[0:7]),
+    .D      (wb_sel_out[7:0]),
     .clk_in (wd_clk),
     .ena    (wd_ena)
   );
 
   reg_ena A
   (
-    .Y<7:0> (A_reg_out[7:0]),
-    .D<7:0> (rdata0_out[7:0]),
+    .Y      (A_reg_out[7:0]),
+    .D      (rdata0_out[7:0]),
     .clk_in (a_clk),
     .ena    (a_ena)
   );
 
   reg_ena B
   (
-    .Y<7:0> (idmem_wdata[7:0]),
-    .D<7:0> (rdata1_out[7:0]),
+    .Y      (idmem_wdata[7:0]),
+    .D      (rdata1_out[7:0]),
     .clk_in (b_clk),
     .ena    (b_ena)
   );
 
   reg_ena PC_old
   (
-    .Y<7:0> (pc_old_out[7:0]),
-    .D<7:0> (PC_out[7:0]),
+    .Y      (pc_old_out[7:0]),
+    .D      (PC_out[7:0]),
     .clk_in (pc_old_clk),
     .ena    (pc_old_ena)
   );
 
   reg_ena I4
   (
-    .Y<7:0> (net9[0:7]),
-    .D<7:0> (net8[0:7]),
+    .Y      (net9[0:7]),
+    .D      (net8[0:7]),
     .clk_in (net6),
     .ena    (net5)
   );
 
   Regfile rf
   (
-    .rdata0<7:0> (rdata0_out[7:0]),
-    .rdata1<7:0> (rdata1_out[7:0]),
-    .clk         (rf_clk),
-    .raddr0<2:0> (net34[0:2]),
-    .raddr1<2:0> (net33[0:2]),
-    .rf_wen      (net32),
-    .waddr<2:0>  (net31[0:2]),
-    .wdata<7:0>  (net25[0:7])
+    .rdata0 (rdata0_out[7:0]),
+    .rdata1 (rdata1_out[7:0]),
+    .clk    (rf_clk),
+    .raddr0 (net34[0:2]),
+    .raddr1 (net33[0:2]),
+    .rf_wen (net32),
+    .waddr  (net31[0:2]),
+    .wdata  (net25[0:7])
   );
 
   Mux4_8b I15
   (
-    .out<7:0> ([*8]mux4_out[70]),
-    .in0<7:0> (idmem_wdata[7:0]),
-    .in1<7:0> (net55[0:7]),
-    .in2<7:0> (net54[0:7]),
-    .in3<7:0> (net53[0:7]),
-    .sel<1:0> (op2_sel[1:0])
+    .out ([*8]mux4_out[70]),
+    .in0 (idmem_wdata[7:0]),
+    .in1 (net55[0:7]),
+    .in2 (net54[0:7]),
+    .in3 (net53[0:7]),
+    .sel (op2_sel[1:0])
   );
 
   ALU_8b ALU
   (
-    .eq       (eq),
-    .out<7:0> (alu_out[7:0]),
-    .in0<7:0> (op1_sel_out[7:0]),
-    .in1<7:0> ([*8]mux4_out[70])
+    .eq  (eq),
+    .out (alu_out[7:0]),
+    .in0 (op1_sel_out[7:0]),
+    .in1 ([*8]mux4_out[70])
   );
 
 endmodule
+
+/* verilator lint_on WIDTHTRUNC */
+/* verilator lint_on WIDTHEXPAND */
+/* verilator lint_on WIDTHCONCAT */
+/* verilator lint_on WIDTH */
+/* verilator lint_on UNDRIVEN */
+/* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on UNUSED */
 
 `endif /* PROC_DPATH_V */

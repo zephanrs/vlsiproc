@@ -5,17 +5,25 @@
 `ifndef NAND2_V
 `define NAND2_V
 
+/* verilator lint_off UNUSED */
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off UNDRIVEN */
+/* verilator lint_off WIDTH */
+/* verilator lint_off WIDTHCONCAT */
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
+
 module NAND2
 (
-  output logic out,
-  input  logic in1,
-  input  logic in0
+  output wire out,
+  input  wire in1,
+  input  wire in0
 );
 
   supply1 vdd;
   supply0 gnd;
 
-  logic net2;
+  wire net2;
 
   nmos NM5        ( out, net2, in0 );
   nmos NM4        ( net2, gnd, in1 );
@@ -23,5 +31,13 @@ module NAND2
   pmos PM5        ( out, vdd, in0 );
 
 endmodule
+
+/* verilator lint_on WIDTHTRUNC */
+/* verilator lint_on WIDTHEXPAND */
+/* verilator lint_on WIDTHCONCAT */
+/* verilator lint_on WIDTH */
+/* verilator lint_on UNDRIVEN */
+/* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on UNUSED */
 
 `endif /* NAND2_V */

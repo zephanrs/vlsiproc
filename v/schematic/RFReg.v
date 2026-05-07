@@ -5,36 +5,44 @@
 `ifndef RFREG_V
 `define RFREG_V
 
+/* verilator lint_off UNUSED */
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off UNDRIVEN */
+/* verilator lint_off WIDTH */
+/* verilator lint_off WIDTHCONCAT */
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
+
 module RFReg
 (
-  inout  logic rdata0,
-  inout  logic rdata1,
-  input  logic D,
-  input  logic clk,
-  input  logic clk_b,
-  input  logic ren0,
-  input  logic ren0_b,
-  input  logic ren1,
-  input  logic ren1_b
+  inout  wire rdata0,
+  inout  wire rdata1,
+  input  wire D,
+  input  wire clk,
+  input  wire clk_b,
+  input  wire ren0,
+  input  wire ren0_b,
+  input  wire ren1,
+  input  wire ren1_b
 );
 
   supply1 vdd;
   supply0 gnd;
 
-  logic net1;
-  logic net12;
-  logic net14;
-  logic net15;
-  logic net16;
-  logic net17;
-  logic net21;
-  logic net29;
-  logic net3;
-  logic net30;
-  logic net36;
-  logic net4;
-  logic net7;
-  logic net8;
+  wire net1;
+  wire net12;
+  wire net14;
+  wire net15;
+  wire net16;
+  wire net17;
+  wire net21;
+  wire net29;
+  wire net3;
+  wire net30;
+  wire net36;
+  wire net4;
+  wire net7;
+  wire net8;
 
   pmos PM12       ( net36, vdd, net12 );
   pmos PM11       ( rdata1, net36, ren1_b );
@@ -64,5 +72,13 @@ module RFReg
   nmos NM0        ( net4, net8, clk_b );
 
 endmodule
+
+/* verilator lint_on WIDTHTRUNC */
+/* verilator lint_on WIDTHEXPAND */
+/* verilator lint_on WIDTHCONCAT */
+/* verilator lint_on WIDTH */
+/* verilator lint_on UNDRIVEN */
+/* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on UNUSED */
 
 `endif /* RFREG_V */
