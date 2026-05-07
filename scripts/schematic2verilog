@@ -413,9 +413,30 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
 
     scalar_nets = [n for n in scalar_nets_set if n not in bus_max]
 
+    # Single-driver bridging: every output port gets an internal '<name>_drv'
+    # wire that absorbs all in-module drivers (transistors / sub-cell outputs);
+    # an `assign port = port_drv;` at the end exposes a single driver to the
+    # boundary so a `logic out` testbench signal (uwire) doesn't blow up.
+    output_port_widths = {name: bits for name, direction, bits in ports
+                          if direction == "output"}
+
+    def remap_drv(net):
+        """If net references an output port (with optional slice), redirect to '_drv'."""
+        if not net:
+            return net
+        m = re.match(r'^(\w+)(\[.*\])?$', net)
+        if m and m.group(1) in output_port_widths:
+            return f"{m.group(1)}_drv{m.group(2) or ''}"
+        return net
+
     int_net_decls = [f"wire {n};" for n in sorted(scalar_nets)]
     for base, hi in sorted(bus_max.items()):
         int_net_decls.append(f"wire [{hi}:0] {base};")
+    for name, bits in sorted(output_port_widths.items()):
+        if bits > 1:
+            int_net_decls.append(f"wire [{bits-1}:0] {name}_drv;")
+        else:
+            int_net_decls.append(f"wire {name}_drv;")
 
     # --- sub-cell instances ---
     sub_insts = []
@@ -424,9 +445,9 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
     for inst_name, cell, conns in insts:
         if cell in MOS_CELLS:
             pins = {p: supply_name(vlog_name(n)) for p, n in conns}
-            d = pins.get("D", "")
-            g = pins.get("G", "")
-            s = pins.get("S", "")
+            d = remap_drv(pins.get("D", ""))
+            g = remap_drv(pins.get("G", ""))
+            s = remap_drv(pins.get("S", ""))
             prim = "nmos" if cell in {"nmos4", "nmos1v", "nmos"} else "pmos"
             mos_lines.append(f"  {prim} {inst_name:<10} ( {d}, {s}, {g} );")
         elif cell in PRIMITIVES:
@@ -436,7 +457,7 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
             vconns = []
             for p, n in conns:
                 vp = strip_pin_range(p)
-                vn = supply_name(cad_net_to_verilog(n))
+                vn = remap_drv(supply_name(cad_net_to_verilog(n)))
                 vconns.append((vp, vn))
             sub_insts.append((vcell, inst_name, vconns))
 
@@ -509,6 +530,11 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
         h()
         for ml in mos_lines:
             h(ml)
+
+    if output_port_widths:
+        h()
+        for name in sorted(output_port_widths):
+            h(f"  assign {name} = {name}_drv;")
 
     h()
     h("endmodule")
