@@ -5,12 +5,20 @@
 `ifndef RFZERO_V
 `define RFZERO_V
 
+/* verilator lint_off UNUSED */
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off UNDRIVEN */
+/* verilator lint_off WIDTH */
+/* verilator lint_off WIDTHCONCAT */
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
+
 module RFzero
 (
-  inout  logic rdata0,
-  inout  logic rdata1,
-  input  logic ren0,
-  input  logic ren1
+  inout  wire rdata0,
+  inout  wire rdata1,
+  input  wire ren0,
+  input  wire ren1
 );
 
   supply0 gnd;
@@ -19,5 +27,13 @@ module RFzero
   nmos NM0        ( rdata0, gnd, ren0 );
 
 endmodule
+
+/* verilator lint_on WIDTHTRUNC */
+/* verilator lint_on WIDTHEXPAND */
+/* verilator lint_on WIDTHCONCAT */
+/* verilator lint_on WIDTH */
+/* verilator lint_on UNDRIVEN */
+/* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on UNUSED */
 
 `endif /* RFZERO_V */

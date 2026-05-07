@@ -5,27 +5,35 @@
 `ifndef MUX4_V
 `define MUX4_V
 
+/* verilator lint_off UNUSED */
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off UNDRIVEN */
+/* verilator lint_off WIDTH */
+/* verilator lint_off WIDTHCONCAT */
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
+
 module Mux4
 (
-  input  logic       in0,
-  input  logic [1:0] sel,
-  input  logic [1:0] sel_b,
-  input  logic       in1,
-  input  logic       in2,
-  input  logic       in3,
-  output logic       out
+  input  wire       in0,
+  input  wire [1:0] sel,
+  input  wire [1:0] sel_b,
+  input  wire       in1,
+  input  wire       in2,
+  input  wire       in3,
+  output wire       out
 );
 
   supply1 vdd;
   supply0 gnd;
 
-  logic net1;
-  logic net11;
-  logic net2;
-  logic net3;
-  logic net4;
-  logic net6;
-  logic net7;
+  wire net1;
+  wire net11;
+  wire net2;
+  wire net3;
+  wire net4;
+  wire net6;
+  wire net7;
 
   pmos PM21       ( net2, net7, sel_b[1] );
   pmos PM17       ( net11, net1, sel_b[0] );
@@ -51,5 +59,13 @@ module Mux4
   nmos NM19       ( net2, net11, sel_b[1] );
 
 endmodule
+
+/* verilator lint_on WIDTHTRUNC */
+/* verilator lint_on WIDTHEXPAND */
+/* verilator lint_on WIDTHCONCAT */
+/* verilator lint_on WIDTH */
+/* verilator lint_on UNDRIVEN */
+/* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on UNUSED */
 
 `endif /* MUX4_V */

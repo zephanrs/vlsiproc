@@ -10,28 +10,36 @@
 `include "schematic/RFzero.v"
 `include "schematic/inv_x4.v"
 
+/* verilator lint_off UNUSED */
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off UNDRIVEN */
+/* verilator lint_off WIDTH */
+/* verilator lint_off WIDTHCONCAT */
+/* verilator lint_off WIDTHEXPAND */
+/* verilator lint_off WIDTHTRUNC */
+
 module RFslice
 (
-  input  logic       wdata,
-  output logic       rdata0,
-  output logic       rdata1,
-  input  logic [7:0] ren0_b,
-  input  logic [7:0] ren0,
-  input  logic [7:0] ren1,
-  input  logic [7:0] ren1_b,
-  input  logic [6:0] wen,
-  input  logic [6:0] wen_b
+  input  wire       wdata,
+  output wire       rdata0,
+  output wire       rdata1,
+  input  wire [7:0] ren0_b,
+  input  wire [7:0] ren0,
+  input  wire [7:0] ren1,
+  input  wire [7:0] ren1_b,
+  input  wire [7:0] wen,
+  input  wire [7:0] wen_b
 );
 
-  logic [*7]net6;
-  logic [*7]rawdata0;
-  logic [*7]rawdata1;
-  logic net1;
-  logic net2;
-  logic net5;
-  logic net6;
-  logic rawdata0;
-  logic rawdata1;
+  wire [*7]net6;
+  wire [*7]rawdata0;
+  wire [*7]rawdata1;
+  wire net1;
+  wire net2;
+  wire net5;
+  wire net6;
+  wire rawdata0;
+  wire rawdata1;
 
   RFReg I1_7
   (
@@ -169,5 +177,13 @@ module RFslice
   );
 
 endmodule
+
+/* verilator lint_on WIDTHTRUNC */
+/* verilator lint_on WIDTHEXPAND */
+/* verilator lint_on WIDTHCONCAT */
+/* verilator lint_on WIDTH */
+/* verilator lint_on UNDRIVEN */
+/* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on UNUSED */
 
 `endif /* RFSLICE_V */
