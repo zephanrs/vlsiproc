@@ -252,7 +252,13 @@ def parse_netlist(path):
                 if hi is not None:
                     raw_ports.append((base, direction, max(hi, lo), min(hi, lo)))
                 else:
-                    raw_ports.append((name, direction, int(bits) - 1, 0))
+                    # SKILL sometimes reports bits=0 for scalar terminals it
+                    # can't classify -- treat <=1 as scalar to avoid '[-1:0]'.
+                    bits = int(bits)
+                    if bits <= 1:
+                        raw_ports.append((name, direction, 0, 0))
+                    else:
+                        raw_ports.append((name, direction, bits - 1, 0))
             elif tag == "net":
                 nets.append(parts[1])
             elif tag == "noconn":
@@ -494,10 +500,9 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
 
     int_net_decls = [f"wire {n};" for n in sorted(scalar_nets)]
     for base, (hi, lo) in sorted(bus_max.items()):
-        if hi == lo:
-            int_net_decls.append(f"wire {base};")
-        else:
-            int_net_decls.append(f"wire [{hi}:{lo}] {base};")
+        # Always emit a range -- some downstream connection used <N> bit-select,
+        # so the net must be a vector (even if hi == lo, e.g. just bit 0 used).
+        int_net_decls.append(f"wire [{hi}:{lo}] {base};")
     for name, (hi, lo) in sorted(output_port_widths.items()):
         if hi == lo:
             int_net_decls.append(f"wire {name}_drv;")
