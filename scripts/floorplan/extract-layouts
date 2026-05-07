@@ -44,32 +44,47 @@ procedure( fpl_box( bbox )
         xCoord( upperRight( bbox ) ) yCoord( upperRight( bbox ) ) )
 )
 
+procedure( fpl_write_missing( fp libName cellName reason )
+  fprintf( fp "MISSING %s %s\n\n" libName cellName )
+  fprintf( errport "fpl: warning, %s for %s/%s\n" reason libName cellName )
+  nil
+)
+
 procedure( fpl_extract_cell( libName cellName fp "ttp" )
-  let( (cv coords term pin fig pc)
-    cv = dbOpenCellViewByType( libName cellName "layout" "" "r" )
-    if( cv then
-      coords = fpl_box( cv~>bBox )
-      fprintf( fp "CELL %s %s\n" libName cellName )
-      fprintf( fp "BBOX %f %f %f %f\n"
-               nth(0 coords) nth(1 coords) nth(2 coords) nth(3 coords) )
-      foreach( term cv~>terminals
-        foreach( pin term~>pins
-          foreach( fig pin~>figs
-            when( fig~>bBox
-              pc = fpl_box( fig~>bBox )
-              fprintf( fp "PIN %s %f %f %f %f\n" term~>name
-                       nth(0 pc) nth(1 pc) nth(2 pc) nth(3 pc) )
+  let( (cv coords term pin fig pc opened)
+    ;; dbOpenCellViewByType returns nil when the layout view is absent inside
+    ;; a registered library, but raises when the *library* isn't registered
+    ;; (or when a PDK lazy-load clobbers poport mid-call). errset turns either
+    ;; case into a MISSING line via the cond below.
+    cv = nil
+    opened = errset( cv = dbOpenCellViewByType( libName cellName "layout" "" "r" ) t )
+    cond(
+      ( null( opened )
+        fpl_write_missing( fp libName cellName "dbOpenCellViewByType raised" ))
+      ( null( cv )
+        fpl_write_missing( fp libName cellName "no layout view" ))
+      ( null( cv~>bBox )
+        dbClose( cv )
+        fpl_write_missing( fp libName cellName "layout has no bBox (empty cell?)" ))
+      ( t
+        coords = fpl_box( cv~>bBox )
+        fprintf( fp "CELL %s %s\n" libName cellName )
+        fprintf( fp "BBOX %f %f %f %f\n"
+                 nth(0 coords) nth(1 coords) nth(2 coords) nth(3 coords) )
+        foreach( term cv~>terminals
+          foreach( pin term~>pins
+            foreach( fig pin~>figs
+              when( fig~>bBox
+                pc = fpl_box( fig~>bBox )
+                fprintf( fp "PIN %s %f %f %f %f\n" term~>name
+                         nth(0 pc) nth(1 pc) nth(2 pc) nth(3 pc) )
+              )
             )
           )
         )
-      )
-      fprintf( fp "ENDCELL\n\n" )
-      dbClose( cv )
-      t
-    else
-      fprintf( fp "MISSING %s %s\n\n" libName cellName )
-      fprintf( errport "fpl: warning, no layout view for %s/%s\n" libName cellName )
-      nil
+        fprintf( fp "ENDCELL\n\n" )
+        dbClose( cv )
+        t )
     )
   )
 )
@@ -77,18 +92,62 @@ procedure( fpl_extract_cell( libName cellName fp "ttp" )
 ;; Status messages always go to errport: some PDK init scripts (e.g. gpdk045's
 ;; libInit.il) leave poport bound to a read-only file, which makes plain
 ;; printf() raise a "cannot send output to an input port" error.
+procedure( fpl_dump_libs()
+  let( (libs n)
+    libs = ddGetLibList()
+    n = length( libs )
+    fprintf( errport "fpl: registered libraries (%d):\n" n )
+    foreach( l libs
+      fprintf( errport "  %-20s %s\n" l~>name l~>readPath )
+    )
+    n
+  )
+)
+
+procedure( fpl_warmup_pdk( cells )
+  ;; The first dbOpenCellViewByType against a PDK-using cell triggers the
+  ;; PDK's libInit.il, which rebinds poport to a read-only banner file --
+  ;; and an internal printf inside that same call then throws. We do that
+  ;; sacrificial open ONCE, up front, on whichever cell we like; errset eats
+  ;; the throw, gpdk is now fully loaded, and we restore poport. From then
+  ;; on every dbOpenCellViewByType succeeds and our extraction loop is clean.
+  let( (entry warmCv)
+    entry = car( cells )
+    fprintf( errport "fpl: warming up PDK via %s/%s (an *Error* below is expected)\n"
+             car(entry) cadr(entry) )
+    errset( warmCv = dbOpenCellViewByType( car(entry) cadr(entry) "layout" "" "r" ) t )
+    poport = errport
+    when( warmCv dbClose( warmCv ) )
+    fprintf( errport "fpl: PDK warmup complete, poport restored to errport\n" )
+  )
+)
+
 procedure( fpl_extract_all( cells outPath )
-  let( (fp ok n)
+  let( (fp n)
     n = 0
+    ;; Diagnostic: dump the libraries Virtuoso has registered. If 'processor'
+    ;; isn't in this list, cds.lib didn't resolve (usually $ROOTDIR not set
+    ;; in virtuoso's env, or virtuoso launched from a dir without a cds.lib).
+    fpl_dump_libs()
+    fpl_warmup_pdk( cells )
     fp = outfile( outPath "w" )
     if( fp then
-      ;; Wrap the loop in errset so a mid-iteration error (PDK weirdness,
-      ;; an unexpected layout edge case, etc.) still falls through to
-      ;; close(fp) and we don't lose the buffered output already written.
-      errset(
-        foreach( entry cells
-          ok = fpl_extract_cell( car(entry) cadr(entry) fp )
-          if( ok then n = n + 1 )
+      ;; errset takes at most 2 args (form + okPrintError flag), so we wrap
+      ;; ONLY the call and inspect its return value outside. errset returns:
+      ;;   nil      -- the form threw (the cell aborted mid-extract)
+      ;;   (t)      -- cell extracted successfully
+      ;;   (nil)    -- cell had no layout view (proc already wrote MISSING)
+      foreach( entry cells
+        let( (libName cellName res)
+          libName  = car( entry )
+          cellName = cadr( entry )
+          fprintf( errport "fpl: extracting %s/%s\n" libName cellName )
+          res = errset( fpl_extract_cell( libName cellName fp ) t )
+          if( null( res ) then
+            fprintf( errport "fpl:   ^ aborted with a thrown error\n" )
+          else
+            when( car( res ) n = n + 1 )
+          )
         )
       )
       close( fp )
@@ -181,10 +240,15 @@ def main():
         + f'\nfpl_extract_all( {skill_cells} "{out_path}" )\nexit()\n'
     )
 
+    # cds.lib in this repo references $ROOTDIR; export it explicitly so the
+    # extraction works regardless of whether setup-project.sh was sourced.
+    env = os.environ.copy()
+    env.setdefault("ROOTDIR", root or os.path.dirname(os.path.dirname(cds_dir)))
+
     print(f"fpl: extracting {len(cells)} cells -> {out_path}")
-    print(f"fpl: running virtuoso (cds: {cds_dir})")
+    print(f"fpl: running virtuoso (cds: {cds_dir}, ROOTDIR={env['ROOTDIR']})")
     result = subprocess.run(
-        [virtuoso, "-nograph"], input=skill_input, text=True, cwd=cds_dir,
+        [virtuoso, "-nograph"], input=skill_input, text=True, cwd=cds_dir, env=env,
     )
     if result.returncode != 0:
         sys.exit(f"virtuoso exited with code {result.returncode}")
