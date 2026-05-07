@@ -34,12 +34,16 @@ def find_git_root():
 
 
 def load_manifest(path):
+    """Returns dict cadence_cell -> verilog_module. [library] section headers are
+    skipped -- this script only cares about the cadence/verilog name pairing."""
     if not os.path.isfile(path):
         sys.exit(f"error: manifest not found: {path}")
     cells = {}
     for lineno, line in enumerate(Path(path).read_text().splitlines(), 1):
         line = line.split("#", 1)[0].strip()
         if not line:
+            continue
+        if line.startswith("[") and line.endswith("]"):
             continue
         parts = line.split()
         if len(parts) != 2:
