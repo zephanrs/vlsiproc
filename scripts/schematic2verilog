@@ -315,11 +315,20 @@ def _expand_insts(insts):
         for offset, idx in enumerate(indices):
             new_conns = []
             for pin, net in conns:
-                # Strip Cadence broadcast prefix ('[*N]' or '*N ') -- each
-                # unrolled instance receives the bare net.
+                # Strip Cadence broadcast prefix ('<*N>' / '[*N]' / '*N ') --
+                # each unrolled instance receives the bare net.
                 m = _BCAST_RE.match(net)
                 if m:
                     net = m.group(4)
+                # Concat: comma-separated elements distributed one-per-instance.
+                if ',' in net:
+                    parts = [p.strip() for p in net.split(',')]
+                    if len(parts) == len(indices):
+                        new_conns.append((pin, parts[offset]))
+                        continue
+                    # Fall through: count mismatch, pass whole concat (lint will warn).
+                    new_conns.append((pin, net))
+                    continue
                 net_base, net_hi, net_lo = _parse_cadence_range(net)
                 if net_hi is not None:
                     if net_hi >= net_lo:
