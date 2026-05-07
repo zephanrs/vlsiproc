@@ -144,16 +144,16 @@ module Regfile
 
   read_decoder I2
   (
-    .ren_b (net14[0:7]),
+    .ren_b (net14[7:0]),
     .raddr (raddr1[2:0]),
-    .ren   (net15[0:7])
+    .ren   (net15[7:0])
   );
 
   read_decoder I1
   (
-    .ren_b (net11[0:7]),
+    .ren_b (net11[7:0]),
     .raddr (raddr0[2:0]),
-    .ren   (net12[0:7])
+    .ren   (net12[7:0])
   );
 
   write_decoder I3

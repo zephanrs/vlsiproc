@@ -39,65 +39,65 @@ module write_decoder
 
   AND4 I4_7
   (
-    .D   ({waddr_a[2], {3{waddr_b[2]}}}),
-    .out (net3[0]),
-    .A   (net6),
-    .B   ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
-    .C   ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]})
+    .in1 ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
+    .in3 ({waddr_a[2], {3{waddr_b[2]}}}),
+    .in0 (net6),
+    .in2 ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]}),
+    .out (net3[0])
   );
 
   AND4 I4_6
   (
-    .D   ({waddr_a[2], {3{waddr_b[2]}}}),
-    .out (net3[1]),
-    .A   (net6),
-    .B   ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
-    .C   ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]})
+    .in1 ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
+    .in3 ({waddr_a[2], {3{waddr_b[2]}}}),
+    .in0 (net6),
+    .in2 ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]}),
+    .out (net3[1])
   );
 
   AND4 I4_5
   (
-    .D   ({waddr_a[2], {3{waddr_b[2]}}}),
-    .out (net3[2]),
-    .A   (net6),
-    .B   ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
-    .C   ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]})
+    .in1 ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
+    .in3 ({waddr_a[2], {3{waddr_b[2]}}}),
+    .in0 (net6),
+    .in2 ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]}),
+    .out (net3[2])
   );
 
   AND4 I4_4
   (
-    .D   ({waddr_a[2], {3{waddr_b[2]}}}),
-    .out (net3[3]),
-    .A   (net6),
-    .B   ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
-    .C   ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]})
+    .in1 ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
+    .in3 ({waddr_a[2], {3{waddr_b[2]}}}),
+    .in0 (net6),
+    .in2 ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]}),
+    .out (net3[3])
   );
 
   AND4 I4_3
   (
-    .D   ({waddr_a[2], {3{waddr_b[2]}}}),
-    .out (net3[4]),
-    .A   (net6),
-    .B   ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
-    .C   ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]})
+    .in1 ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
+    .in3 ({waddr_a[2], {3{waddr_b[2]}}}),
+    .in0 (net6),
+    .in2 ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]}),
+    .out (net3[4])
   );
 
   AND4 I4_2
   (
-    .D   ({waddr_a[2], {3{waddr_b[2]}}}),
-    .out (net3[5]),
-    .A   (net6),
-    .B   ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
-    .C   ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]})
+    .in1 ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
+    .in3 ({waddr_a[2], {3{waddr_b[2]}}}),
+    .in0 (net6),
+    .in2 ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]}),
+    .out (net3[5])
   );
 
   AND4 I4_1
   (
-    .D   ({waddr_a[2], {3{waddr_b[2]}}}),
-    .out (net3[6]),
-    .A   (net6),
-    .B   ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
-    .C   ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]})
+    .in1 ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
+    .in3 ({waddr_a[2], {3{waddr_b[2]}}}),
+    .in0 (net6),
+    .in2 ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]}),
+    .out (net3[6])
   );
 
   inv_drive I3_7
