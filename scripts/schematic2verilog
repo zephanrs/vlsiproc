@@ -23,30 +23,17 @@ import tempfile
 # No string manipulation, regex, or formatting -- just data extraction.
 # -----------------------------------------------------------------------
 SKILL_EXTRACT = r"""
-procedure( s2v_extract( libName cellName outFile )
-  let( (cv fp bits)
-    cv = dbOpenCellViewByType( libName cellName "schematic" "" "r" )
-    unless( cv
-      fprintf( errport "s2v: ERROR cannot open schematic %s/%s\n" libName cellName )
-      return( nil )
-    )
-    fp = outfile( outFile "w" )
-    unless( fp
-      fprintf( errport "s2v: ERROR cannot write %s\n" outFile )
-      dbClose( cv )  return( nil )
-    )
-
+; Emit one cell's netlist to fp.
+procedure( s2v_emit( cv fp cellName )
+  let( (bits)
     fprintf( fp "cell\t%s\n" cellName )
-
     foreach( term cv~>terminals
       bits = if( term~>termType == "singleBit" then 1 else length( term~>nets ) )
       fprintf( fp "port\t%s\t%s\t%d\n" term~>name term~>direction bits )
     )
-
     foreach( net cv~>nets
       fprintf( fp "net\t%s\n" net~>name )
     )
-
     foreach( inst cv~>instances
       when( inst~>cellName == "noConn"
         foreach( it inst~>instTerms
@@ -64,10 +51,41 @@ procedure( s2v_extract( libName cellName outFile )
         fprintf( fp "\n" )
       )
     )
+  )
+)
 
+; Recursively walk a schematic, extracting it and any sub-cells that aren't
+; in skipList (cells with a hand-written ref Verilog) or in done (already
+; extracted this run). Returns the updated done list.
+procedure( s2v_walk( libName cellName outDir skipList done )
+  let( (cv fp outFile subCell)
+    when( member( cellName done ) return( done ) )
+    when( member( cellName skipList ) return( done ) )
+    cv = dbOpenCellViewByType( libName cellName "schematic" "" "r" )
+    unless( cv
+      fprintf( errport "s2v: WARNING cannot open %s/%s schematic\n" libName cellName )
+      return( done )
+    )
+    outFile = strcat( outDir "/" cellName ".netlist" )
+    fp = outfile( outFile "w" )
+    unless( fp
+      fprintf( errport "s2v: ERROR cannot write %s\n" outFile )
+      dbClose( cv ) return( done )
+    )
+    s2v_emit( cv fp cellName )
     close( fp )
+    printf( "s2v: extracted %s/%s -> %s\n" libName cellName outFile )
+    done = cons( cellName done )
+    foreach( inst cv~>instances
+      subCell = inst~>cellName
+      when( subCell &&
+            inst~>master &&
+            !( member( subCell '("nmos4" "pmos4" "nmos" "pmos" "nmos1v" "pmos1v" "ipin" "opin" "iopin" "vdd!" "gnd!" "vdd" "gnd" "noConn") ) )
+        done = s2v_walk( inst~>master~>libName subCell outDir skipList done )
+      )
+    )
     dbClose( cv )
-    printf( "s2v: extracted %s -> %s\n" cellName outFile )
+    done
   )
 )
 """
@@ -497,25 +515,41 @@ def main():
     if not virtuoso:
         sys.exit("error: cannot find 'virtuoso' -- add it to PATH")
 
+    # Skip list: cadence cells whose Verilog already exists as a hand-written
+    # ref. SKILL won't recurse into these; we'll just `\include "ref/X.v"`.
+    skip_cad = {cad for cad, vname in mdict.items()
+                if os.path.isfile(os.path.join(ref_dir, vname + ".v"))}
+    known_vnames = set(mdict.values())
+    if os.path.isdir(ref_dir):
+        for f in os.listdir(ref_dir):
+            if f.endswith(".v"):
+                v = f[:-2]
+                if v not in known_vnames:
+                    skip_cad.add(v)
+    skip_skill = "'(" + " ".join(f'"{c}"' for c in sorted(skip_cad)) + ")"
+
     with tempfile.TemporaryDirectory() as tmp:
-        netlist_files = {cad: os.path.join(tmp, cad + ".netlist") for _, cad, _ in cells}
-        calls = [f's2v_extract( "{lib}" "{cad}" "{netlist_files[cad]}" )'
-                 for lib, cad, _ in cells]
+        calls = ["s2v_done = nil"]
+        for lib, cad, _ in cells:
+            calls.append(
+                f's2v_done = s2v_walk( "{lib}" "{cad}" "{tmp}" {skip_skill} s2v_done )'
+            )
         skill_input = SKILL_EXTRACT + "\n" + "\n".join(calls) + "\nexit()\n"
 
-        print(f"s2v: running virtuoso for {len(cells)} cell(s) (cds: {cds_dir})")
+        print(f"s2v: running virtuoso (cds: {cds_dir})")
         result = subprocess.run(
             [virtuoso, "-nograph"], input=skill_input, text=True, cwd=cds_dir,
         )
         if result.returncode != 0:
             sys.exit(f"virtuoso exited with code {result.returncode}")
 
-        for lib, cad, _ in cells:
-            nl = netlist_files[cad]
-            if not os.path.isfile(nl):
-                print(f"warning: no netlist produced for {lib}/{cad}", file=sys.stderr)
-                continue
-            cell_name, ports, nets, insts, noconn_nets = parse_netlist(nl)
+        netlists = sorted(f for f in os.listdir(tmp) if f.endswith(".netlist"))
+        if not netlists:
+            sys.exit("s2v: virtuoso produced no netlists")
+        for nl_name in netlists:
+            cell_name, ports, nets, insts, noconn_nets = parse_netlist(
+                os.path.join(tmp, nl_name)
+            )
             cell_name = mdict.get(cell_name, cell_name)
             generate_verilog(cell_name, ports, nets, insts, noconn_nets,
                              ref_dir, out_dir, mdict)
