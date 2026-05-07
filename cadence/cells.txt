@@ -18,7 +18,6 @@
 [processor]
 Adder_8b        Adder_8b
 ALU             ALU_8b
-Comparator_8b   EqComparator_8b
 imm_gen         ImmGen
 Mux2_8b         Mux2_8b
 Mux4_8b         Mux4_8b
@@ -39,6 +38,7 @@ XOR2            XOR2
 # [processor]
 # read_decoder    read_decoder
 # reg_ena         reg_ena
+# reg_ena_16b     reg_ena_16b
 # reg_ena_reset   reg_ena_reset
 # RFslice         RFslice
 # Sklansky_8b     Sklansky_8b

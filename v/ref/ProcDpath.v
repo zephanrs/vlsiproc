@@ -134,15 +134,12 @@ module ProcDpath
   assign idmem_wdata = b;
 
   // Immediate Generation
-  logic [9:0] immgen_bits;
   logic [7:0] immgen_imm;
-
-  assign immgen_bits = { inst[13], inst[11:9], inst[5:3], inst[2:0] };
 
   ImmGen immgen
   (
-    .imm_bits (immgen_bits),
-    .imm      (immgen_imm)
+    .inst (inst),
+    .imm  (immgen_imm)
   );
 
   // Old PC Register
