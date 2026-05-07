@@ -15,9 +15,9 @@
 
 module XOR2
 (
-  output wire [-1:0] out,
-  input  wire [-1:0] in0,
-  input  wire [-1:0] in1
+  output wire out,
+  input  wire in0,
+  input  wire in1
 );
 
   supply1 vdd;
@@ -29,7 +29,7 @@ module XOR2
   wire net17;
   wire net3;
   wire net4;
-  wire [-1:0] out_drv;
+  wire out_drv;
 
   pmos PM7        ( net4, vdd, in1_b );
   pmos PM5        ( in1_b, vdd, in1 );

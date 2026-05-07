@@ -19,14 +19,14 @@
 
 module Regfile
 (
-  input  wire [-1:0] clk,
-  input  wire [2:0]  waddr,
-  input  wire [7:0]  wdata,
-  input  wire [2:0]  raddr0,
-  input  wire [2:0]  raddr1,
-  output wire [7:0]  rdata1,
-  output wire [7:0]  rdata0,
-  input  wire [-1:0] wen
+  input  wire [7:1] clk,
+  input  wire [2:0] waddr,
+  input  wire [7:0] wdata,
+  input  wire [2:0] raddr0,
+  input  wire [2:0] raddr1,
+  output wire [7:0] rdata1,
+  output wire [7:0] rdata0,
+  input  wire       wen
 );
 
   wire [7:0] net11;
@@ -158,10 +158,10 @@ module Regfile
 
   write_decoder I3
   (
+    .clk    (clk[7:1]),
     .wen    (rwen[7:1]),
     .rf_wen (wen),
     .wen_b  (rwen_b[7:1]),
-    .clk    (clk),
     .waddr  (waddr[2:0])
   );
 

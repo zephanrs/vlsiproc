@@ -15,15 +15,15 @@
 
 module RFReg
 (
-  inout  wire [-1:0] rdata0,
-  inout  wire [-1:0] rdata1,
-  input  wire [-1:0] D,
-  input  wire [-1:0] clk,
-  input  wire [-1:0] clk_b,
-  input  wire [-1:0] ren0,
-  input  wire [-1:0] ren0_b,
-  input  wire [-1:0] ren1,
-  input  wire [-1:0] ren1_b
+  inout  wire rdata0,
+  inout  wire rdata1,
+  input  wire D,
+  input  wire clk,
+  input  wire clk_b,
+  input  wire ren0,
+  input  wire ren0_b,
+  input  wire ren1,
+  input  wire ren1_b
 );
 
   supply1 vdd;

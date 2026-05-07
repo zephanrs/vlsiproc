@@ -23,10 +23,10 @@
 
 module ALU_8b
 (
-  input  wire [7:0]  in0,
-  input  wire [7:0]  in1,
-  output wire [-1:0] eq,
-  output wire [7:0]  sum
+  input  wire [7:0] in0,
+  input  wire [7:0] in1,
+  output wire       eq,
+  output wire [7:0] sum
 );
 
   wire G10;
@@ -70,8 +70,8 @@ module ALU_8b
   wire net9;
   wire [7:0] G;
   wire [7:1] P;
-  wire out;
-  wire [-1:0] eq_drv;
+  wire [0:0] out;
+  wire eq_drv;
   wire [7:0] sum_drv;
 
   inv_x1 I70

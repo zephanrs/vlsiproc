@@ -15,9 +15,9 @@
 
 module inv_drive
 (
-  input  wire [-1:0] in,
-  output wire [-1:0] out,
-  output wire [-1:0] out_b
+  input  wire in,
+  output wire out,
+  output wire out_b
 );
 
   supply1 vdd;
@@ -26,8 +26,8 @@ module inv_drive
   wire net10;
   wire net2;
   wire net7;
-  wire [-1:0] out_drv;
-  wire [-1:0] out_b_drv;
+  wire out_drv;
+  wire out_b_drv;
 
   nmos NM5        ( out_drv, gnd, net10 );
   nmos NM4        ( net10, gnd, in );

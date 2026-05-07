@@ -15,10 +15,10 @@
 
 module RFzero
 (
-  inout  wire [-1:0] rdata0,
-  inout  wire [-1:0] rdata1,
-  input  wire [-1:0] ren0,
-  input  wire [-1:0] ren1
+  inout  wire rdata0,
+  inout  wire rdata1,
+  input  wire ren0,
+  input  wire ren1
 );
 
   supply0 gnd;

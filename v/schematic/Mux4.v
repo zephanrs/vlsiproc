@@ -15,13 +15,13 @@
 
 module Mux4
 (
-  input  wire [-1:0] in0,
-  input  wire [1:0]  sel,
-  input  wire [1:0]  sel_b,
-  input  wire [-1:0] in1,
-  input  wire [-1:0] in2,
-  input  wire [-1:0] in3,
-  output wire [-1:0] out
+  input  wire       in0,
+  input  wire [1:0] sel,
+  input  wire [1:0] sel_b,
+  input  wire       in1,
+  input  wire       in2,
+  input  wire       in3,
+  output wire       out
 );
 
   supply1 vdd;
@@ -34,7 +34,7 @@ module Mux4
   wire net4;
   wire net6;
   wire net7;
-  wire [-1:0] out_drv;
+  wire out_drv;
 
   pmos PM21       ( net2, net7, sel_b[1] );
   pmos PM17       ( net11, net1, sel_b[0] );

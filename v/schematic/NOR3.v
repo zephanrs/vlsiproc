@@ -15,10 +15,10 @@
 
 module NOR3
 (
-  input  wire [-1:0] in1,
-  input  wire [-1:0] in2,
-  output wire [-1:0] out,
-  input  wire [-1:0] in0
+  input  wire in1,
+  input  wire in2,
+  output wire out,
+  input  wire in0
 );
 
   supply1 vdd;
@@ -26,7 +26,7 @@ module NOR3
 
   wire net1;
   wire net4;
-  wire [-1:0] out_drv;
+  wire out_drv;
 
   pmos PM2        ( net1, vdd, in0 );
   pmos PM1        ( out_drv, net4, in2 );
