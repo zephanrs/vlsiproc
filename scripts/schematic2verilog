@@ -282,6 +282,34 @@ def _parse_cadence_range(name):
         return m.group(1), b, b
     return name, None, None
 
+def _expand_concat_bits(net):
+    """Flatten a Cadence concat / replication net expression into a flat list
+    of single-bit references in MSB-first (left-to-right) order. Buses expand
+    high-to-low; '<*N>' replicates N times. Used to distribute one bit per
+    array instance when the comma-element count doesn't match (e.g.
+    `<*4>x,<*4>y` for an 8-instance array)."""
+    bits = []
+    for part in net.split(','):
+        part = part.strip()
+        m = _BCAST_RE.match(part)
+        if m:
+            count = int(m.group(1) or m.group(2) or m.group(3))
+            inner = m.group(4)
+        else:
+            count = 1
+            inner = part
+        base, hi, lo = _parse_cadence_range(inner)
+        if hi is None or hi == lo:
+            inner_bits = [inner]
+        else:
+            if hi >= lo:
+                bit_idxs = list(range(hi, lo - 1, -1))
+            else:
+                bit_idxs = list(range(hi, lo + 1))
+            inner_bits = [f"{base}<{b}>" for b in bit_idxs]
+        bits.extend(inner_bits * count)
+    return bits
+
 def _coalesce_ports(raw_ports):
     """Merge multiple bit-selected port labels (`inst<13>`, `inst<11:9>`, ...)
     into one bus port spanning [max_hi:0]. Scalar ports pass through unchanged."""
@@ -315,20 +343,18 @@ def _expand_insts(insts):
         for offset, idx in enumerate(indices):
             new_conns = []
             for pin, net in conns:
+                # Flatten concats and replications to bits and distribute one
+                # per instance whenever the bit count matches the array size.
+                if ',' in net or _BCAST_RE.match(net):
+                    expanded = _expand_concat_bits(net)
+                    if expanded and len(expanded) == len(indices):
+                        new_conns.append((pin, expanded[offset]))
+                        continue
                 # Strip Cadence broadcast prefix ('<*N>' / '[*N]' / '*N ') --
-                # each unrolled instance receives the bare net.
+                # otherwise each instance receives the bare net.
                 m = _BCAST_RE.match(net)
                 if m:
                     net = m.group(4)
-                # Concat: comma-separated elements distributed one-per-instance.
-                if ',' in net:
-                    parts = [p.strip() for p in net.split(',')]
-                    if len(parts) == len(indices):
-                        new_conns.append((pin, parts[offset]))
-                        continue
-                    # Fall through: count mismatch, pass whole concat (lint will warn).
-                    new_conns.append((pin, net))
-                    continue
                 net_base, net_hi, net_lo = _parse_cadence_range(net)
                 if net_hi is not None:
                     if net_hi >= net_lo:
