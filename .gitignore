@@ -38,6 +38,7 @@ flow/csrc/
 flow/*.daidir/
 flow/post-synth.*
 flow/*.rpt
+flow/sweep-results/
 flow/proc2_vcs
 flow/proc2_ffglsim
 flow/ucli.key
