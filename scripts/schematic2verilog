@@ -245,14 +245,14 @@ def parse_netlist(path):
                 cell_name = parts[1]
             elif tag == "port":
                 _, name, direction, bits = parts
-                # Pull a baked-in <hi:lo> or <N> out of the name and use the
-                # max bit index. Multiple bit-selected port labels for the same
-                # base get coalesced after the loop.
+                # Pull a baked-in <hi:lo> or <N> out of the name. Multiple
+                # bit-selected port labels for the same base get coalesced
+                # after the loop, preserving the actual [hi:lo] range.
                 base, hi, lo = _parse_cadence_range(name)
                 if hi is not None:
-                    raw_ports.append((base, direction, max(hi, lo)))
+                    raw_ports.append((base, direction, max(hi, lo), min(hi, lo)))
                 else:
-                    raw_ports.append((name, direction, int(bits) - 1))
+                    raw_ports.append((name, direction, int(bits) - 1, 0))
             elif tag == "net":
                 nets.append(parts[1])
             elif tag == "noconn":
@@ -312,16 +312,18 @@ def _expand_concat_bits(net):
 
 def _coalesce_ports(raw_ports):
     """Merge multiple bit-selected port labels (`inst<13>`, `inst<11:9>`, ...)
-    into one bus port spanning [max_hi:0]. Scalar ports pass through unchanged."""
-    grouped = {}    # base -> [direction, max_hi]
+    into one bus port spanning [max_hi:min_lo]. Preserves non-zero LSB so a
+    schematic-declared `wen<7:1>` stays 7-bit, not silently widened to 8."""
+    grouped = {}    # base -> [direction, max_hi, min_lo]
     order   = []
-    for base, direction, hi in raw_ports:
+    for base, direction, hi, lo in raw_ports:
         if base in grouped:
             grouped[base][1] = max(grouped[base][1], hi)
+            grouped[base][2] = min(grouped[base][2], lo)
         else:
-            grouped[base] = [direction, hi]
+            grouped[base] = [direction, hi, lo]
             order.append(base)
-    return [(base, grouped[base][0], grouped[base][1] + 1) for base in order]
+    return [(base, grouped[base][0], grouped[base][1], grouped[base][2]) for base in order]
 
 def _expand_insts(insts):
     """
@@ -350,11 +352,18 @@ def _expand_insts(insts):
                     if expanded and len(expanded) == len(indices):
                         new_conns.append((pin, expanded[offset]))
                         continue
-                # Strip Cadence broadcast prefix ('<*N>' / '[*N]' / '*N ') --
-                # otherwise each instance receives the bare net.
-                m = _BCAST_RE.match(net)
-                if m:
-                    net = m.group(4)
+                    # Single broadcast '<*N>x' (no commas): each instance gets
+                    # the bare inner expression -- this is the right thing
+                    # whether x is a scalar or a multi-bit bus going to a
+                    # multi-bit pin per instance.
+                    if ',' not in net:
+                        m = _BCAST_RE.match(net)
+                        if m:
+                            new_conns.append((pin, m.group(4)))
+                            continue
+                    # Concat with mismatched bit count -- pass whole expr.
+                    new_conns.append((pin, net))
+                    continue
                 net_base, net_hi, net_lo = _parse_cadence_range(net)
                 if net_hi is not None:
                     if net_hi >= net_lo:
@@ -399,18 +408,18 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
             includes.append(inc)
 
     # --- port list ---
-    def width_str(bits):
-        return f"[{bits-1}:0]" if bits > 1 else ""
+    def width_str(hi, lo):
+        return "" if hi == lo else f"[{hi}:{lo}]"
 
-    def type_str(direction, bits):
+    def type_str(direction, hi, lo):
         # Use 'wire' (not 'logic') so iverilog allows multiple drivers --
         # transistor-level cells often have pull-up and pull-down networks
         # both driving the same node, and dynamic-logic nets get pre-charged.
         d = dir_map.get(direction, "inout ")
-        w = width_str(bits)
+        w = width_str(hi, lo)
         return f"{d} wire {w}" if w else f"{d} wire"
 
-    port_type_strs = [type_str(d, b) for _, d, b in ports]
+    port_type_strs = [type_str(d, hi, lo) for _, d, hi, lo in ports]
     max_type_len   = max((len(s) for s in port_type_strs), default=0)
 
     # --- internal nets ---
@@ -457,7 +466,11 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
             continue
 
         if hi is not None:
-            bus_max[vbase] = max(bus_max.get(vbase, -1), hi, lo)
+            if vbase in bus_max:
+                ph, pl = bus_max[vbase]
+                bus_max[vbase] = (max(ph, hi, lo), min(pl, hi, lo))
+            else:
+                bus_max[vbase] = (max(hi, lo), min(hi, lo))
         else:
             scalar_nets_set.add(vbase)
 
@@ -467,7 +480,7 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
     # wire that absorbs all in-module drivers (transistors / sub-cell outputs);
     # an `assign port = port_drv;` at the end exposes a single driver to the
     # boundary so a `logic out` testbench signal (uwire) doesn't blow up.
-    output_port_widths = {name: bits for name, direction, bits in ports
+    output_port_widths = {name: (hi, lo) for name, direction, hi, lo in ports
                           if direction == "output"}
 
     def remap_drv(net):
@@ -480,13 +493,16 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
         return net
 
     int_net_decls = [f"wire {n};" for n in sorted(scalar_nets)]
-    for base, hi in sorted(bus_max.items()):
-        int_net_decls.append(f"wire [{hi}:0] {base};")
-    for name, bits in sorted(output_port_widths.items()):
-        if bits > 1:
-            int_net_decls.append(f"wire [{bits-1}:0] {name}_drv;")
+    for base, (hi, lo) in sorted(bus_max.items()):
+        if hi == lo:
+            int_net_decls.append(f"wire {base};")
         else:
+            int_net_decls.append(f"wire [{hi}:{lo}] {base};")
+    for name, (hi, lo) in sorted(output_port_widths.items()):
+        if hi == lo:
             int_net_decls.append(f"wire {name}_drv;")
+        else:
+            int_net_decls.append(f"wire [{hi}:{lo}] {name}_drv;")
 
     # --- sub-cell instances ---
     sub_insts = []
@@ -542,7 +558,7 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
     h()
     h(f"module {cell_name}")
     h("(")
-    for i, ((name, direction, bits), ts) in enumerate(zip(ports, port_type_strs)):
+    for i, ((name, direction, _, _), ts) in enumerate(zip(ports, port_type_strs)):
         comma = "," if i < len(ports) - 1 else ""
         h(f"  {pad(ts, max_type_len)} {vlog_name(name)}{comma}")
     h(");")
