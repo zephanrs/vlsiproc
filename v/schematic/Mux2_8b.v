@@ -18,10 +18,10 @@
 
 module Mux2_8b
 (
-  input  wire [7:0]  in0,
-  input  wire [7:0]  in1,
-  input  wire [-1:0] sel,
-  output wire [7:0]  out
+  input  wire [7:0] in0,
+  input  wire [7:0] in1,
+  input  wire       sel,
+  output wire [7:0] out
 );
 
   wire sel_b;

@@ -20,11 +20,11 @@
 
 module reg_ena_reset
 (
-  output wire [7:0]  Y,
-  input  wire [-1:0] ena,
-  input  wire [-1:0] reset,
-  input  wire [-1:0] clk_in,
-  input  wire [7:0]  D
+  output wire [7:0] Y,
+  input  wire       ena,
+  input  wire       reset,
+  input  wire       clk_in,
+  input  wire [7:0] D
 );
 
   wire net2;

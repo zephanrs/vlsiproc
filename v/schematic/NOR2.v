@@ -15,16 +15,16 @@
 
 module NOR2
 (
-  input  wire [-1:0] in0,
-  input  wire [-1:0] in1,
-  output wire [-1:0] out
+  input  wire in0,
+  input  wire in1,
+  output wire out
 );
 
   supply1 vdd;
   supply0 gnd;
 
   wire net5;
-  wire [-1:0] out_drv;
+  wire out_drv;
 
   pmos PM0        ( net5, vdd, in0 );
   pmos PM1        ( out_drv, net5, in1 );

@@ -15,9 +15,9 @@
 
 module AND2
 (
-  output wire [-1:0] out,
-  input  wire [-1:0] in1,
-  input  wire [-1:0] in0
+  output wire out,
+  input  wire in1,
+  input  wire in0
 );
 
   supply1 vdd;
@@ -25,7 +25,7 @@ module AND2
 
   wire net1;
   wire out_b;
-  wire [-1:0] out_drv;
+  wire out_drv;
 
   nmos NM3        ( out_drv, gnd, out_b );
   nmos NM5        ( out_b, net1, in0 );

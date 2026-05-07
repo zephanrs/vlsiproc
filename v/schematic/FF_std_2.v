@@ -15,10 +15,10 @@
 
 module FF_std_2
 (
-  output wire [-1:0] Y,
-  input  wire [-1:0] ck_b,
-  input  wire [-1:0] D,
-  input  wire [-1:0] ck
+  output wire Y,
+  input  wire ck_b,
+  input  wire D,
+  input  wire ck
 );
 
   supply1 vdd;
@@ -34,7 +34,7 @@ module FF_std_2
   wire net5;
   wire net6;
   wire net7;
-  wire [-1:0] Y_drv;
+  wire Y_drv;
 
   nmos NM18       ( net14, net10, ck_b );
   nmos NM16       ( net10, gnd, D );
