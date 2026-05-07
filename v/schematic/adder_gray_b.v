@@ -15,12 +15,12 @@
 
 module adder_gray_b
 (
-  input  wire G_m_k,
-  input  wire P_m_k,
-  input  wire G_kmin1_n,
-  output wire P_m_n_b,
-  input  wire P_kmin1_n,
-  output wire G_m_n_b
+  input  wire [-1:0] G_m_k,
+  input  wire [-1:0] P_m_k,
+  input  wire [-1:0] G_kmin1_n,
+  output wire [-1:0] P_m_n_b,
+  input  wire [-1:0] P_kmin1_n,
+  output wire [-1:0] G_m_n_b
 );
 
   supply1 vdd;
@@ -29,8 +29,8 @@ module adder_gray_b
   wire net1;
   wire net2;
   wire net4;
-  wire G_m_n_b_drv;
-  wire P_m_n_b_drv;
+  wire [-1:0] G_m_n_b_drv;
+  wire [-1:0] P_m_n_b_drv;
 
   nmos NM5        ( net4, gnd, P_kmin1_n );
   nmos NM4        ( P_m_n_b_drv, net4, P_m_k );

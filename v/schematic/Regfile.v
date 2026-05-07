@@ -19,31 +19,31 @@
 
 module Regfile
 (
-  input  wire       clk,
-  input  wire [2:0] waddr,
-  input  wire [7:0] wdata,
-  input  wire [2:0] raddr0,
-  input  wire [2:0] raddr1,
-  output wire [7:0] rdata1,
-  output wire [7:0] rdata0,
-  input  wire       wen
+  input  wire [-1:0] clk,
+  input  wire [2:0]  waddr,
+  input  wire [7:0]  wdata,
+  input  wire [2:0]  raddr0,
+  input  wire [2:0]  raddr1,
+  output wire [7:0]  rdata1,
+  output wire [7:0]  rdata0,
+  input  wire [-1:0] wen
 );
 
   wire [7:0] net11;
   wire [7:0] net12;
   wire [7:0] net14;
   wire [7:0] net15;
-  wire [7:0] rwen;
-  wire [7:0] rwen_b;
+  wire [7:1] rwen;
+  wire [7:1] rwen_b;
   wire [7:0] rdata0_drv;
   wire [7:0] rdata1_drv;
 
   RFslice I0_7
   (
-    .ren1_b (net14[0]),
-    .ren1   (net15[0]),
-    .ren0_b (net11[0]),
-    .ren0   (net12[0]),
+    .ren1_b (net14[7:0]),
+    .ren1   (net15[7:0]),
+    .ren0_b (net11[7:0]),
+    .ren0   (net12[7:0]),
     .wen_b  (rwen_b[7:1]),
     .wen    (rwen[7:1]),
     .rdata1 (rdata1_drv[7]),
@@ -53,10 +53,10 @@ module Regfile
 
   RFslice I0_6
   (
-    .ren1_b (net14[1]),
-    .ren1   (net15[1]),
-    .ren0_b (net11[1]),
-    .ren0   (net12[1]),
+    .ren1_b (net14[7:0]),
+    .ren1   (net15[7:0]),
+    .ren0_b (net11[7:0]),
+    .ren0   (net12[7:0]),
     .wen_b  (rwen_b[7:1]),
     .wen    (rwen[7:1]),
     .rdata1 (rdata1_drv[6]),
@@ -66,10 +66,10 @@ module Regfile
 
   RFslice I0_5
   (
-    .ren1_b (net14[2]),
-    .ren1   (net15[2]),
-    .ren0_b (net11[2]),
-    .ren0   (net12[2]),
+    .ren1_b (net14[7:0]),
+    .ren1   (net15[7:0]),
+    .ren0_b (net11[7:0]),
+    .ren0   (net12[7:0]),
     .wen_b  (rwen_b[7:1]),
     .wen    (rwen[7:1]),
     .rdata1 (rdata1_drv[5]),
@@ -79,10 +79,10 @@ module Regfile
 
   RFslice I0_4
   (
-    .ren1_b (net14[3]),
-    .ren1   (net15[3]),
-    .ren0_b (net11[3]),
-    .ren0   (net12[3]),
+    .ren1_b (net14[7:0]),
+    .ren1   (net15[7:0]),
+    .ren0_b (net11[7:0]),
+    .ren0   (net12[7:0]),
     .wen_b  (rwen_b[7:1]),
     .wen    (rwen[7:1]),
     .rdata1 (rdata1_drv[4]),
@@ -92,10 +92,10 @@ module Regfile
 
   RFslice I0_3
   (
-    .ren1_b (net14[4]),
-    .ren1   (net15[4]),
-    .ren0_b (net11[4]),
-    .ren0   (net12[4]),
+    .ren1_b (net14[7:0]),
+    .ren1   (net15[7:0]),
+    .ren0_b (net11[7:0]),
+    .ren0   (net12[7:0]),
     .wen_b  (rwen_b[7:1]),
     .wen    (rwen[7:1]),
     .rdata1 (rdata1_drv[3]),
@@ -105,10 +105,10 @@ module Regfile
 
   RFslice I0_2
   (
-    .ren1_b (net14[5]),
-    .ren1   (net15[5]),
-    .ren0_b (net11[5]),
-    .ren0   (net12[5]),
+    .ren1_b (net14[7:0]),
+    .ren1   (net15[7:0]),
+    .ren0_b (net11[7:0]),
+    .ren0   (net12[7:0]),
     .wen_b  (rwen_b[7:1]),
     .wen    (rwen[7:1]),
     .rdata1 (rdata1_drv[2]),
@@ -118,10 +118,10 @@ module Regfile
 
   RFslice I0_1
   (
-    .ren1_b (net14[6]),
-    .ren1   (net15[6]),
-    .ren0_b (net11[6]),
-    .ren0   (net12[6]),
+    .ren1_b (net14[7:0]),
+    .ren1   (net15[7:0]),
+    .ren0_b (net11[7:0]),
+    .ren0   (net12[7:0]),
     .wen_b  (rwen_b[7:1]),
     .wen    (rwen[7:1]),
     .rdata1 (rdata1_drv[1]),
@@ -131,10 +131,10 @@ module Regfile
 
   RFslice I0_0
   (
-    .ren1_b (net14[7]),
-    .ren1   (net15[7]),
-    .ren0_b (net11[7]),
-    .ren0   (net12[7]),
+    .ren1_b (net14[7:0]),
+    .ren1   (net15[7:0]),
+    .ren0_b (net11[7:0]),
+    .ren0   (net12[7:0]),
     .wen_b  (rwen_b[7:1]),
     .wen    (rwen[7:1]),
     .rdata1 (rdata1_drv[0]),

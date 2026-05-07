@@ -23,38 +23,38 @@
 module ProcDpath
 (
   output wire [7:0]  PC_out,
-  input  wire        addr_sel,
+  input  wire [-1:0] addr_sel,
   output wire [7:0]  idmem_addr,
   input  wire [16:0] idmem_rdata,
   output wire [7:0]  idmem_wdata,
-  input  wire        pc_sel,
+  input  wire [-1:0] pc_sel,
   input  wire [1:0]  op2_sel,
-  input  wire        op1_sel,
-  input  wire        eq,
+  input  wire [-1:0] op1_sel,
+  input  wire [-1:0] eq,
   output wire [7:0]  rdata0_out,
   output wire [7:0]  rdata1_out,
   output wire [7:0]  A_reg_out,
   output wire [7:0]  wb_sel_out,
   output wire [7:0]  pc_sel_mux_out,
-  input  wire        pc_rst,
-  input  wire        pc_en,
-  input  wire        pc_cllk,
-  input  wire        pc_old_ena,
-  input  wire        pc_old_clk,
+  input  wire [-1:0] pc_rst,
+  input  wire [-1:0] pc_en,
+  input  wire [-1:0] pc_cllk,
+  input  wire [-1:0] pc_old_ena,
+  input  wire [-1:0] pc_old_clk,
   output wire [7:0]  pc_old_out,
-  output wire [70:0] mux4_out,
+  output wire        mux4_out,
   output wire [7:0]  op1_sel_out,
   output wire [7:0]  alu_out,
-  input  wire        rf_clk,
-  input  wire        a_ena,
-  input  wire        a_clk,
-  input  wire        b_ena,
-  input  wire        b_clk,
-  input  wire        addr_ena,
-  input  wire        addr_clk,
-  input  wire        wd_ena,
-  input  wire        wd_clk,
-  input  wire        wb_sel
+  input  wire [-1:0] rf_clk,
+  input  wire [-1:0] a_ena,
+  input  wire [-1:0] a_clk,
+  input  wire [-1:0] b_ena,
+  input  wire [-1:0] b_clk,
+  input  wire [-1:0] addr_ena,
+  input  wire [-1:0] addr_clk,
+  input  wire [-1:0] wd_ena,
+  input  wire [-1:0] wd_clk,
+  input  wire [-1:0] wb_sel
 );
 
   wire net32;
@@ -77,7 +77,7 @@ module ProcDpath
   wire [7:0] alu_out_drv;
   wire [7:0] idmem_addr_drv;
   wire [7:0] idmem_wdata_drv;
-  wire [70:0] mux4_out_drv;
+  wire mux4_out_drv;
   wire [7:0] op1_sel_out_drv;
   wire [7:0] pc_old_out_drv;
   wire [7:0] pc_sel_mux_out_drv;

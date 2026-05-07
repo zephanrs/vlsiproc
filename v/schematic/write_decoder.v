@@ -21,11 +21,11 @@
 
 module write_decoder
 (
-  input  wire [2:0] waddr,
-  output wire [7:0] wen_b,
-  input  wire       clk,
-  input  wire       rf_wen,
-  output wire [7:0] wen
+  input  wire [2:0]  waddr,
+  output wire [7:1]  wen_b,
+  input  wire [-1:0] clk,
+  input  wire [-1:0] rf_wen,
+  output wire [7:1]  wen
 );
 
   wire net5;
@@ -34,69 +34,69 @@ module write_decoder
   wire [6:0] net3;
   wire [2:0] waddr_a;
   wire [2:0] waddr_b;
-  wire [7:0] wen_drv;
-  wire [7:0] wen_b_drv;
+  wire [7:1] wen_drv;
+  wire [7:1] wen_b_drv;
 
   AND4 I4_7
   (
-    .in1 ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
-    .in3 ({waddr_a[2], {3{waddr_b[2]}}}),
+    .in1 (waddr_a[0]),
+    .in3 (waddr_a[2]),
     .in0 (net6),
-    .in2 ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]}),
+    .in2 (waddr_a[1]),
     .out (net3[0])
   );
 
   AND4 I4_6
   (
-    .in1 ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
-    .in3 ({waddr_a[2], {3{waddr_b[2]}}}),
+    .in1 (waddr_b[0]),
+    .in3 (waddr_a[2]),
     .in0 (net6),
-    .in2 ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]}),
+    .in2 (waddr_a[1]),
     .out (net3[1])
   );
 
   AND4 I4_5
   (
-    .in1 ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
-    .in3 ({waddr_a[2], {3{waddr_b[2]}}}),
+    .in1 (waddr_a[0]),
+    .in3 (waddr_a[2]),
     .in0 (net6),
-    .in2 ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]}),
+    .in2 (waddr_b[1]),
     .out (net3[2])
   );
 
   AND4 I4_4
   (
-    .in1 ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
-    .in3 ({waddr_a[2], {3{waddr_b[2]}}}),
+    .in1 (waddr_b[0]),
+    .in3 (waddr_a[2]),
     .in0 (net6),
-    .in2 ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]}),
+    .in2 (waddr_b[1]),
     .out (net3[3])
   );
 
   AND4 I4_3
   (
-    .in1 ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
-    .in3 ({waddr_a[2], {3{waddr_b[2]}}}),
+    .in1 (waddr_a[0]),
+    .in3 (waddr_b[2]),
     .in0 (net6),
-    .in2 ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]}),
+    .in2 (waddr_a[1]),
     .out (net3[4])
   );
 
   AND4 I4_2
   (
-    .in1 ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
-    .in3 ({waddr_a[2], {3{waddr_b[2]}}}),
+    .in1 (waddr_b[0]),
+    .in3 (waddr_b[2]),
     .in0 (net6),
-    .in2 ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]}),
+    .in2 (waddr_a[1]),
     .out (net3[5])
   );
 
   AND4 I4_1
   (
-    .in1 ({waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0], waddr_b[0], waddr_a[0]}),
-    .in3 ({waddr_a[2], {3{waddr_b[2]}}}),
+    .in1 (waddr_a[0]),
+    .in3 (waddr_b[2]),
     .in0 (net6),
-    .in2 ({waddr_a[1], {2{waddr_b[1]}}, {2{waddr_a[1]}}, waddr_b[1]}),
+    .in2 (waddr_b[1]),
     .out (net3[6])
   );
 
