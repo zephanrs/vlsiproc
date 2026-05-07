@@ -5,7 +5,7 @@
 `ifndef RFSLICE_V
 `define RFSLICE_V
 
-`include "schematic/RFReg.v"
+`include "ref/RFReg.v"
 `include "schematic/inv_x1.v"
 `include "schematic/RFzero.v"
 `include "schematic/inv_x4.v"
