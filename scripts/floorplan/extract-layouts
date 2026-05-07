@@ -45,8 +45,18 @@ procedure( fpl_box( bbox )
 )
 
 procedure( fpl_extract_cell( libName cellName fp "ttp" )
-  let( (cv coords term pin fig pc)
-    cv = dbOpenCellViewByType( libName cellName "layout" "" "r" )
+  let( (cv coords term pin fig pc result)
+    ;; dbOpenCellViewByType returns nil when the layout view is absent inside
+    ;; a registered library, but raises when the *library* isn't registered.
+    ;; Wrap it so either case ends up as a MISSING line instead of unwinding.
+    result = errset(
+      cv = dbOpenCellViewByType( libName cellName "layout" "" "r" )
+    )
+    when( null( result )
+      fprintf( errport "fpl: error opening %s/%s: %L\n"
+               libName cellName errset.errset )
+      cv = nil
+    )
     if( cv then
       coords = fpl_box( cv~>bBox )
       fprintf( fp "CELL %s %s\n" libName cellName )
@@ -78,15 +88,19 @@ procedure( fpl_extract_cell( libName cellName fp "ttp" )
 ;; libInit.il) leave poport bound to a read-only file, which makes plain
 ;; printf() raise a "cannot send output to an input port" error.
 procedure( fpl_extract_all( cells outPath )
-  let( (fp ok n)
+  let( (fp ok n libs)
     n = 0
+    ;; Diagnostic: dump the libraries Virtuoso has registered. If 'processor'
+    ;; isn't in this list, cds.lib didn't resolve (usually $ROOTDIR not set
+    ;; in the env when virtuoso started, or virtuoso launched from a dir
+    ;; without a cds.lib).
+    libs = mapcar( lambda( (l) l~>name ) ddGetLibList() )
+    fprintf( errport "fpl: visible libraries (%d): %L\n" length(libs) libs )
     fp = outfile( outPath "w" )
     if( fp then
-      ;; Wrap the loop in errset so a mid-iteration error (PDK weirdness,
-      ;; an unexpected layout edge case, etc.) still falls through to
-      ;; close(fp) and we don't lose the buffered output already written.
-      errset(
-        foreach( entry cells
+      ;; Per-cell errset so one bad cell doesn't abort the rest.
+      foreach( entry cells
+        errset(
           ok = fpl_extract_cell( car(entry) cadr(entry) fp )
           if( ok then n = n + 1 )
         )
@@ -181,10 +195,15 @@ def main():
         + f'\nfpl_extract_all( {skill_cells} "{out_path}" )\nexit()\n'
     )
 
+    # cds.lib in this repo references $ROOTDIR; export it explicitly so the
+    # extraction works regardless of whether setup-project.sh was sourced.
+    env = os.environ.copy()
+    env.setdefault("ROOTDIR", root or os.path.dirname(os.path.dirname(cds_dir)))
+
     print(f"fpl: extracting {len(cells)} cells -> {out_path}")
-    print(f"fpl: running virtuoso (cds: {cds_dir})")
+    print(f"fpl: running virtuoso (cds: {cds_dir}, ROOTDIR={env['ROOTDIR']})")
     result = subprocess.run(
-        [virtuoso, "-nograph"], input=skill_input, text=True, cwd=cds_dir,
+        [virtuoso, "-nograph"], input=skill_input, text=True, cwd=cds_dir, env=env,
     )
     if result.returncode != 0:
         sys.exit(f"virtuoso exited with code {result.returncode}")
