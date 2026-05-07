@@ -31,6 +31,14 @@ import sys
 # average reflects all of them.
 # -----------------------------------------------------------------------
 SKILL_EXTRACT = r"""
+;; Some PDK init scripts (e.g. gpdk045's libInit.il) leave poport bound to a
+;; read-only banner file, which makes any implicit return-value echo or stray
+;; printf raise "cannot send output to an input port" -- and that error then
+;; unwinds out of fpl_extract_all before close() flushes the output buffer,
+;; producing an empty layouts.txt. Redirecting poport to errport up front
+;; routes any incidental output to stderr where it can't break us.
+poport = errport
+
 procedure( fpl_box( bbox )
   list( xCoord( lowerLeft( bbox ) )  yCoord( lowerLeft( bbox ) )
         xCoord( upperRight( bbox ) ) yCoord( upperRight( bbox ) ) )
@@ -60,23 +68,31 @@ procedure( fpl_extract_cell( libName cellName fp "ttp" )
       t
     else
       fprintf( fp "MISSING %s %s\n\n" libName cellName )
-      printf( "fpl: warning, no layout view for %s/%s\n" libName cellName )
+      fprintf( errport "fpl: warning, no layout view for %s/%s\n" libName cellName )
       nil
     )
   )
 )
 
+;; Status messages always go to errport: some PDK init scripts (e.g. gpdk045's
+;; libInit.il) leave poport bound to a read-only file, which makes plain
+;; printf() raise a "cannot send output to an input port" error.
 procedure( fpl_extract_all( cells outPath )
   let( (fp ok n)
     n = 0
     fp = outfile( outPath "w" )
     if( fp then
-      foreach( entry cells
-        ok = fpl_extract_cell( car(entry) cadr(entry) fp )
-        if( ok then n = n + 1 )
+      ;; Wrap the loop in errset so a mid-iteration error (PDK weirdness,
+      ;; an unexpected layout edge case, etc.) still falls through to
+      ;; close(fp) and we don't lose the buffered output already written.
+      errset(
+        foreach( entry cells
+          ok = fpl_extract_cell( car(entry) cadr(entry) fp )
+          if( ok then n = n + 1 )
+        )
       )
       close( fp )
-      printf( "fpl: wrote %d/%d cells to %s\n" n length(cells) outPath )
+      fprintf( errport "fpl: wrote %d/%d cells to %s\n" n length(cells) outPath )
       t
     else
       fprintf( errport "fpl: ERROR cannot open %s for writing\n" outPath )
