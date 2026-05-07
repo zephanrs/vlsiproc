@@ -24,15 +24,15 @@ module Proc2
   // Control Signals (Control Unit -> Datapath)
   logic       pc_en;
   logic       addr_sel;
-  logic       fetch_latch_en;
+  logic       fetch_en;
   logic       ab_en;
   logic       pc_sel;
   logic       op1_sel;
   logic [1:0] op2_sel;
   logic       addr_en;
-  logic       wb_sel;
   logic       wd_en;
   logic       rf_wen;
+  logic       imm_type;
 
   // Status Signals (Datapath -> Control Unit)
   logic [15:0] inst;
