@@ -641,6 +641,11 @@ def main():
                     skip_cad.add(v)
     skip_skill = "'(" + " ".join(f'"{c}"' for c in sorted(skip_cad)) + ")"
 
+    # Preserve the raw netlists alongside the generated .v files so we can
+    # inspect exactly what SKILL emits when something looks wrong.
+    debug_nl_dir = os.path.join(out_dir, ".netlists")
+    shutil.rmtree(debug_nl_dir, ignore_errors=True)
+    os.makedirs(debug_nl_dir, exist_ok=True)
     with tempfile.TemporaryDirectory() as tmp:
         calls = ["s2v_done = nil"]
         for lib, cad, _ in cells:
@@ -660,6 +665,7 @@ def main():
         if not netlists:
             sys.exit("s2v: virtuoso produced no netlists")
         for nl_name in netlists:
+            shutil.copy(os.path.join(tmp, nl_name), os.path.join(debug_nl_dir, nl_name))
             cell_name, ports, nets, insts, noconn_nets = parse_netlist(
                 os.path.join(tmp, nl_name)
             )
