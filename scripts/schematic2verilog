@@ -121,12 +121,17 @@ def strip_pin_range(pin):
     """`.sel<1:0>` -> `sel`, `.out<7>` -> `out`, `clk` -> `clk`."""
     return re.sub(r'<\d+(?::\d+)?>$', '', pin)
 
+# Cadence broadcast/replication: `[*N]x` (with brackets, no space) or
+# `*N x` (with space, no brackets). Group 1 or 2 is N; group 3 is the inner.
+_BCAST_RE = re.compile(r'^(?:\[\*(\d+)\]|\*(\d+)\s+)\s*(.+)$')
+
 def _convert_one(part):
-    """Convert one Cadence net atom: '*N x' -> '{N{x}}', '<>' -> '[]'."""
+    """Convert one Cadence net atom: '[*N]x' or '*N x' -> '{N{x}}', '<>' -> '[]'."""
     part = part.strip()
-    m = re.match(r'^\*(\d+)\s+(.+)$', part)
+    m = _BCAST_RE.match(part)
     if m:
-        return "{" + m.group(1) + "{" + vlog_name(m.group(2)) + "}}"
+        n = m.group(1) or m.group(2)
+        return "{" + n + "{" + vlog_name(m.group(3)) + "}}"
     return vlog_name(part)
 
 def cad_net_to_verilog(net):
@@ -139,16 +144,16 @@ def cad_net_to_verilog(net):
 
 def extract_signals(net):
     """Underlying signal names referenced by a Cadence net expression
-    (for internal-net declaration tracking). Strips '*N ' broadcast prefix
-    and splits comma-separated concat parts."""
+    (for internal-net declaration tracking). Strips '[*N]' or '*N '
+    broadcast prefixes and splits comma-separated concat parts."""
     if not net:
         return []
     result = []
     for part in net.split(','):
         part = part.strip()
-        m = re.match(r'^\*\d+\s+(.+)$', part)
+        m = _BCAST_RE.match(part)
         if m:
-            part = m.group(1)
+            part = m.group(3)
         result.append(part)
     return result
 
@@ -303,11 +308,11 @@ def _expand_insts(insts):
         for offset, idx in enumerate(indices):
             new_conns = []
             for pin, net in conns:
-                # Strip Cadence '*N ' broadcast prefix -- each unrolled
-                # instance receives the bare net.
-                m = re.match(r'^\*\d+\s+(.+)$', net)
+                # Strip Cadence broadcast prefix ('[*N]' or '*N ') -- each
+                # unrolled instance receives the bare net.
+                m = _BCAST_RE.match(net)
                 if m:
-                    net = m.group(1)
+                    net = m.group(3)
                 net_base, net_hi, net_lo = _parse_cadence_range(net)
                 if net_hi is not None:
                     if net_hi >= net_lo:
@@ -379,7 +384,10 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
             return m_bit.group(1), int(m_bit.group(2)), int(m_bit.group(2))
         return name, None, None
 
-    all_raw_nets = set(nets)
+    all_raw_nets = set()
+    for n in nets:
+        for sig in extract_signals(n):
+            all_raw_nets.add(sig)
     for _, _, conns in insts:
         for _, net in conns:
             for sig in extract_signals(net):
