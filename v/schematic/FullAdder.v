@@ -15,11 +15,11 @@
 
 module FullAdder
 (
-  input  wire in1,
-  input  wire cin,
-  output wire sum,
-  output wire cout,
-  input  wire in0
+  input  wire [-1:0] in1,
+  input  wire [-1:0] cin,
+  output wire [-1:0] sum,
+  output wire [-1:0] cout,
+  input  wire [-1:0] in0
 );
 
   supply1 vdd;
@@ -37,8 +37,8 @@ module FullAdder
   wire net7;
   wire net8;
   wire net9;
-  wire cout_drv;
-  wire sum_drv;
+  wire [-1:0] cout_drv;
+  wire [-1:0] sum_drv;
 
   pmos PM15       ( sum_drv, vdd, net7 );
   pmos PM14       ( cout_drv, vdd, net12 );

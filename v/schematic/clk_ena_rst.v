@@ -15,10 +15,10 @@
 
 module clk_ena_rst
 (
-  input  wire rst,
-  input  wire clk,
-  input  wire ena,
-  output wire ena_clk_b
+  input  wire [-1:0] rst,
+  input  wire [-1:0] clk,
+  input  wire [-1:0] ena,
+  output wire [-1:0] ena_clk_b
 );
 
   supply1 vdd;
@@ -33,7 +33,7 @@ module clk_ena_rst
   wire net3;
   wire net5;
   wire net7;
-  wire ena_clk_b_drv;
+  wire [-1:0] ena_clk_b_drv;
 
   pmos PM24       ( ck, vdd, ck_b );
   pmos PM23       ( ck_b, vdd, clk );
