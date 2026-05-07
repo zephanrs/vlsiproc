@@ -56,10 +56,19 @@ procedure( fpl_extract_cell( libName cellName fp "ttp" )
     ;; a registered library, but raises when the *library* isn't registered.
     ;; Wrap it so either case ends up as a MISSING line.
     cv = nil
-    opened = errset( cv = dbOpenCellViewByType( libName cellName "layout" "" "r" ) t )
     ;; Opening a layout that pulls in gpdk045 triggers its libInit.il, which
-    ;; rebinds poport to a read-only banner file. Re-establish the errport
-    ;; redirect so any later implicit printf in this cell doesn't throw.
+    ;; rebinds poport to a read-only banner file. The lazy-load happens DURING
+    ;; the dbOpenCellViewByType call, so an internal printf later in that
+    ;; same call throws -- we never reach a post-call poport reset.
+    ;; Workaround: catch the throw, reset poport, and retry. The PDK is
+    ;; already loaded after the first attempt, so the retry doesn't re-trigger
+    ;; the init and completes cleanly.
+    opened = errset( cv = dbOpenCellViewByType( libName cellName "layout" "" "r" ) t )
+    when( null( opened )
+      poport = errport
+      fprintf( errport "fpl: retrying %s/%s after PDK lazy-load\n" libName cellName )
+      opened = errset( cv = dbOpenCellViewByType( libName cellName "layout" "" "r" ) t )
+    )
     poport = errport
     cond(
       ( null( opened )
