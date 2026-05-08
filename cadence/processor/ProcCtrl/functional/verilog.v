@@ -17,8 +17,6 @@ module ProcCtrl (
   addr_en,
   wd_en,
   rf_wen,
-  imm_type,
-
   inst,
   eq 
 );
@@ -39,7 +37,6 @@ module ProcCtrl (
   output       addr_en;
   output       wd_en;
   output       rf_wen;
-  output       imm_type;
 
   input  [15:0] inst;
   input         eq;
@@ -108,7 +105,6 @@ module ProcCtrl (
                     | (  state[1] &  state[3] & ~state[0] & ~state[2] )
                     | (  state[2] &  state[3] & ~state[0] & ~state[1] );
 
-  assign imm_type = inst[15] & ( inst[13] | ~inst[12] );
 
 endmodule
 
