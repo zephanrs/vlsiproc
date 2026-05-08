@@ -61,10 +61,10 @@
 		</checksasserts>
 		<plottingoptions>
 			<plottingoption>waveformtemplate
-				<value></value>
+				<value>digital_signals</value>
 			</plottingoption>
 			<plottingoption>plottingmode
-				<value>Replace</value>
+				<value>New Win</value>
 			</plottingoption>
 			<plottingoption>plottype
 				<value>None</value>
@@ -73,21 +73,36 @@
 				<value>no</value>
 			</plottingoption>
 			<plottingoption>useMaestroPlottingTemplate
-				<value>no</value>
+				<value>yes</value>
 			</plottingoption>
 			<plottingoption>allplottingtemplates
 				<value></value>
+				<plottingtemplate>digital_signals
+					<templatehistory>ExplorerRun.0</templatehistory>
+					<templatetime>May  8 13:46:50 2026</templatetime>
+					<templatecomment></templatecomment>
+					<templatelocation>/home/dnb68/processor/cadence/testbenchs/Proc_tb/maestro/plottingTemplates/</templatelocation>
+				</plottingtemplate>
 			</plottingoption>
 			<plottingoption>defaultplottingtemplate
 				<value></value>
+				<historydefault>ExplorerRun.0
+					<value>digital_signals</value>
+				</historydefault>
 			</plottingoption>
 			<plottingoption>distributedplot_enabled
 				<value>no</value>
 			</plottingoption>
+			<plottingoption>autoplotmode
+				<value>New Win</value>
+			</plottingoption>
 		</plottingoptions>
 		<exploreroptions>
 			<exploreroption>waveformtemplate
-				<value>(None)</value>
+				<value>digital_signals</value>
+			</exploreroption>
+			<exploreroption>autoplotmode
+				<value>New Win</value>
 			</exploreroption>
 		</exploreroptions>
 		<overwritehistoryname>ExplorerRun.0</overwritehistoryname>
