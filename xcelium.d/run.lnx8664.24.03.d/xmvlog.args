@@ -6,7 +6,7 @@
 ./xcelium.d/run.lnx8664.24.03.d
 -RUNMODE
 -sv
-/tmp/tmpzcfgti7f.sv
+/tmp/tmpm7_c8xyt.sv
 -CDSLIB
 ./xcelium.d/run.lnx8664.24.03.d/cdsrun.lib
 -HDLVAR
