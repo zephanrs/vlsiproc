@@ -24,7 +24,7 @@ Mux4_4b         Mux4_4b
 Incrementer_4b  Incrementer_4b
 reg_rst_4b      Register_4b
 ProcCtrl        Proc2Ctrl
-ProcDpath       ProcDpath
+ProcDpath       Proc2Dpath
 register_file   Regfile
 
 [standard_cells]

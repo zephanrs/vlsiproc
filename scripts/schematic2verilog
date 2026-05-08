@@ -460,6 +460,49 @@ def _expand_insts(insts):
     return result
 
 # -----------------------------------------------------------------------
+# Ref-module port parser: lets us prune schematic-only "scoping" pins
+# from a generated module so the boundary matches the ref interface.
+# -----------------------------------------------------------------------
+_REF_PORT_RE = re.compile(
+    r'\b(input|output|inout)\s+(?:logic|wire|reg)?\s*'
+    r'(?:\[\s*(\d+)\s*:\s*(\d+)\s*\])?\s*(\w+)'
+)
+
+def parse_ref_ports(ref_dir, vname):
+    """Return {portname: (direction, hi, lo)} from ref/<vname>.v, or None.
+    Best-effort: only used to identify which schematic ports are extras."""
+    path = os.path.join(ref_dir, vname + ".v")
+    if not os.path.isfile(path):
+        return None
+    with open(path) as f:
+        text = f.read()
+    text = re.sub(r'//[^\n]*', '', text)
+    text = re.sub(r'/\*.*?\*/', '', text, flags=re.DOTALL)
+    m = re.search(r'\bmodule\s+\w+\s*\((.*?)\)\s*;', text, re.DOTALL)
+    if not m:
+        return None
+    portlist = m.group(1)
+    out = {}
+    for raw in portlist.split(','):
+        m2 = _REF_PORT_RE.search(raw)
+        if not m2:
+            continue
+        d, hi, lo, name = m2.group(1), m2.group(2), m2.group(3), m2.group(4)
+        hi = int(hi) if hi is not None else 0
+        lo = int(lo) if lo is not None else 0
+        out[name] = (d, hi, lo)
+    return out
+
+def classify_extra_input(name, ref_ports):
+    """Schematic-only input -> matching ref port name (or None)."""
+    n = name.lower()
+    if "clk" in n and "clk" in ref_ports:
+        return "clk"
+    if ("rst" in n or "reset" in n) and "rst" in ref_ports:
+        return "rst"
+    return None
+
+# -----------------------------------------------------------------------
 # Generate Verilog from parsed netlist
 # -----------------------------------------------------------------------
 def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_dir, manifest):
@@ -471,6 +514,50 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
     insts = _reorient_mos(insts, input_port_bases)
 
     dir_map    = {"input": "input ", "output": "output", "inputOutput": "inout "}
+
+    # --- ref-port filter: schematic ports that aren't in the ref get
+    #     demoted (outputs -> internal wires; clk/rst-named inputs ->
+    #     remapped to ref's clk/rst). Lets the schematic carry extra
+    #     scope-only output pins and a clock-tree of per-register clocks
+    #     while still presenting the ref's standard boundary.
+    ref_ports = parse_ref_ports(ref_dir, cell_name)
+    extra_remap = {}        # schematic port name -> ref port name
+    dropped_outputs = set() # schematic output ports demoted to internal wires
+    if ref_ports is not None:
+        ref_names = set(ref_ports.keys())
+        schem_names = {p[0] for p in ports}
+        kept_ports = []
+        for name, direction, hi, lo in ports:
+            if name in ref_names:
+                kept_ports.append((name, direction, hi, lo))
+                continue
+            if direction == "output":
+                dropped_outputs.add(name)
+                continue
+            if direction == "input":
+                target = classify_extra_input(name, ref_ports)
+                if target is None:
+                    sys.exit(
+                        f"error: schematic {cell_name!r} has extra input "
+                        f"{name!r} with no obvious mapping to a ref port "
+                        f"({sorted(ref_names)})"
+                    )
+                extra_remap[name] = target
+                continue
+            kept_ports.append((name, direction, hi, lo))
+        # Add any ref ports not already present (e.g. ref has 'clk' but
+        # the schematic only has per-register clk pins).
+        kept_bases = {p[0] for p in kept_ports}
+        for rname, (rdir, rhi, rlo) in ref_ports.items():
+            if rname in kept_bases:
+                continue
+            if rname in extra_remap.values():
+                kept_ports.append((rname, rdir, rhi, rlo))
+        # Preserve ref order on output for readability.
+        order = {n: i for i, n in enumerate(ref_ports.keys())}
+        kept_ports.sort(key=lambda p: order.get(p[0], 9999))
+        ports = kept_ports
+
     port_bases = {p[0] for p in ports}
 
     # --- includes: one per unique sub-cell, ref preferred ---
@@ -543,6 +630,10 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
             continue
         if vnet in noconn_vlog:
             continue
+        # Extra schematic-only inputs (e.g. pc_clk) get rewritten to a real
+        # ref port (clk/rst) via remap_drv — don't redeclare them.
+        if base in extra_remap or vbase in extra_remap:
+            continue
 
         if hi is not None:
             if vbase in bus_max:
@@ -563,12 +654,20 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
                           if direction == "output"}
 
     def remap_drv(net):
-        """If net references an output port (with optional slice), redirect to '_drv'."""
+        """Rewrite a net reference for the output:
+          1. extra-input pin (e.g. pc_clk) -> mapped ref port (clk)
+          2. real output port -> '<name>_drv' single-driver wire
+        Slice/concat brackets are preserved."""
         if not net:
             return net
         m = re.match(r'^(\w+)(\[.*\])?$', net)
-        if m and m.group(1) in output_port_widths:
-            return f"{m.group(1)}_drv{m.group(2) or ''}"
+        if m:
+            base = m.group(1)
+            tail = m.group(2) or ""
+            if base in extra_remap:
+                return f"{extra_remap[base]}{tail}"
+            if base in output_port_widths:
+                return f"{base}_drv{tail}"
         return net
 
     int_net_decls = [f"wire {n};" for n in sorted(scalar_nets)]
@@ -744,6 +843,9 @@ def main():
     manifest = load_manifest(args.manifest)
     mdict    = manifest_dict(manifest)
 
+    def _has_ref(vname):
+        return os.path.isfile(os.path.join(ref_dir, vname + ".v"))
+
     if args.cells:
         by_cad = {cad: (lib, vname) for lib, cad, vname in manifest}
         unknown = [c for c in args.cells if c not in by_cad]
@@ -751,8 +853,12 @@ def main():
             sys.exit(f"error: not in manifest: {unknown}")
         cells = [(by_cad[c][0], c, by_cad[c][1]) for c in args.cells]
     else:
+        # Default mode: skip cells whose vname already has a ref Verilog.
+        # Their schematic version (often transistor-level) is non-simulatable
+        # for iverilog; consumers `\include "ref/<vname>.v"` instead.
         cells = [(lib, cad, vname) for lib, cad, vname in manifest
-                 if is_stale(lib, cad, vname, cds_dir, out_dir)]
+                 if is_stale(lib, cad, vname, cds_dir, out_dir)
+                 and not _has_ref(vname)]
 
     if not cells:
         print("s2v: nothing to regenerate")
