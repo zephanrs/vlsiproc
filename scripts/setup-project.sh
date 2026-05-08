@@ -18,6 +18,10 @@ module load synopsys/synopsys-dc
 module load cadence/innovus
 module load cadence/cadence
 
+# Hacks to get the Verilog Functional views Working
+export PATH=/opt/cadence/XCELIUM2403/tools.lnx86/bin:$PATH
+export PATH=/opt/cadence/XCELIUM2403/tools.lnx86/bin/64bit:$PATH
+
 export ASSURAHOME=/opt/cadence/ASSURA41
 export QRC_HOME=/opt/cadence/QUANTUS231
 export PATH=$ASSURAHOME/tools/bin:$QRC_HOME/bin:$QRC_HOME/tools/bin:$PATH
