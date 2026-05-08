@@ -29,8 +29,8 @@
 
 module Proc2Ctrl
 (
-  input  wire        rst,
   input  wire        clk,
+  input  wire        rst,
   output wire        idmem_val,
   output wire        idmem_type,
   output wire        pc_en,

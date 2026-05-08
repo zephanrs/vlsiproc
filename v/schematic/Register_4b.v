@@ -19,10 +19,10 @@
 
 module Register_4b
 (
-  output wire [3:0] q,
-  input  wire       rst,
   input  wire       clk,
-  input  wire [3:0] d
+  input  wire       rst,
+  input  wire [3:0] d,
+  output wire [3:0] q
 );
 
   wire net2;

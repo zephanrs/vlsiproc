@@ -20,10 +20,10 @@ module Mux4_8b
 (
   input  wire [7:0] in0,
   input  wire [7:0] in1,
-  input  wire [1:0] sel,
   input  wire [7:0] in2,
-  output wire [7:0] out,
-  input  wire [7:0] in3
+  input  wire [7:0] in3,
+  input  wire [1:0] sel,
+  output wire [7:0] out
 );
 
   wire [1:0] sel_b;

@@ -15,11 +15,11 @@
 
 module AND4
 (
-  input  wire in3,
+  input  wire in0,
   input  wire in1,
   input  wire in2,
-  output wire out,
-  input  wire in0
+  input  wire in3,
+  output wire out
 );
 
   supply1 vdd;
