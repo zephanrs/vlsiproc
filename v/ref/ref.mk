@@ -3,12 +3,17 @@
 #=========================================================================
 
 ref_srcs = \
+  INV.v \
   AND2.v \
+  AND3.v \
   AND4.v \
+  OR2.v \
+  OR3.v \
   NAND2.v \
   NOR2.v \
   NOR3.v \
   XOR2.v \
+  AOI21.v \
   FullAdder.v \
   DFFRE.v \
   Adder_8b.v \
@@ -19,6 +24,8 @@ ref_srcs = \
   Incrementer_4b.v \
   Register_8b.v \
   Register_16b.v \
+  RegEn_8b.v \
+  RegEn_16b.v \
   ALU_8b.v \
   ImmGen.v \
   Regfile.v \

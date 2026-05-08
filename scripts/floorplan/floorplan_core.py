@@ -539,6 +539,8 @@ def evaluate(
       ips = sorted(set(block_indices))
       for c in range(ips[0], ips[-1]):
         cut_overlaps[c] += w.width
+  if overlap_weight:
+    cost += overlap_weight * sum(c * c for c in cut_overlaps)
   return Layout(
     order=list(order),
     centers=centers,
@@ -554,10 +556,12 @@ def anneal(
   seed: int,
   steps: int,
   off_chip_ports: set[str] | None = None,
+  overlap_weight: float = 0.0,
 ) -> tuple[Layout, Layout]:
   rng = random.Random(seed)
   block_map = {b.name: b for b in blocks}
-  cur = evaluate([b.name for b in blocks], block_map, wires, off_chip_ports=off_chip_ports)
+  cur = evaluate([b.name for b in blocks], block_map, wires,
+                 off_chip_ports=off_chip_ports, overlap_weight=overlap_weight)
   initial = cur
   best = cur
   t0 = max(1.0, cur.cost * 0.1)
@@ -572,7 +576,8 @@ def anneal(
     else:
       a, b = rng.sample(range(len(cand)), 2)
       cand.insert(b, cand.pop(a))
-    new = evaluate(cand, block_map, wires, off_chip_ports=off_chip_ports)
+    new = evaluate(cand, block_map, wires,
+                   off_chip_ports=off_chip_ports, overlap_weight=overlap_weight)
     delta = new.cost - cur.cost
     if delta <= 0 or rng.random() < math.exp(-delta / max(t, 1e-9)):
       cur = new
@@ -592,6 +597,7 @@ def build_floorplan(
   cell_map: dict[str, tuple[str, str]] | None = None,
   port_aliases: dict[str, dict[str, str]] | None = None,
   off_chip_ports: set[str] | None = None,
+  overlap_weight: float = 0.0,
 ) -> FloorplanResult:
   modules, defines = load_modules(module_dir)
   top = load_top(verilog_path, top_name, defines)
@@ -599,7 +605,9 @@ def build_floorplan(
                         port_aliases=port_aliases)
   wires = build_wires(top, modules, include_ports=include_ports,
                       off_chip_ports=off_chip_ports)
-  initial, best = anneal(blocks, wires, seed, steps, off_chip_ports=off_chip_ports)
+  initial, best = anneal(blocks, wires, seed, steps,
+                         off_chip_ports=off_chip_ports,
+                         overlap_weight=overlap_weight)
   return FloorplanResult(
     source=str(verilog_path),
     top=top.name,
