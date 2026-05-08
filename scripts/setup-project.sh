@@ -19,6 +19,8 @@ module load cadence/innovus
 module load cadence/cadence
 
 # Hacks to get the Verilog Functional views Working
+export XCELIUM_HOME=/opt/cadence/XCELIUM2403
+export IUS_HOME=/opt/cadence/XCELIUM2403
 export PATH=/opt/cadence/XCELIUM2403/tools.lnx86/bin:$PATH
 export PATH=/opt/cadence/XCELIUM2403/tools.lnx86/bin/64bit:$PATH
 

@@ -1,0 +1,28 @@
+//Verilog HDL for "processor", "TestMemory" "functional"
+
+
+module TestMemory
+(
+  input             clk,
+  input             rst,
+
+  input             mem_val,
+  input             mem_type,   // 0 = read, 1 = write
+  input      [7:0]  mem_addr,
+  input      [7:0]  mem_wdata,
+  output reg [15:0] mem_rdata
+);
+
+    assign mem_rdata =
+  {
+    clk,            // [15]
+    rst,            // [14]
+    mem_val,        // [13]
+    mem_type,       // [12]
+    mem_addr[7:4],  // [11:8]
+    mem_addr[3:0],  // [7:4]
+    mem_wdata[3:0]  // [3:0]
+  };
+
+
+endmodule
