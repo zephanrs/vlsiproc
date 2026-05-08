@@ -1,0 +1,34 @@
+cell	OR3
+port	in1	input	0
+port	in2	input	0
+port	out	output	0
+port	in0	input	0
+net	net1
+net	net4
+net	net10
+net	out
+net	vdd!
+net	in2
+net	in0
+net	in1
+net	gnd!
+inst	PM3	pmos1v	D	out	B	vdd!	G	net10	S	vdd!
+inst	PM2	pmos1v	D	net1	B	vdd!	G	in0	S	vdd!
+inst	PM1	pmos1v	D	net10	B	vdd!	G	in2	S	net4
+inst	PM0	pmos1v	D	net4	B	vdd!	G	in1	S	net1
+inst	NM3	nmos1v	D	out	B	gnd!	G	net10	S	gnd!
+inst	NM2	nmos1v	D	net10	B	gnd!	G	in2	S	gnd!
+inst	NM1	nmos1v	D	net10	B	gnd!	G	in1	S	gnd!
+inst	NM0	nmos1v	D	net10	B	gnd!	G	in0	S	gnd!
+inst	I8	gnd	gnd!	gnd!
+inst	I7	gnd	gnd!	gnd!
+inst	I2	gnd	gnd!	gnd!
+inst	PIN2	ipin
+inst	PIN1	ipin
+inst	PIN0	ipin
+inst	PIN4	opin
+inst	I9	vdd	vdd!	vdd!
+inst	I5	vdd	vdd!	vdd!
+inst	I4	vdd	vdd!	vdd!
+inst	I3	vdd	vdd!	vdd!
+inst	I6	vdd	vdd!	vdd!

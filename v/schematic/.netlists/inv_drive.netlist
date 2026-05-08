@@ -1,0 +1,35 @@
+cell	inv_drive
+port	in	input	0
+port	out	output	0
+port	out_b	output	0
+net	out
+net	out_b
+net	net7
+net	vdd!
+net	net2
+net	gnd!
+net	in
+net	net10
+inst	PIN3	ipin
+inst	PIN5	opin
+inst	PIN4	opin
+inst	NM5	nmos1v	D	out	B	gnd!	G	net10	S	gnd!
+inst	NM4	nmos1v	D	net10	B	gnd!	G	in	S	gnd!
+inst	NM2	nmos1v	D	out_b	B	gnd!	G	net2	S	gnd!
+inst	NM1	nmos1v	D	net2	B	gnd!	G	net7	S	gnd!
+inst	NM0	nmos1v	D	net7	B	gnd!	G	in	S	gnd!
+inst	PM5	pmos1v	D	out	B	vdd!	G	net10	S	vdd!
+inst	PM4	pmos1v	D	net10	B	vdd!	G	in	S	vdd!
+inst	PM2	pmos1v	D	out_b	B	vdd!	G	net2	S	vdd!
+inst	PM1	pmos1v	D	net2	B	vdd!	G	net7	S	vdd!
+inst	PM0	pmos1v	D	net7	B	vdd!	G	in	S	vdd!
+inst	I18	gnd	gnd!	gnd!
+inst	I15	gnd	gnd!	gnd!
+inst	I12	gnd	gnd!	gnd!
+inst	I9	gnd	gnd!	gnd!
+inst	I7	gnd	gnd!	gnd!
+inst	I17	vdd	vdd!	vdd!
+inst	I16	vdd	vdd!	vdd!
+inst	I11	vdd	vdd!	vdd!
+inst	I10	vdd	vdd!	vdd!
+inst	I8	vdd	vdd!	vdd!

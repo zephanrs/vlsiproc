@@ -1,0 +1,55 @@
+cell	RFslice
+port	wdata	input	0
+port	rdata0	output	0
+port	rdata1	output	0
+port	ren0_b<7:0>	input	0
+port	ren0<7:0>	input	0
+port	ren1<7:0>	input	0
+port	ren1_b<7:0>	input	0
+port	wen<7:1>	input	0
+port	wen_b<7:1>	input	0
+net	wdata
+net	ren0<7:0>
+net	ren0<0>
+net	rawdata0
+net	rawdata1
+net	ren1<0>
+net	<*7>net6
+net	net6
+net	net5
+net	<*7>rawdata0
+net	ren0_b<0>
+net	<*7>rawdata1
+net	rdata0
+net	rdata1
+net	net2
+net	net1
+net	ren0_b<7:0>
+net	ren0<7:1>
+net	ren1<7:1>
+net	wen<7:1>
+net	wen_b<7:1>
+net	ren0_b<7:1>
+net	ren1_b<7:1>
+net	ren1<7:0>
+net	ren1_b<7:0>
+net	ren1_b<0>
+inst	PIN13	ipin
+inst	PIN8	ipin
+inst	PIN12	ipin
+inst	PIN11	ipin
+inst	PIN9	ipin
+inst	PIN10	ipin
+inst	PIN7	ipin
+inst	I1<7:1>	RFReg	ren1_b	ren1_b<7:1>	ren0_b	ren0_b<7:1>	ren1	ren1<7:1>	ren0	ren0<7:1>	rdata0	<*7>rawdata0	rdata1	<*7>rawdata1	D	<*7>net6	clk	wen<7:1>	clk_b	wen_b<7:1>
+inst	I6	inv_x1	out	net2	in	rawdata1
+inst	I5	inv_x1	out	net1	in	rawdata0
+inst	I9	inv_x1	out	net5	in	wdata
+inst	I2	RFzero	ren1	ren1<0>	ren0	ren0<0>	rdata0	rawdata0	rdata1	rawdata1
+noconn	ren0_b<0>
+noconn	ren1_b<0>
+inst	I10	inv_x4	out	net6	in	net5
+inst	I8	inv_x4	out	rdata1	in	net2
+inst	I7	inv_x4	out	rdata0	in	net1
+inst	PIN2	opin
+inst	PIN1	opin

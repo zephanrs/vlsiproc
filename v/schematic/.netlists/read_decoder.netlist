@@ -1,0 +1,19 @@
+cell	read_decoder
+port	ren<7:0>	output	0
+port	ren_b<7:0>	output	0
+port	raddr<2:0>	input	0
+net	ren_b<7:0>
+net	raddr_a<2:0>
+net	raddr_b<2:0>
+net	net1<0:7>
+net	ren<7:0>
+net	raddr<2:0>
+net	<*4>raddr_b<2>,<*4>raddr_a<2>
+net	raddr_b<0>,raddr_a<0>,raddr_b<0>,raddr_a<0>,raddr_b<0>,raddr_a<0>,raddr_b<0>,raddr_a<0>
+net	<*2>raddr_b<1>,<*2>raddr_a<1>,<*2>raddr_b<1>,<*2>raddr_a<1>
+inst	PIN0	ipin
+inst	PIN5	opin
+inst	PIN4	opin
+inst	I1<7:0>	NOR3	in2	<*4>raddr_b<2>,<*4>raddr_a<2>	in0	raddr_b<0>,raddr_a<0>,raddr_b<0>,raddr_a<0>,raddr_b<0>,raddr_a<0>,raddr_b<0>,raddr_a<0>	in1	<*2>raddr_b<1>,<*2>raddr_a<1>,<*2>raddr_b<1>,<*2>raddr_a<1>	out	net1<0:7>
+inst	I3<7:0>	inv_drive	in	net1<0:7>	out	ren<7:0>	out_b	ren_b<7:0>
+inst	I0<2:0>	inv_drive	out	raddr_a<2:0>	out_b	raddr_b<2:0>	in	raddr<2:0>

@@ -1,0 +1,13 @@
+cell	inv_x1
+port	in	input	0
+port	out	output	0
+net	out
+net	in
+net	gnd!
+net	vdd!
+inst	NM0	nmos1v	D	out	B	gnd!	G	in	S	gnd!
+inst	PM0	pmos1v	D	out	B	vdd!	G	in	S	vdd!
+inst	I0	gnd	gnd!	gnd!
+inst	I1	vdd	vdd!	vdd!
+inst	PIN1	opin
+inst	PIN0	ipin

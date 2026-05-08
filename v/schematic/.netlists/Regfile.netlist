@@ -1,0 +1,41 @@
+cell	Regfile
+port	clk<7:1>	input	0
+port	waddr<2:0>	input	0
+port	wdata<7:0>	input	0
+port	raddr0<2:0>	input	0
+port	raddr1<2:0>	input	0
+port	rdata1<7:0>	output	0
+port	rdata0<7:0>	output	0
+port	wen	input	0
+net	raddr0<2:0>
+net	rdata0<7:0>
+net	<*8>rwen<7:1>
+net	<*8>net11<0:7>
+net	<*8>net15<0:7>
+net	<*8>net14<0:7>
+net	waddr<2:0>
+net	rwen<7:1>
+net	wen
+net	wdata<7:0>
+net	clk<7:1>
+net	raddr1<2:0>
+net	net11<0:7>
+net	net12<0:7>
+net	rdata1<7:0>
+net	net14<0:7>
+net	net15<0:7>
+net	<*8>net12<0:7>
+net	<*8>rwen_b<7:1>
+net	rwen_b<7:1>
+inst	I0<7:0>	RFslice	ren1_b<7:0>	<*8>net14<0:7>	ren1<7:0>	<*8>net15<0:7>	ren0_b<7:0>	<*8>net11<0:7>	ren0<7:0>	<*8>net12<0:7>	wen_b<7:1>	<*8>rwen_b<7:1>	wen<7:1>	<*8>rwen<7:1>	rdata1	rdata1<7:0>	rdata0	rdata0<7:0>	wdata	wdata<7:0>
+inst	I2	read_decoder	ren_b<7:0>	net14<0:7>	raddr<2:0>	raddr1<2:0>	ren<7:0>	net15<0:7>
+inst	I1	read_decoder	ren_b<7:0>	net11<0:7>	raddr<2:0>	raddr0<2:0>	ren<7:0>	net12<0:7>
+inst	I3	write_decoder	clk<7:1>	clk<7:1>	wen<7:1>	rwen<7:1>	rf_wen	wen	wen_b<7:1>	rwen_b<7:1>	waddr<2:0>	waddr<2:0>
+inst	PIN5	ipin
+inst	PIN4	ipin
+inst	PIN3	ipin
+inst	PIN2	ipin
+inst	PIN1	ipin
+inst	PIN8	ipin
+inst	PIN7	opin
+inst	PIN6	opin

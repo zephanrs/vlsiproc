@@ -1,0 +1,47 @@
+cell	HalfAdder
+port	sum	output	0
+port	in1	input	0
+port	cout	output	0
+port	in0	input	0
+net	out_b
+net	cout
+net	net2
+net	sum
+net	in1
+net	in0
+net	gnd!
+net	in0_b
+net	in1_b
+net	vdd!
+net	net6
+net	net7
+net	net8
+net	net9
+inst	PIN5	opin
+inst	PIN3	opin
+inst	NM3	nmos1v	D	cout	B	gnd!	G	out_b	S	gnd!
+inst	NM6	nmos1v	D	in0_b	B	gnd!	G	in0	S	gnd!
+inst	NM10	nmos1v	D	sum	B	gnd!	G	in1_b	S	net8
+inst	NM12	nmos1v	D	sum	B	gnd!	G	in0	S	net6
+inst	NM5	nmos1v	D	in1_b	B	gnd!	G	in1	S	gnd!
+inst	NM11	nmos1v	D	net6	B	gnd!	G	in1	S	gnd!
+inst	NM9	nmos1v	D	net8	B	gnd!	G	in0_b	S	gnd!
+inst	NM0	nmos1v	D	out_b	B	gnd!	G	in1	S	net2
+inst	NM4	nmos1v	D	net2	B	gnd!	G	in0	S	gnd!
+inst	PIN4	ipin
+inst	PIN2	ipin
+inst	PM4	pmos1v	D	cout	B	vdd!	G	out_b	S	vdd!
+inst	PM1	pmos1v	D	out_b	B	vdd!	G	in1	S	vdd!
+inst	PM0	pmos1v	D	out_b	B	vdd!	G	in0	S	vdd!
+inst	PM6	pmos1v	D	in0_b	B	vdd!	G	in0	S	vdd!
+inst	PM7	pmos1v	D	net7	B	vdd!	G	in1_b	S	vdd!
+inst	PM2	pmos1v	D	net9	B	vdd!	G	in0_b	S	vdd!
+inst	PM3	pmos1v	D	sum	B	vdd!	G	in1	S	net9
+inst	PM8	pmos1v	D	sum	B	vdd!	G	in0	S	net7
+inst	PM5	pmos1v	D	in1_b	B	vdd!	G	in1	S	vdd!
+inst	I2	gnd	gnd!	gnd!
+inst	I4	gnd	gnd!	gnd!
+inst	I1	gnd	gnd!	gnd!
+inst	I0	vdd	vdd!	vdd!
+inst	I5	vdd	vdd!	vdd!
+inst	I3	vdd	vdd!	vdd!
