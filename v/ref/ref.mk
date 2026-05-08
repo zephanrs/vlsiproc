@@ -23,6 +23,7 @@ ref_srcs = \
   Mux4_8b.v \
   Mux4_4b.v \
   Incrementer_4b.v \
+  Register_4b.v \
   Register_8b.v \
   Register_16b.v \
   RegEn_8b.v \
@@ -38,12 +39,18 @@ ref_srcs = \
   Proc2.v \
 
 ref_cell_tests = \
+  INV-test.v \
   AND2-test.v \
+  AND3-test.v \
   AND4-test.v \
+  OR2-test.v \
+  OR3-test.v \
   NAND2-test.v \
+  NAND3-test.v \
   NOR2-test.v \
   NOR3-test.v \
   XOR2-test.v \
+  AOI21-test.v \
   FullAdder-test.v \
   DFFRE-test.v \
 
@@ -52,13 +59,17 @@ ref_blocks_tests = \
   EqComparator_8b-test.v \
   Mux2_8b-test.v \
   Mux4_8b-test.v \
+  Mux4_4b-test.v \
+  Incrementer_4b-test.v \
   ALU_8b-test.v \
   ImmGen-test.v \
+  Register_4b-test.v \
   Register_8b-test.v \
   Register_16b-test.v \
   Regfile-test.v \
 
 ref_proc_tests = \
+  Proc2Ctrl-test.v \
   Proc2-test.v \
 
 ref_tests = $(ref_cell_tests) $(ref_blocks_tests) $(ref_proc_tests)
