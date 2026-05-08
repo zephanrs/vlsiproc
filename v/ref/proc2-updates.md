@@ -51,8 +51,8 @@
 | `rf_wen`     | `s0 & s1 & s2 & s3`                                                       | AND4 = 1         |
 | `fetch_en`   | `s0 & ~s1 & ~s2 & ~s3`                                                    | AND4 = 1         |
 | `ab_en`      | `s1 & ~s0 & ~s2 & ~s3`                                                    | AND4 = 1         |
-| `pc_en`      | `(s0 & ~s1 & ~s3) \| (s3 & ~s0 & ~s2)`                                    | 2 AND3 + OR2 = 3 |
-| `wd_en`      | `(s0 & s3 & ~s1) \| (s1 & s2 & ~s0)`                                      | 2 AND3 + OR2 = 3 |
+| `pc_en`      | `(s0 & ~s1 & ~s3) \| (s3 & ~s0 & ~s2)`                                    | **2 NAND3 + NAND2 = 3** (NAND-NAND, 2 stages) |
+| `wd_en`      | `(s0 & s3 & ~s1) \| (s1 & s2 & ~s0)`                                      | **2 NAND3 + NAND2 = 3** (NAND-NAND, 2 stages) |
 | `idmem_val`  | `~((~s2 & s3) \| (s0 \| s1))` = `AOI21(~s2, s3, OR2(s0,s1))`              | **OR2 + AOI21 = 2** |
 | `ns_sel[0]`  | `(s1 & ~s0) \| (s0 & s2 & s3 & ~s1)`                                      | AND2 + AND4 + OR2 = 3 |
 | `ns_sel[1]`  | `AOI21(~s0, s3, s2) \| AND4(s2, s3, ~s0, ~s1) \| (AND4(~s3, s2, s1, s0) & ~eq)` | **AOI21 + AND4 + AND4 + AND2 + OR3 = 5** |
@@ -101,14 +101,19 @@ Total: **5 INVs** (or as few as 1 if FF q_n outputs are used for state inverters
 
 ### AND gates
 
-- **AND2** — `op2_sel[0]`, `idmem_type`, `wb_sel`, plus `ns_sel[1]` eq-gated AND2.  Total: **4 AND2**.
-- **AND3** — `addr_en`, `pc_en` (2×), `wd_en` (2×).  Total: **5 AND3**.
-- **AND4** — `rf_wen`, `fetch_en`, `ab_en`, `ns_sel[0]`, `ns_sel[1]` (2 terms).  Total: **6 AND4**.
+- **AND2** — `op2_sel[0]`, `idmem_type`, `wb_sel`, `ns_sel[0]` (small term), `ns_sel[1]` eq-gated AND2.  Total: **5 AND2**.
+- **AND3** — `addr_en`.  Total: **1 AND3**.
+- **AND4** — `rf_wen`, `fetch_en`, `ab_en`, `ns_sel[0]` (large term), `ns_sel[1]` (2 terms).  Total: **6 AND4**.
 
 ### OR gates
 
-- **OR2** — `op2_sel[1]`, `idmem_val` (feeds AOI21 c-input), `pc_en`, `wd_en`, `ns_sel[0]`.  Total: **5 OR2**.
+- **OR2** — `op2_sel[1]`, `idmem_val` (feeds AOI21 c-input), `ns_sel[0]`.  Total: **3 OR2**.
 - **OR3** — `ns_sel[1]` (final merge of three groups).  Total: **1 OR3**.
+
+### NAND gates (NAND-NAND form for 2-stage SOPs)
+
+- **NAND2** — final merge for `pc_en`, `wd_en`.  Total: **2 NAND2**.
+- **NAND3** — product terms in `pc_en` (2×), `wd_en` (2×).  Total: **4 NAND3**.
 
 ### Compound gates (AOI / OAI)
 
