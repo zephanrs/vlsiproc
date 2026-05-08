@@ -17,8 +17,9 @@
 
 module ImmGen
 (
-  output wire [7:0]  imm,
-  input  wire [15:0] inst
+  input  wire [11:0] inst,
+  input  wire        imm_type,
+  output wire [7:0]  imm
 );
 
   wire [7:0] imm_drv;
@@ -28,7 +29,7 @@ module ImmGen
     .out (imm_drv[7:0]),
     .in0 ({{3{inst[11]}}, inst[10:9], inst[2:0]}),
     .in1 ({{3{inst[5]}}, inst[4:3], inst[2:0]}),
-    .sel (inst[13])
+    .sel (imm_type)
   );
 
   assign imm = imm_drv;

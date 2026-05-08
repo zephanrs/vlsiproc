@@ -12,7 +12,6 @@
 `include "ref/Mux4_8b.v"
 `include "ref/ALU_8b.v"
 `include "schematic/reg_ena_16b.v"
-`include "ref/ImmGen.v"
 
 /* verilator lint_off UNUSED */
 /* verilator lint_off UNUSEDSIGNAL */
@@ -41,23 +40,21 @@ module ProcDpath
   input  wire        pc_rst,
   input  wire        pc_en,
   input  wire        pc_cllk,
-  input  wire        pc_old_ena,
+  input  wire        fetch_en,
   input  wire        pc_old_clk,
   output wire [7:0]  pc_old_out,
   output wire        mux4_out,
   output wire [7:0]  op1_sel_out,
   output wire [7:0]  alu_out,
   input  wire [7:1]  rf_clk,
-  input  wire        a_ena,
   input  wire        a_clk,
-  input  wire        b_ena,
   input  wire        b_clk,
-  input  wire        addr_ena,
+  input  wire        ab_en,
+  input  wire        wd_en,
   input  wire        addr_clk,
-  input  wire        wd_ena,
+  input  wire        addr_en,
   input  wire        wd_clk,
   input  wire        wb_sel,
-  input  wire        ir_ena,
   input  wire        ir_clk,
   input  wire        rf_wen,
   input  wire [15:0] idmem_rdata,
@@ -68,6 +65,7 @@ module ProcDpath
   supply1 vdd;
   supply0 gnd;
 
+  wire net3;
   wire [7:0] net25;
   wire [7:0] net54;
   wire [7:0] A_reg_out_drv;
@@ -141,7 +139,7 @@ module ProcDpath
     .Y      (addr_out_drv[7:0]),
     .D      (alu_out_drv[7:0]),
     .clk_in (addr_clk),
-    .ena    (addr_ena)
+    .ena    (addr_en)
   );
 
   reg_ena WD
@@ -149,7 +147,7 @@ module ProcDpath
     .Y      (net25[7:0]),
     .D      (wb_sel_out_drv[7:0]),
     .clk_in (wd_clk),
-    .ena    (wd_ena)
+    .ena    (wd_en)
   );
 
   reg_ena A
@@ -157,7 +155,7 @@ module ProcDpath
     .Y      (A_reg_out_drv[7:0]),
     .D      (rdata0_out_drv[7:0]),
     .clk_in (a_clk),
-    .ena    (a_ena)
+    .ena    (ab_en)
   );
 
   reg_ena B
@@ -165,7 +163,7 @@ module ProcDpath
     .Y      (idmem_wdata_drv[7:0]),
     .D      (rdata1_out_drv[7:0]),
     .clk_in (b_clk),
-    .ena    (b_ena)
+    .ena    (ab_en)
   );
 
   reg_ena PC_old
@@ -173,7 +171,7 @@ module ProcDpath
     .Y      (pc_old_out_drv[7:0]),
     .D      (PC_out_drv[7:0]),
     .clk_in (pc_old_clk),
-    .ena    (pc_old_ena)
+    .ena    (fetch_en)
   );
 
   Regfile rf
@@ -192,16 +190,16 @@ module ProcDpath
   (
     .out ({8{mux4_out[70]}}),
     .in0 (idmem_wdata_drv[7:0]),
-    .in1 ({8{gnd!}}),
+    .in1 ({8{gnd}}),
     .in2 (net54[7:0]),
-    .in3 ({{6{gnd!}}, vdd!, gnd!}),
+    .in3 ({{6{gnd}}, vdd, gnd}),
     .sel (op2_sel[1:0])
   );
 
   ALU_8b ALU
   (
+    .sum (alu_out_drv[7:0]),
     .eq  (eq_drv),
-    .out (alu_out_drv[7:0]),
     .in0 (op1_sel_out_drv[7:0]),
     .in1 ({8{mux4_out[70]}})
   );
@@ -211,16 +209,7 @@ module ProcDpath
     .D      (idmem_rdata[15:0]),
     .Y      (inst_drv[15:0]),
     .clk_in (ir_clk),
-    .ena    (ir_ena)
-  );
-
-  ImmGen I17
-  (
-    .imm  (net54[7:0]),
-    .inst (inst_drv[2:0]),
-    .inst (inst_drv[5:3]),
-    .inst (inst_drv[11:9]),
-    .inst (inst_drv[13])
+    .ena    (fetch_en)
   );
 
   assign A_reg_out = A_reg_out_drv;
