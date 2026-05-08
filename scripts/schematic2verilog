@@ -133,13 +133,15 @@ def strip_pin_range(pin):
 _BCAST_RE = re.compile(r'^(?:<\*(\d+)>|\[\*(\d+)\]|\*(\d+)\s+)\s*(.+)$')
 
 def _convert_one(part):
-    """Convert one Cadence net atom: '<*N>x' / '[*N]x' / '*N x' -> '{N{x}}', '<>' -> '[]'."""
+    """Convert one Cadence net atom: '<*N>x' / '[*N]x' / '*N x' -> '{N{x}}', '<>' -> '[]'.
+    Normalizes Cadence supply suffixes inside the inner expression so
+    '<*4>gnd!' becomes '{4{gnd}}' (not '{4{gnd!}}', which is invalid Verilog)."""
     part = part.strip()
     m = _BCAST_RE.match(part)
     if m:
         n = m.group(1) or m.group(2) or m.group(3)
-        return "{" + n + "{" + vlog_name(m.group(4)) + "}}"
-    return vlog_name(part)
+        return "{" + n + "{" + supply_name(vlog_name(m.group(4))) + "}}"
+    return supply_name(vlog_name(part))
 
 def cad_net_to_verilog(net):
     """Full Cadence net expression -> Verilog. Handles concat, replication, <>."""
