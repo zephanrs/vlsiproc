@@ -6,6 +6,7 @@ cadence/.cadence/
 cadence/perf/
 cadence/drc/
 cadence/lvs/
+cadence/xcelium.d
 .cadence/perf/
 
 # Cadence log files
