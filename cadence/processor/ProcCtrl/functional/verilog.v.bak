@@ -1,5 +1,6 @@
 //Verilog HDL for "processor", "ProcCtrl" "functional"
 
+`include "../../../Mux4_4b/functional/verilog.v"
 
 module ProcCtrl (
   clk,
