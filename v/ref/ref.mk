@@ -10,6 +10,7 @@ ref_srcs = \
   OR2.v \
   OR3.v \
   NAND2.v \
+  NAND3.v \
   NOR2.v \
   NOR3.v \
   XOR2.v \
