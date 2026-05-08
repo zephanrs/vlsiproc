@@ -35,7 +35,7 @@
 						<value>1</value>
 					</var>
 					<var>tclk
-						<value>1n</value>
+						<value>500p</value>
 					</var>
 					<var>tdelay
 						<value>250p</value>
@@ -57,7 +57,7 @@
 		</checksasserts>
 		<plottingoptions>
 			<plottingoption>waveformtemplate
-				<value>digital_view</value>
+				<value>(None)</value>
 			</plottingoption>
 			<plottingoption>plottingmode
 				<value>Replace</value>
@@ -90,15 +90,15 @@
 				<value>no</value>
 			</plottingoption>
 			<plottingoption>autoplotmode
-				<value>Replace</value>
+				<value>Append</value>
 			</plottingoption>
 		</plottingoptions>
 		<exploreroptions>
 			<exploreroption>waveformtemplate
-				<value>digital_view</value>
+				<value>(None)</value>
 			</exploreroption>
 			<exploreroption>autoplotmode
-				<value>Replace</value>
+				<value>Append</value>
 			</exploreroption>
 		</exploreroptions>
 		<incrementalsimsetup>

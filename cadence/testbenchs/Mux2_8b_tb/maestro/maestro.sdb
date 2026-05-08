@@ -31,17 +31,8 @@
 					</option>
 				</tooloptions>
 				<vars>
-					<var>s1
-						<value></value>
-					</var>
-					<var>s2
-						<value></value>
-					</var>
-					<var>s3
-						<value></value>
-					</var>
-					<var>V
-						<value></value>
+					<var>tclk
+						<value>1n</value>
 					</var>
 				</vars>
 			</test>
@@ -59,7 +50,7 @@
 		</checksasserts>
 		<plottingoptions>
 			<plottingoption>waveformtemplate
-				<value>(None)</value>
+				<value></value>
 			</plottingoption>
 			<plottingoption>plottingmode
 				<value>Replace</value>
@@ -71,7 +62,7 @@
 				<value>no</value>
 			</plottingoption>
 			<plottingoption>useMaestroPlottingTemplate
-				<value>yes</value>
+				<value>no</value>
 			</plottingoption>
 			<plottingoption>allplottingtemplates
 				<value></value>
