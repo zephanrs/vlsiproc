@@ -13,12 +13,11 @@
 module ImmGen
 (
   input  logic [15:0] inst,
-  input  logic        imm_type,
   output logic  [7:0] imm
 );
 
   always_comb begin
-    if (imm_type)  // I-type
+    if (inst[15])  // I-type
       imm = {{2{inst[5]}}, inst[5:3], inst[2:0]};
     else           // S-type
       imm = {{2{inst[11]}}, inst[11:9], inst[2:0]};
