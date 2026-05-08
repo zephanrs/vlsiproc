@@ -843,9 +843,6 @@ def main():
     manifest = load_manifest(args.manifest)
     mdict    = manifest_dict(manifest)
 
-    def _has_ref(vname):
-        return os.path.isfile(os.path.join(ref_dir, vname + ".v"))
-
     if args.cells:
         by_cad = {cad: (lib, vname) for lib, cad, vname in manifest}
         unknown = [c for c in args.cells if c not in by_cad]
@@ -853,15 +850,12 @@ def main():
             sys.exit(f"error: not in manifest: {unknown}")
         cells = [(by_cad[c][0], c, by_cad[c][1]) for c in args.cells]
     else:
-        # Default mode: skip standard-cell cells whose vname already has a
-        # hand-written ref Verilog -- their schematic is transistor-level
-        # and non-simulatable for iverilog; consumers `\include "ref/<vname>.v"`
-        # instead. Processor cells (top-level: Proc2Ctrl, Proc2Dpath, ...) are
-        # gate-level and ARE simulated, so we always (re)generate them even
-        # when a ref exists.
+        # Default mode: regenerate everything in the manifest whose .v is
+        # missing or older than the schematic. The whole point is to test
+        # the schematic against the ref, so we don't skip cells that
+        # happen to have a ref.
         cells = [(lib, cad, vname) for lib, cad, vname in manifest
-                 if is_stale(lib, cad, vname, cds_dir, out_dir)
-                 and not (lib == "standard_cells" and _has_ref(vname))]
+                 if is_stale(lib, cad, vname, cds_dir, out_dir)]
 
     if not cells:
         print("s2v: nothing to regenerate")
