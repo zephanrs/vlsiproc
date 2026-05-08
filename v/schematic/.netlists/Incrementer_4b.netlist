@@ -1,0 +1,26 @@
+cell	Incrementer_4b
+port	in<3:0>	input	0
+port	out<3:0>	output	0
+net	net1
+net	net3
+net	out<0>
+net	net6
+net	out<1>
+net	net9
+net	out<2>
+net	out<3:0>
+net	out<3>
+net	in<3:0>
+net	in<3>
+net	in<2>
+net	in<1>
+net	in<0>
+net	vdd!
+inst	I4	HalfAdder	sum	out<0>	in1	in<0>	cout	net9	in0	vdd!
+inst	I3	HalfAdder	sum	out<1>	in1	in<1>	cout	net6	in0	net9
+inst	I2	HalfAdder	sum	out<2>	in1	in<2>	cout	net3	in0	net6
+inst	I1	HalfAdder	sum	out<3>	in1	in<3>	cout	net1	in0	net3
+inst	PIN0	ipin
+inst	I5	vdd	vdd!	vdd!
+inst	PIN1	opin
+noconn	net1

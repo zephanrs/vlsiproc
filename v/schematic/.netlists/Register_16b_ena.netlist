@@ -1,0 +1,33 @@
+cell	Register_16b_ena
+port	q<15:0>	output	0
+port	en	input	0
+port	clk	input	0
+port	d<15:0>	input	0
+net	clk
+net	d<7:0>
+net	out_ckb_top
+net	q<7:0>
+net	<*8>out_ckb_top
+net	<*8>outb_ck_top
+net	outb_ck_top
+net	d<15:8>
+net	ena_drv_bottom
+net	q<15:8>
+net	d<15:0>
+net	out_ckb_bottom
+net	<*8>out_ckb_bottom
+net	ena_drv_top
+net	<*8>outb_ck_bottom
+net	outb_ck_bottom
+net	q<15:0>
+net	en
+inst	PIN2	ipin
+inst	PIN1	ipin
+inst	PIN0	ipin
+inst	PIN3	opin
+inst	I2	inv_drive	in	ena_drv_top	out	out_ckb_top	out_b	outb_ck_top
+inst	I9	inv_drive	in	ena_drv_bottom	out	out_ckb_bottom	out_b	outb_ck_bottom
+inst	I3	clk_ena	ena_clk_b	ena_drv_top	clk	clk	ena	en
+inst	I8	clk_ena	ena_clk_b	ena_drv_bottom	clk	clk	ena	en
+inst	I4<0:7>	FF_std_2	ck	<*8>outb_ck_top	ck_b	<*8>out_ckb_top	Y	q<15:8>	D	d<15:8>
+inst	I<0:7>	FF_std_2	ck	<*8>outb_ck_bottom	ck_b	<*8>out_ckb_bottom	Y	q<7:0>	D	d<7:0>

@@ -1,0 +1,32 @@
+cell	XOR2
+port	out	output	0
+port	in0	input	0
+port	in1	input	0
+net	net4
+net	net12
+net	net17
+net	in0_b
+net	out
+net	in1
+net	in1_b
+net	net3
+net	in0
+net	gnd!
+net	vdd!
+inst	PM7	pmos1v	D	net4	B	vdd!	G	in1_b	S	vdd!
+inst	PM5	pmos1v	D	in1_b	B	vdd!	G	in1	S	vdd!
+inst	PM6	pmos1v	D	in0_b	B	vdd!	G	in0	S	vdd!
+inst	PM3	pmos1v	D	out	B	vdd!	G	in1	S	net12
+inst	PM2	pmos1v	D	net12	B	vdd!	G	in0_b	S	vdd!
+inst	PM8	pmos1v	D	out	B	vdd!	G	in0	S	net4
+inst	NM5	nmos1v	D	in1_b	B	gnd!	G	in1	S	gnd!
+inst	NM6	nmos1v	D	in0_b	B	gnd!	G	in0	S	gnd!
+inst	NM11	nmos1v	D	net17	B	gnd!	G	in1	S	gnd!
+inst	NM10	nmos1v	D	out	B	gnd!	G	in1_b	S	net3
+inst	NM9	nmos1v	D	net3	B	gnd!	G	in0_b	S	gnd!
+inst	NM12	nmos1v	D	out	B	gnd!	G	in0	S	net17
+inst	I0	gnd	gnd!	gnd!
+inst	I1	vdd	vdd!	vdd!
+inst	PIN0	opin
+inst	PIN2	ipin
+inst	PIN1	ipin

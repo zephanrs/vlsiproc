@@ -1,0 +1,24 @@
+cell	AND2
+port	out	output	0
+port	in1	input	0
+port	in0	input	0
+net	in1
+net	out
+net	out_b
+net	gnd!
+net	vdd!
+net	net1
+net	in0
+inst	I3	gnd	gnd!	gnd!
+inst	I1	gnd	gnd!	gnd!
+inst	NM3	nmos1v	D	out	B	gnd!	G	out_b	S	gnd!
+inst	NM5	nmos1v	D	out_b	B	gnd!	G	in0	S	net1
+inst	NM4	nmos1v	D	net1	B	gnd!	G	in1	S	gnd!
+inst	PM3	pmos1v	D	out	B	vdd!	G	out_b	S	vdd!
+inst	PM6	pmos1v	D	out_b	B	vdd!	G	in1	S	vdd!
+inst	PM5	pmos1v	D	out_b	B	vdd!	G	in0	S	vdd!
+inst	I0	vdd	vdd!	vdd!
+inst	I2	vdd	vdd!	vdd!
+inst	PIN0	ipin
+inst	PIN1	ipin
+inst	PIN2	opin

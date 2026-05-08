@@ -1,0 +1,19 @@
+cell	NAND2
+port	out	output	0
+port	in1	input	0
+port	in0	input	0
+net	out
+net	in1
+net	gnd!
+net	vdd!
+net	in0
+net	net2
+inst	I1	gnd	gnd!	gnd!
+inst	NM5	nmos1v	D	out	B	gnd!	G	in0	S	net2
+inst	NM4	nmos1v	D	net2	B	gnd!	G	in1	S	gnd!
+inst	PIN2	opin
+inst	PIN0	ipin
+inst	PIN1	ipin
+inst	PM6	pmos1v	D	out	B	vdd!	G	in1	S	vdd!
+inst	PM5	pmos1v	D	out	B	vdd!	G	in0	S	vdd!
+inst	I2	vdd	vdd!	vdd!

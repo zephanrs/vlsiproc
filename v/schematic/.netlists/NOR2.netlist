@@ -1,0 +1,19 @@
+cell	NOR2
+port	in0	input	0
+port	in1	input	0
+port	out	output	0
+net	vdd!
+net	in1
+net	out
+net	net5
+net	in0
+net	gnd!
+inst	PM0	pmos1v	D	net5	B	vdd!	G	in0	S	vdd!
+inst	PM1	pmos1v	D	out	B	vdd!	G	in1	S	net5
+inst	NM1	nmos1v	D	out	B	gnd!	G	in1	S	gnd!
+inst	NM0	nmos1v	D	out	B	gnd!	G	in0	S	gnd!
+inst	PIN1	ipin
+inst	PIN0	ipin
+inst	PIN2	opin
+inst	I0	gnd	gnd!	gnd!
+inst	I1	vdd	vdd!	vdd!

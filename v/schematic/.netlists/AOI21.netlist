@@ -1,0 +1,31 @@
+cell	AOI21
+port	out	output	0
+port	in0	input	0
+port	in1	input	0
+port	in2	input	0
+net	out
+net	in0
+net	in1
+net	in2
+net	gnd!
+net	vdd!
+net	net2
+net	net1
+inst	PM2	pmos1v	D	net1	B	vdd!	G	in1	S	vdd!
+inst	PM1	pmos1v	D	net1	B	vdd!	G	in0	S	vdd!
+inst	PM4	pmos1v	D	out	B	vdd!	G	in2	S	net1
+inst	I7	vdd	vdd!	vdd!
+inst	I6	vdd	vdd!	vdd!
+inst	I5	vdd	vdd!	vdd!
+inst	I1	vdd	vdd!	vdd!
+inst	PIN1	opin
+inst	NM2	nmos1v	D	out	B	gnd!	G	in2	S	gnd!
+inst	NM1	nmos1v	D	net2	B	gnd!	G	in1	S	gnd!
+inst	NM0	nmos1v	D	out	B	gnd!	G	in0	S	net2
+inst	I4	gnd	gnd!	gnd!
+inst	I3	gnd	gnd!	gnd!
+inst	I2	gnd	gnd!	gnd!
+inst	I0	gnd	gnd!	gnd!
+inst	PIN3	ipin
+inst	PIN2	ipin
+inst	PIN0	ipin
