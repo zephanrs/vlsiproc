@@ -61,6 +61,7 @@ module Proc2Ctrl
   wire net25;
   wire net3;
   wire net4;
+  wire net7;
   wire [3:0] fast;
   wire [2:1] fast_b;
   wire [3:0] net5;
@@ -108,9 +109,9 @@ module Proc2Ctrl
   AOI21 I40
   (
     .out (net13),
-    .in0 (state[3]),
-    .in1 (state[2]),
-    .in2 (state_b[0])
+    .in0 (state_b[0]),
+    .in1 (state[3]),
+    .in2 (state[2])
   );
 
   AOI21 I38
@@ -181,6 +182,12 @@ module Proc2Ctrl
     .in  (fast[3])
   );
 
+  inv_x1 I49
+  (
+    .out (net7),
+    .in  (eq)
+  );
+
   OR2 I47
   (
     .out (ns_sel[0]),
@@ -212,7 +219,7 @@ module Proc2Ctrl
   AND2 I43
   (
     .out (net25),
-    .in0 (eq),
+    .in0 (net7),
     .in1 (net21)
   );
 
