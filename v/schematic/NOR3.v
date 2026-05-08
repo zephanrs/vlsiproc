@@ -15,10 +15,10 @@
 
 module NOR3
 (
+  input  wire in0,
   input  wire in1,
   input  wire in2,
-  output wire out,
-  input  wire in0
+  output wire out
 );
 
   supply1 vdd;

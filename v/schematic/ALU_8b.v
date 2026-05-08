@@ -25,8 +25,8 @@ module ALU_8b
 (
   input  wire [7:0] in0,
   input  wire [7:0] in1,
-  output wire       eq,
-  output wire [7:0] sum
+  output wire [7:0] sum,
+  output wire       eq
 );
 
   wire G10;

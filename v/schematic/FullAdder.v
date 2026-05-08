@@ -15,11 +15,11 @@
 
 module FullAdder
 (
+  input  wire in0,
   input  wire in1,
   input  wire cin,
-  output wire sum,
   output wire cout,
-  input  wire in0
+  output wire sum
 );
 
   supply1 vdd;

@@ -7,9 +7,9 @@ schem_srcs = \
   AND4.v \
   AOI21.v \
   FullAdder.v \
-  ImmGen.v \
   Incrementer_4b.v \
   Mux2_8b.v \
+  Mux4_4b.v \
   Mux4_8b.v \
   NAND2.v \
   NAND3.v \
@@ -18,7 +18,7 @@ schem_srcs = \
   OR2.v \
   OR3.v \
   Proc2Ctrl.v \
-  ProcDpath.v \
+  Proc2Dpath.v \
   Regfile.v \
   Register_4b.v \
   XOR2.v
@@ -42,6 +42,7 @@ schem_tests = \
   OR2-test-schem.v \
   OR3-test-schem.v \
   Proc2Ctrl-test-schem.v \
+  Proc2Dpath-test-schem.v \
   Regfile-test-schem.v \
   Register_4b-test-schem.v \
   XOR2-test-schem.v

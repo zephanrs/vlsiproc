@@ -20,13 +20,13 @@
 module Regfile
 (
   input  wire [7:1] clk,
+  input  wire       wen,
   input  wire [2:0] waddr,
   input  wire [7:0] wdata,
   input  wire [2:0] raddr0,
-  input  wire [2:0] raddr1,
-  output wire [7:0] rdata1,
   output wire [7:0] rdata0,
-  input  wire       wen
+  input  wire [2:0] raddr1,
+  output wire [7:0] rdata1
 );
 
   wire [7:0] net11;
