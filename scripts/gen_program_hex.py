@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 import re
 import sys
 import subprocess
@@ -12,6 +13,9 @@ if len(sys.argv) != 4:
 test_file = Path(sys.argv[1])
 task_name = sys.argv[2]
 out_file = Path(sys.argv[3])
+
+rootdir = Path(os.environ.get("ROOTDIR") or Path(__file__).resolve().parent.parent)
+tinyrv1_v = rootdir / "v" / "ref" / "tinyrv1_v2.v"
 
 src = test_file.read_text()
 
@@ -35,10 +39,10 @@ if not asm_calls:
     raise SystemExit(f"No asm(...) calls found in task {task_name}")
 
 lines = [
-    '`include "/home/dnb68/processor/v/ref/tinyrv1.v"',
+    f'`include "{tinyrv1_v}"',
     "",
     "module Top;",
-    "  TinyRV1 tinyrv1();",
+    "  TinyRV1_v2 tinyrv1();",
     "  reg [15:0] word;",
     "",
     "  initial begin",
@@ -68,7 +72,7 @@ cmd = [
 
 result = subprocess.run(
     cmd,
-    cwd="/home/dnb68/processor",
+    cwd=str(rootdir),
     text=True,
     stdout=subprocess.PIPE,
     stderr=subprocess.STDOUT,
