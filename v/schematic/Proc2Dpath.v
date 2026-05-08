@@ -7,8 +7,8 @@
 
 `include "ref/AND2.v"
 `include "ref/Mux2_8b.v"
-`include "schematic/reg_ena.v"
-`include "schematic/Register_16b_ena.v"
+`include "ref/reg_ena.v"
+`include "ref/Register_16b_ena.v"
 `include "ref/Mux4_8b.v"
 `include "ref/Regfile.v"
 `include "ref/ALU_8b.v"
@@ -181,8 +181,8 @@ module Proc2Dpath
     .rdata0 (rdata0_out[7:0]),
     .rdata1 (rdata1_out[7:0]),
     .raddr0 (inst_drv[8:6]),
-    .raddr1 (inst_drv[11:9]),
-    .waddr  (inst_drv[5:3]),
+    .raddr1 (inst_drv[5:3]),
+    .waddr  (inst_drv[11:9]),
     .wdata  (net25[7:0])
   );
 
