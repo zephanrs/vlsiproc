@@ -142,7 +142,8 @@ def main():
     # 7-clock H-trees, structural concats) -- wrap each schem-test file with
     # lint-off pragmas so the testbench's narrower signals can pad/expand.
     LINT = ("UNUSED", "UNUSEDSIGNAL", "UNDRIVEN",
-            "WIDTH", "WIDTHCONCAT", "WIDTHEXPAND", "WIDTHTRUNC")
+            "WIDTH", "WIDTHCONCAT", "WIDTHEXPAND", "WIDTHTRUNC",
+            "PROCASSINIT")
     prefix = "".join(f"/* verilator lint_off {w} */\n" for w in LINT)
     suffix = "".join(f"/* verilator lint_on {w} */\n" for w in reversed(LINT))
 
