@@ -28,6 +28,11 @@ cadence/*.log
 logs*/
 *oacache*
 
+# Cadence/Xcelium generated files
+xcelium.d/
+xrun.history
+xmvlog.log
+
 # Verilator flow generated files
 flow/obj_dir/
 flow/*-pickled.v
