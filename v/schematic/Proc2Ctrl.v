@@ -93,10 +93,10 @@ module Proc2Ctrl
 
   Register_4b I9
   (
-    .Q      (fast[3:0]),
-    .D      (net8[3:0]),
-    .clk_in (clk),
-    .reset  (rst)
+    .d   (net8[3:0]),
+    .rst (rst),
+    .q   (fast[3:0]),
+    .clk (clk)
   );
 
   Incrementer_4b I11

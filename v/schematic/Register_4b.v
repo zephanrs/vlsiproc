@@ -19,21 +19,21 @@
 
 module Register_4b
 (
-  input  wire [3:0] D,
-  output wire [3:0] Q,
-  input  wire       reset,
-  input  wire       clk_in
+  output wire [3:0] q,
+  input  wire       rst,
+  input  wire       clk,
+  input  wire [3:0] d
 );
 
   wire net2;
   wire net5;
   wire net7;
-  wire [3:0] Q_drv;
+  wire [3:0] q_drv;
 
   FF_reset I_3
   (
-    .Y       (Q_drv[3]),
-    .D       (D[3]),
+    .Y       (q_drv[3]),
+    .D       (d[3]),
     .ck      (net5),
     .ck_b    (net7),
     .reset_b (net2)
@@ -41,8 +41,8 @@ module Register_4b
 
   FF_reset I_2
   (
-    .Y       (Q_drv[2]),
-    .D       (D[2]),
+    .Y       (q_drv[2]),
+    .D       (d[2]),
     .ck      (net5),
     .ck_b    (net7),
     .reset_b (net2)
@@ -50,8 +50,8 @@ module Register_4b
 
   FF_reset I_1
   (
-    .Y       (Q_drv[1]),
-    .D       (D[1]),
+    .Y       (q_drv[1]),
+    .D       (d[1]),
     .ck      (net5),
     .ck_b    (net7),
     .reset_b (net2)
@@ -59,8 +59,8 @@ module Register_4b
 
   FF_reset I_0
   (
-    .Y       (Q_drv[0]),
-    .D       (D[0]),
+    .Y       (q_drv[0]),
+    .D       (d[0]),
     .ck      (net5),
     .ck_b    (net7),
     .reset_b (net2)
@@ -68,7 +68,7 @@ module Register_4b
 
   inv_drive I9
   (
-    .in    (clk_in),
+    .in    (clk),
     .out   (net5),
     .out_b (net7)
   );
@@ -76,10 +76,10 @@ module Register_4b
   inv_x1 I10
   (
     .out (net2),
-    .in  (reset)
+    .in  (rst)
   );
 
-  assign Q = Q_drv;
+  assign q = q_drv;
 
 endmodule
 
