@@ -1,0 +1,9 @@
+//Verilog HDL for "processor", "Incrementer_4b" "functional"
+
+
+module Incrementer_4b ( cout, sum, in );
+
+  input  [3:0] in;
+  output cout;
+  output  [3:0] sum;
+endmodule
