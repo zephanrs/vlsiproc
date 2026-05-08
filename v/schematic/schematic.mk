@@ -3,30 +3,47 @@
 schem_srcs = \
   ALU_8b.v \
   AND2.v \
+  AND3.v \
   AND4.v \
+  AOI21.v \
   FullAdder.v \
   ImmGen.v \
+  Incrementer_4b.v \
   Mux2_8b.v \
   Mux4_8b.v \
   NAND2.v \
+  NAND3.v \
   NOR2.v \
   NOR3.v \
+  OR2.v \
+  OR3.v \
+  Proc2Ctrl.v \
   ProcDpath.v \
   Regfile.v \
+  Register_4b.v \
   XOR2.v
 
 schem_tests = \
   ALU_8b-test-schem.v \
   AND2-test-schem.v \
+  AND3-test-schem.v \
   AND4-test-schem.v \
+  AOI21-test-schem.v \
   FullAdder-test-schem.v \
   ImmGen-test-schem.v \
+  Incrementer_4b-test-schem.v \
   Mux2_8b-test-schem.v \
+  Mux4_4b-test-schem.v \
   Mux4_8b-test-schem.v \
   NAND2-test-schem.v \
+  NAND3-test-schem.v \
   NOR2-test-schem.v \
   NOR3-test-schem.v \
+  OR2-test-schem.v \
+  OR3-test-schem.v \
+  Proc2Ctrl-test-schem.v \
   Regfile-test-schem.v \
+  Register_4b-test-schem.v \
   XOR2-test-schem.v
 
 $(eval $(call check_part,schem))

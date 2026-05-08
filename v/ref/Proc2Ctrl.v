@@ -16,6 +16,7 @@
 `define PROC2_CTRL_V
 
 `include "ref/Mux4_4b.v"
+`include "ref/Register_4b.v"
 `include "ref/Incrementer_4b.v"
 `include "ref/INV.v"
 `include "ref/AND2.v"
@@ -23,6 +24,8 @@
 `include "ref/AND4.v"
 `include "ref/OR2.v"
 `include "ref/OR3.v"
+`include "ref/NAND2.v"
+`include "ref/NAND3.v"
 `include "ref/AOI21.v"
 
 module Proc2Ctrl
@@ -54,18 +57,19 @@ module Proc2Ctrl
 );
 
   //----------------------------------------------------------------------
-  // State register (4 DFFREs, reset to F0 = 4'b0000)
+  // State register (Register_4b: 4 DFFREs, resets to F0 = 4'b0000)
   //----------------------------------------------------------------------
 
   logic [3:0] state;
   logic [3:0] next_state;
 
-  always_ff @( posedge clk ) begin
-    if ( rst )
-      state <= 4'b0000;
-    else
-      state <= next_state;
-  end
+  Register_4b state_reg
+  (
+    .clk (clk),
+    .rst (rst),
+    .d   (next_state),
+    .q   (state)
+  );
 
   // Bit aliases
   wire s0 = state[0];
@@ -170,19 +174,25 @@ module Proc2Ctrl
   // ab_en = s1 & ~s0 & ~s2 & ~s3            — AND4 (D = 0010)
   AND4 u_ab_en ( .in0(s1), .in1(ns0), .in2(ns2), .in3(ns3), .out(ab_en) );
 
-  // pc_en = AND3(s0, ~s1, ~s3) | AND3(s3, ~s0, ~s2)
-  //   covers F1, JR (term 1)  /  B1, JA1 (term 2)
-  wire pc_en_t1, pc_en_t2;
-  AND3 u_pc_en_t1 ( .in0(s0), .in1(ns1), .in2(ns3), .out(pc_en_t1) );
-  AND3 u_pc_en_t2 ( .in0(s3), .in1(ns0), .in2(ns2), .out(pc_en_t2) );
-  OR2  u_pc_en    ( .in0(pc_en_t1), .in1(pc_en_t2), .out(pc_en) );
+  // pc_en = (s0 & ~s1 & ~s3) | (s3 & ~s0 & ~s2)
+  //   NAND-NAND form (2 stages, no extra inverters):
+  //     nt1 = NAND3(s0, ~s1, ~s3)          // ~T1 (covers F1, JR)
+  //     nt2 = NAND3(s3, ~s0, ~s2)          // ~T2 (covers B1, JA1)
+  //     pc_en = NAND2(nt1, nt2) = T1 | T2
+  wire pc_en_nt1, pc_en_nt2;
+  NAND3 u_pc_en_nt1 ( .in0(s0), .in1(ns1), .in2(ns3), .out(pc_en_nt1) );
+  NAND3 u_pc_en_nt2 ( .in0(s3), .in1(ns0), .in2(ns2), .out(pc_en_nt2) );
+  NAND2 u_pc_en     ( .in0(pc_en_nt1), .in1(pc_en_nt2), .out(pc_en) );
 
-  // wd_en = AND3(s0, s3, ~s1) | AND3(s1, s2, ~s0)
-  //   covers JA0, L2 (term 1)  /  A0, AI (term 2)
-  wire wd_en_t1, wd_en_t2;
-  AND3 u_wd_en_t1 ( .in0(s0), .in1(s3), .in2(ns1), .out(wd_en_t1) );
-  AND3 u_wd_en_t2 ( .in0(s1), .in1(s2), .in2(ns0), .out(wd_en_t2) );
-  OR2  u_wd_en    ( .in0(wd_en_t1), .in1(wd_en_t2), .out(wd_en) );
+  // wd_en = (s0 & s3 & ~s1) | (s1 & s2 & ~s0)
+  //   NAND-NAND form (2 stages):
+  //     nt1 = NAND3(s0, s3, ~s1)           // ~T1 (covers JA0, L2)
+  //     nt2 = NAND3(s1, s2, ~s0)           // ~T2 (covers A0, AI)
+  //     wd_en = NAND2(nt1, nt2) = T1 | T2
+  wire wd_en_nt1, wd_en_nt2;
+  NAND3 u_wd_en_nt1 ( .in0(s0), .in1(s3), .in2(ns1), .out(wd_en_nt1) );
+  NAND3 u_wd_en_nt2 ( .in0(s1), .in1(s2), .in2(ns0), .out(wd_en_nt2) );
+  NAND2 u_wd_en     ( .in0(wd_en_nt1), .in1(wd_en_nt2), .out(wd_en) );
 
   // idmem_val = (~s0 & ~s1) & (s2 | ~s3)
   //   = ~((s0 | s1) | (~s2 & s3))

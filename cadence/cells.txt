@@ -20,17 +20,26 @@ ALU             ALU_8b
 imm_gen         ImmGen
 Mux2_8b         Mux2_8b
 Mux4_8b         Mux4_8b
+Mux4_4b         Mux4_4b
+Incrementer_4b  Incrementer_4b
+reg_rst_4b      Register_4b
+ProcCtrl        Proc2Ctrl
 ProcDpath       ProcDpath
 register_file   Regfile
 
 [standard_cells]
 AND2            AND2
+AND3            AND3
 AND4            AND4
-FullAdder       FullAdder
+OR2             OR2
+OR3             OR3
 NAND2           NAND2
+NAND3           NAND3
 NOR2            NOR2
 NOR3            NOR3
 XOR2            XOR2
+AOI21           AOI21
+FullAdder       FullAdder
 
 # No ref yet -- write v/ref/<name>.v + v/test/<name>-test.v, then enable:
 #
