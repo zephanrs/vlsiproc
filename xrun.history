@@ -4,3 +4,11 @@ s1(08May2026:08:51:26):  xrun -64bit -sv /tmp/emit_addi_basic.sv
 s2(08May2026:08:55:03):  /opt/cadence/XCELIUM2403/tools.lnx86/bin/64bit/xrun -64bit -sv /tmp/tmpismehur8.sv 
 #e3(08May2026:08:56:44): source ./xcelium.d/env.d/env.history.08May2026_08_56_44
 s3(08May2026:08:56:44):  /opt/cadence/XCELIUM2403/tools.lnx86/bin/64bit/xrun -64bit -sv /tmp/tmpzcfgti7f.sv 
+#e4(08May2026:12:22:51): source ./xcelium.d/env.d/env.history.08May2026_12_22_51
+s4(08May2026:12:22:51):  /opt/cadence/XCELIUM2403/tools.lnx86/bin/64bit/xrun -64bit -sv /tmp/emit_add_addi_seq.sv 
+#e5(08May2026:12:37:38): source ./xcelium.d/env.d/env.history.08May2026_12_37_38
+s5(08May2026:12:37:38):  /opt/cadence/XCELIUM2403/tools.lnx86/bin/64bit/xrun -64bit -sv /tmp/tmp5ll3sxko.sv 
+#e6(08May2026:12:37:47): source ./xcelium.d/env.d/env.history.08May2026_12_37_47
+s6(08May2026:12:37:47):  /opt/cadence/XCELIUM2403/tools.lnx86/bin/64bit/xrun -64bit -sv /tmp/tmp02d7lu5h.sv 
+#e7(08May2026:13:00:23): source ./xcelium.d/env.d/env.history.08May2026_13_00_23
+s7(08May2026:13:00:23):  /opt/cadence/XCELIUM2403/tools.lnx86/bin/64bit/xrun -64bit -sv /tmp/tmpm7_c8xyt.sv 

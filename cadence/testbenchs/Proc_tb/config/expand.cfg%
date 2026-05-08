@@ -1,4 +1,4 @@
-//Revision 1
+//Revision 3
 //NOTE
 // Default config view template for AMS netlister(s) in ADE.
 // Note:
@@ -12,6 +12,9 @@ liblist myLib;
 
 viewlist spectre, spice, pspice, verilog, verilogams, behavioral, functional, systemVerilog, schematic, veriloga, vhdl, vhdlams, wreal;
 stoplist spectre;
+
+
+cell processor.ProcCtrl binding :schematic;
 
 
 endconfig
