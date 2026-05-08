@@ -1,0 +1,7 @@
+//
+// File created by:  xrun
+// Do not modify this file
+
+s1::(08May2026:08:51:26):( xrun -64bit -sv /tmp/emit_addi_basic.sv )&&(./xcelium.d/env.d/env.history.08May2026_08_51_26)
+s2::(08May2026:08:55:03):( /opt/cadence/XCELIUM2403/tools.lnx86/bin/64bit/xrun -64bit -sv /tmp/tmpismehur8.sv )&&(./xcelium.d/env.d/env.history.08May2026_08_55_03)
+s3::(08May2026:08:56:44):( /opt/cadence/XCELIUM2403/tools.lnx86/bin/64bit/xrun -64bit -sv /tmp/tmpzcfgti7f.sv )&&(./xcelium.d/env.d/env.history.08May2026_08_56_44)
