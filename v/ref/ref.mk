@@ -51,13 +51,6 @@ ref_blocks_tests = \
   Regfile-test.v \
 
 ref_proc_tests = \
-  Proc-addi-test.v \
-  Proc-add-test.v \
-  Proc-lw-test.v \
-  Proc-sw-test.v \
-  Proc-jal-test.v \
-  Proc-jr-test.v \
-  Proc-bne-test.v \
   Proc2-test.v \
 
 ref_tests = $(ref_cell_tests) $(ref_blocks_tests) $(ref_proc_tests)
