@@ -7,7 +7,7 @@
 
 `include "ref/AND4.v"
 `include "schematic/inv_drive.v"
-`include "schematic/clk_ena.v"
+`include "ref/clk_ena.v"
 `include "schematic/inv_x1.v"
 `include "schematic/inv_x4.v"
 
