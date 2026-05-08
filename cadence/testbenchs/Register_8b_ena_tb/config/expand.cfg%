@@ -1,0 +1,20 @@
+//Revision 1
+//NOTE
+// Default template for spectre
+// Note:
+//      Please remember to replace Top Cell Library, Cell, and View
+//      fields with the actual names used by your design.
+//END_NOTE
+
+config Register_8b_ena_tb;
+design testbenchs.Register_8b_ena_tb:schematic;
+liblist myLib;
+
+viewlist spectre, cmos_sch, \cmos.sch , schematic, veriloga, ahdl, pspice, dspf;
+stoplist spectre;
+
+
+cell processor.reg_ena binding :av_extracted;
+
+
+endconfig
