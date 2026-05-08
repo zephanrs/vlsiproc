@@ -70,6 +70,7 @@ ref_blocks_tests = \
 
 ref_proc_tests = \
   Proc2Ctrl-test.v \
+  Proc2Dpath-test.v \
   Proc2-test.v \
 
 ref_tests = $(ref_cell_tests) $(ref_blocks_tests) $(ref_proc_tests)
