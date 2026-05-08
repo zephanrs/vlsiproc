@@ -493,12 +493,15 @@ def parse_ref_ports(ref_dir, vname):
         out[name] = (d, hi, lo)
     return out
 
+_CLK_RE = re.compile(r'cl+k|clock')   # tolerant of typos like 'pc_cllk'
+_RST_RE = re.compile(r'rst|reset')
+
 def classify_extra_input(name, ref_ports):
     """Schematic-only input -> matching ref port name (or None)."""
     n = name.lower()
-    if "clk" in n and "clk" in ref_ports:
+    if _CLK_RE.search(n) and "clk" in ref_ports:
         return "clk"
-    if ("rst" in n or "reset" in n) and "rst" in ref_ports:
+    if _RST_RE.search(n) and "rst" in ref_ports:
         return "rst"
     return None
 
