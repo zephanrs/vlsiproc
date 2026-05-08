@@ -16,6 +16,7 @@
 `define PROC2_CTRL_V
 
 `include "ref/Mux4_4b.v"
+`include "ref/Register_4b.v"
 `include "ref/Incrementer_4b.v"
 `include "ref/INV.v"
 `include "ref/AND2.v"
@@ -56,18 +57,19 @@ module Proc2Ctrl
 );
 
   //----------------------------------------------------------------------
-  // State register (4 DFFREs, reset to F0 = 4'b0000)
+  // State register (Register_4b: 4 DFFREs, resets to F0 = 4'b0000)
   //----------------------------------------------------------------------
 
   logic [3:0] state;
   logic [3:0] next_state;
 
-  always_ff @( posedge clk ) begin
-    if ( rst )
-      state <= 4'b0000;
-    else
-      state <= next_state;
-  end
+  Register_4b state_reg
+  (
+    .clk (clk),
+    .rst (rst),
+    .d   (next_state),
+    .q   (state)
+  );
 
   // Bit aliases
   wire s0 = state[0];
