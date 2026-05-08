@@ -142,7 +142,6 @@ module Proc2Dpath
   ImmGen immgen
   (
     .inst     (inst),
-    .imm_type (inst[15]),
     .imm      (immgen_imm)
   );
 
