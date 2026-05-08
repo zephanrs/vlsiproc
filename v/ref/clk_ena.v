@@ -16,7 +16,8 @@ module clk_ena
   input  wire ena
 );
 
-  logic latched_ena = 1'b0;
+  logic latched_ena;
+  initial latched_ena = 1'b0;
 
   always_latch
     if (!clk)
