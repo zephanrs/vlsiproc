@@ -9,6 +9,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 COMMENT_RE = re.compile(r"/\*.*?\*/|//.*?$", re.S | re.M)
+BUS_BIT_RE = re.compile(r"<[^>]*>$")  # strip Cadence bit suffix: in0<7> -> in0
+SUPPLY_PINS = {"gnd!", "vdd!", "gnd", "vdd"}
 MODULE_RE = re.compile(
   r"module\s+(?P<name>\w+)\s*\((?P<header>.*?)\)\s*;\s*(?P<body>.*?)endmodule",
   re.S,
@@ -103,6 +105,7 @@ class FloorplanResult:
   wires: list[Wire]
   initial: Layout
   best: Layout
+  off_chip_ports: tuple[str, ...] = ()
 
 
 def strip_comments(text: str) -> str:
@@ -292,6 +295,7 @@ def build_blocks(
   modules: dict[str, Module],
   layouts: dict[str, CellLayout] | None = None,
   cell_map: dict[str, tuple[str, str]] | None = None,
+  port_aliases: dict[str, dict[str, str]] | None = None,
 ) -> list[Block]:
   memo: dict[str, float] = {}
   blocks: list[Block] = []
@@ -302,11 +306,19 @@ def build_blocks(
       if mapping:
         layout = layouts.get(f"{mapping[0]}/{mapping[1]}")
     if layout:
+      pin_offsets = dict(layout.pin_x)
+      # Surface aliased Verilog port names alongside the Cadence pin names so
+      # HPWL lookups via instance.port hit the right pin offset regardless of
+      # which side's naming the design uses.
+      aliases = (port_aliases or {}).get(inst.module_type, {})
+      for vlog_port, cad_pin in aliases.items():
+        if cad_pin in layout.pin_x:
+          pin_offsets[vlog_port] = layout.pin_x[cad_pin]
       blocks.append(Block(
         name=inst.name,
         module_type=inst.module_type,
         size=layout.width,
-        pin_offsets=dict(layout.pin_x),
+        pin_offsets=pin_offsets,
       ))
     else:
       blocks.append(Block(
@@ -319,9 +331,12 @@ def build_blocks(
 
 
 def load_layouts(path: Path) -> dict[str, CellLayout]:
-  """Parse the SKILL extract-layouts output. Pins x-coords are normalized
-  to 0..width (relative to the cell's lower-left bbox corner). Multiple shapes
-  for the same pin are averaged."""
+  """Parse the SKILL extract-layouts output. Pin x-coords are normalized to
+  0..width (relative to the cell's lower-left bbox corner) and aggregated by
+  base port name -- the SKILL emits one PIN line per bit shape (e.g. `in0<0>`
+  ... `in0<7>`), and the Verilog floorplan only knows the bare port name
+  (`in0`), so bit suffixes are stripped and all bits' centers are averaged
+  into a single representative x. Power/ground pins are ignored."""
   layouts: dict[str, CellLayout] = {}
   cur_lib = cur_cell = None
   cur_xmin = cur_ymin = 0.0
@@ -343,8 +358,11 @@ def load_layouts(path: Path) -> dict[str, CellLayout]:
       cur_width, cur_height = x2 - x1, y2 - y1
     elif head == "PIN":
       name = parts[1]
+      if name in SUPPLY_PINS:
+        continue
+      base = BUS_BIT_RE.sub("", name)
       x1, y1, x2, y2 = (float(v) for v in parts[2:6])
-      pin_xs[name].append(0.5 * (x1 + x2) - cur_xmin)
+      pin_xs[base].append(0.5 * (x1 + x2) - cur_xmin)
     elif head == "ENDCELL":
       if cur_lib and cur_cell:
         pin_x = {n: sum(xs) / len(xs) for n, xs in pin_xs.items()}
@@ -373,14 +391,21 @@ def _closure(start: str, graph: dict[str, set[str]], base: dict[str, set[str]], 
   return result
 
 
-def build_wires(top: TopModule, modules: dict[str, Module], include_ports: bool = False) -> list[Wire]:
+def build_wires(
+  top: TopModule,
+  modules: dict[str, Module],
+  include_ports: bool = False,
+  off_chip_ports: set[str] | None = None,
+) -> list[Wire]:
   ignore = {"clk", "rst"}
+  off_chip_ports = off_chip_ports or set()
   raw_drv: dict[str, set[tuple[str, str]]] = defaultdict(set)
   raw_snk: dict[str, set[tuple[str, str]]] = defaultdict(set)
-  if include_ports:
-    for port in top.ports.values():
-      ep = (f"port:{port.name}", "")
-      (raw_drv if port.direction == "input" else raw_snk)[port.name].add(ep)
+  for port in top.ports.values():
+    if not (include_ports or port.name in off_chip_ports):
+      continue
+    ep = (f"port:{port.name}", "")
+    (raw_drv if port.direction == "input" else raw_snk)[port.name].add(ep)
   for inst in top.instances:
     m = modules.get(inst.module_type)
     if not m:
@@ -412,7 +437,22 @@ def build_wires(top: TopModule, modules: dict[str, Module], include_ports: bool 
     if not include_ports and sum(not name.startswith("port:") for name, _ in endpoints) < 2:
       continue
     wires.append(Wire(name=net, width=top.net_widths.get(net, 1), endpoints=endpoints))
-  return wires
+
+  # Drop slice-redundant wires: when an `assign rs1 = inst[2:0]` etc. unifies a
+  # narrow net into a wider parent, the closure produces wires whose endpoint
+  # sets are strict subsets of the parent's. Physically that's one bus, not
+  # several -- the slice's bits are already in the parent's wirelength. Keep
+  # the widest wire per endpoint-superset and drop everything it dominates.
+  wires.sort(key=lambda w: (-w.width, w.name))
+  kept: list[Wire] = []
+  kept_eps: list[frozenset[tuple[str, str]]] = []
+  for w in wires:
+    eps = frozenset(w.endpoints)
+    if any(eps.issubset(k) for k in kept_eps):
+      continue
+    kept.append(w)
+    kept_eps.append(eps)
+  return kept
 
 
 def positions(order: list[str], blocks: dict[str, Block], gap: float = 1.0) -> dict[str, float]:
@@ -423,6 +463,20 @@ def positions(order: list[str], blocks: dict[str, Block], gap: float = 1.0) -> d
     centers[name] = x + 0.5 * size
     x += size + gap
   return centers
+
+
+def layout_extent(order: list[str], blocks: dict[str, Block], gap: float = 1.0) -> tuple[float, float]:
+  """Leftmost and rightmost x of the placed row (ignoring gap after last)."""
+  if not order:
+    return (0.0, 0.0)
+  total = sum(blocks[n].size for n in order) + gap * max(0, len(order) - 1)
+  return (0.0, total)
+
+
+def off_chip_side(min_x: float, max_x: float, layout_w: float) -> str:
+  """Pick the chip edge an off-chip port should anchor at to minimize HPWL.
+  Returns 'left' for x=0 or 'right' for x=layout_w."""
+  return "left" if max_x <= layout_w - min_x else "right"
 
 
 def pin_position(name: str, pin: str, centers: dict[str, float], blocks: dict[str, Block]) -> float | None:
@@ -438,26 +492,55 @@ def pin_position(name: str, pin: str, centers: dict[str, float], blocks: dict[st
   return centers[name]
 
 
-def evaluate(order: list[str], blocks: dict[str, Block], wires: list[Wire], gap: float = 1.0) -> Layout:
+def evaluate(
+  order: list[str],
+  blocks: dict[str, Block],
+  wires: list[Wire],
+  gap: float = 1.0,
+  off_chip_ports: set[str] | None = None,
+  overlap_weight: float = 0.0,
+) -> Layout:
+  off_chip_ports = off_chip_ports or set()
   centers = positions(order, blocks, gap=gap)
+  _, layout_w = layout_extent(order, blocks, gap=gap)
   index = {name: i for i, name in enumerate(order)}
   cut_overlaps = [0] * max(0, len(order) - 1)
   cost = 0.0
   for w in wires:
     xs: list[float] = []
     block_indices: list[int] = []
-    for name, pin in w.endpoints:
-      x = pin_position(name, pin, centers, blocks)
+    n_off_chip = 0
+    for name, _pin in w.endpoints:
+      if name.startswith("port:"):
+        port_name = name.split(":", 1)[1]
+        if port_name in off_chip_ports:
+          n_off_chip += 1
+        continue
+      x = pin_position(name, _pin, centers, blocks)
       if x is None:
         continue
       xs.append(x)
       block_indices.append(index[name])
-    if len(xs) < 2:
+    if not xs:
       continue
-    cost += w.width * (max(xs) - min(xs))
-    ips = sorted(set(block_indices))
-    for c in range(ips[0], ips[-1]):
-      cut_overlaps[c] += w.width
+    min_x, max_x = min(xs), max(xs)
+    if n_off_chip:
+      # All off-chip endpoints anchor at whichever chip edge yields smaller
+      # HPWL contribution; both edges == same side is optimal.
+      side = off_chip_side(min_x, max_x, layout_w)
+      if side == "left":
+        min_x = 0.0
+      else:
+        max_x = layout_w
+    if len(xs) + n_off_chip < 2:
+      continue
+    cost += w.width * (max_x - min_x)
+    if len(block_indices) >= 2:
+      ips = sorted(set(block_indices))
+      for c in range(ips[0], ips[-1]):
+        cut_overlaps[c] += w.width
+  if overlap_weight:
+    cost += overlap_weight * sum(c * c for c in cut_overlaps)
   return Layout(
     order=list(order),
     centers=centers,
@@ -467,10 +550,18 @@ def evaluate(order: list[str], blocks: dict[str, Block], wires: list[Wire], gap:
   )
 
 
-def anneal(blocks: list[Block], wires: list[Wire], seed: int, steps: int) -> tuple[Layout, Layout]:
+def anneal(
+  blocks: list[Block],
+  wires: list[Wire],
+  seed: int,
+  steps: int,
+  off_chip_ports: set[str] | None = None,
+  overlap_weight: float = 0.0,
+) -> tuple[Layout, Layout]:
   rng = random.Random(seed)
   block_map = {b.name: b for b in blocks}
-  cur = evaluate([b.name for b in blocks], block_map, wires)
+  cur = evaluate([b.name for b in blocks], block_map, wires,
+                 off_chip_ports=off_chip_ports, overlap_weight=overlap_weight)
   initial = cur
   best = cur
   t0 = max(1.0, cur.cost * 0.1)
@@ -485,7 +576,8 @@ def anneal(blocks: list[Block], wires: list[Wire], seed: int, steps: int) -> tup
     else:
       a, b = rng.sample(range(len(cand)), 2)
       cand.insert(b, cand.pop(a))
-    new = evaluate(cand, block_map, wires)
+    new = evaluate(cand, block_map, wires,
+                   off_chip_ports=off_chip_ports, overlap_weight=overlap_weight)
     delta = new.cost - cur.cost
     if delta <= 0 or rng.random() < math.exp(-delta / max(t, 1e-9)):
       cur = new
@@ -503,12 +595,19 @@ def build_floorplan(
   include_ports: bool = False,
   layouts: dict[str, CellLayout] | None = None,
   cell_map: dict[str, tuple[str, str]] | None = None,
+  port_aliases: dict[str, dict[str, str]] | None = None,
+  off_chip_ports: set[str] | None = None,
+  overlap_weight: float = 0.0,
 ) -> FloorplanResult:
   modules, defines = load_modules(module_dir)
   top = load_top(verilog_path, top_name, defines)
-  blocks = build_blocks(top, modules, layouts=layouts, cell_map=cell_map)
-  wires = build_wires(top, modules, include_ports=include_ports)
-  initial, best = anneal(blocks, wires, seed, steps)
+  blocks = build_blocks(top, modules, layouts=layouts, cell_map=cell_map,
+                        port_aliases=port_aliases)
+  wires = build_wires(top, modules, include_ports=include_ports,
+                      off_chip_ports=off_chip_ports)
+  initial, best = anneal(blocks, wires, seed, steps,
+                         off_chip_ports=off_chip_ports,
+                         overlap_weight=overlap_weight)
   return FloorplanResult(
     source=str(verilog_path),
     top=top.name,
@@ -518,4 +617,5 @@ def build_floorplan(
     wires=wires,
     initial=initial,
     best=best,
+    off_chip_ports=tuple(sorted(off_chip_ports or set())),
   )

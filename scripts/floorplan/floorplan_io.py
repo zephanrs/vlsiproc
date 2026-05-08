@@ -1,87 +1,147 @@
 from __future__ import annotations
 
-import html
 import json
 from dataclasses import asdict
 from pathlib import Path
 
-from floorplan_core import Block, FloorplanResult, Layout, Wire, pin_position
-
-PALETTE = [
-  "#355070", "#6d597a", "#b56576", "#e56b6f", "#eaac8b",
-  "#3d5a80", "#81b29a", "#f2cc8f", "#4d908e", "#577590",
-]
+from floorplan_core import (
+  Block, FloorplanResult, Layout, Wire,
+  layout_extent, off_chip_side, pin_position,
+)
 
 
-def render_svg(path: Path, layout: Layout, blocks: list[Block], wires: list[Wire]) -> None:
+def render_png(path: Path, layout: Layout, blocks: list[Block], wires: list[Wire],
+               off_chip_ports: set[str]) -> None:
+  """Textbook bit-slice datapath floorplan: vertical cell strips that contain
+  horizontal bus lanes, dots at every pin connection, and off-chip nets that
+  extend past the strip row to a label on the chosen chip edge."""
+  import matplotlib
+  matplotlib.use("Agg")
+  import matplotlib.pyplot as plt
+  from matplotlib.patches import Rectangle
+
   block_map = {b.name: b for b in blocks}
   order = layout.order
   centers = layout.centers
-  sizes = {n: block_map[n].size for n in order}
-  layout_w = sum(sizes[n] for n in order) + max(0, len(order) - 1)
-  margin_x = 80
-  block_h = 72
-  wire_step = 18
-  block_y = 80 + wire_step * len(wires)
-  total_w = 1260
-  total_h = block_y + block_h + 80
-  scale = (total_w - 2 * margin_x) / max(layout_w, 1.0)
-  colors = {
-    t: PALETTE[i % len(PALETTE)]
-    for i, t in enumerate(sorted({b.module_type for b in blocks}))
-  }
+  _, layout_w = layout_extent(order, block_map)
+
+  # Resolve each wire to its (block, x) endpoint set + off-chip count. Drop
+  # wires that wouldn't draw a visible segment. Sort widest-first so wide
+  # buses sit at the top of the cell, like the textbook figure.
+  shown: list[tuple[Wire, list[float], int]] = []
+  for w in wires:
+    eps: list[float] = []
+    n_off = 0
+    for name, pin in w.endpoints:
+      if name.startswith("port:"):
+        port = name.split(":", 1)[1]
+        if port in off_chip_ports:
+          n_off += 1
+        continue
+      x = pin_position(name, pin, centers, block_map)
+      if x is not None:
+        eps.append(x)
+    if len(eps) + n_off < 2:
+      continue
+    if not eps:
+      continue
+    shown.append((w, eps, n_off))
+  shown.sort(key=lambda t: (-t[0].width, t[0].name))
+
+  # Geometry: cells are tall vertical strips that contain the bus lanes.
+  bus_step = 16
+  cell_pad_top = 16
+  cell_pad_bot = 16
+  cell_h = max(80, cell_pad_top + cell_pad_bot + bus_step * max(1, len(shown)))
+  cell_y0 = 0
+  cell_y1 = cell_h
+  inst_label_y = cell_y1 + 6
+  bit_label_y = cell_y0 - 6
+  type_label_y = cell_y0 - 18
+  scale = 14.0
+  margin_x = 110
+  view_w = layout_w * scale + 2 * margin_x
+
+  fig_w = max(12.0, view_w / 90.0)
+  fig_h = max(7.5, (cell_h + 240) / 90.0)
+  fig, ax = plt.subplots(figsize=(fig_w, fig_h), dpi=160)
+  ax.set_xlim(0, view_w)
+  ax.set_ylim(type_label_y - 100, inst_label_y + 100)
+  ax.set_aspect("auto")
+  ax.axis("off")
 
   def sx(x: float) -> float:
     return margin_x + x * scale
 
-  pieces = [
-    f'<svg xmlns="http://www.w3.org/2000/svg" width="{total_w}" height="{total_h}" viewBox="0 0 {total_w} {total_h}">',
-    '<rect width="100%" height="100%" fill="#faf7f2"/>',
-    f'<text x="{margin_x}" y="38" font-size="20" font-family="Menlo, monospace" fill="#1f2933">1D floorplan</text>',
-    f'<text x="{margin_x}" y="58" font-size="12" font-family="Menlo, monospace" fill="#52606d">cost={layout.cost:.1f}  max_overlap={layout.max_overlap}</text>',
-  ]
-  for lane, w in enumerate(sorted(wires, key=lambda x: -x.width)):
-    raw_xs = [pin_position(n, p, centers, block_map) for n, p in w.endpoints]
-    xs = [sx(x) for x in raw_xs if x is not None]
-    if len(xs) < 2:
-      continue
-    y = block_y - 20 - lane * wire_step
-    color = "#294c60" if w.width >= 8 else "#5b8e7d" if w.width >= 4 else "#bc6c25"
-    pieces.append(
-      f'<line x1="{min(xs):.1f}" y1="{y:.1f}" x2="{max(xs):.1f}" y2="{y:.1f}" '
-      f'stroke="{color}" stroke-width="{1.4 + 0.18 * w.width:.2f}" stroke-linecap="round" opacity="0.9"/>'
-    )
-    for x in xs:
-      pieces.append(
-        f'<line x1="{x:.1f}" y1="{y:.1f}" x2="{x:.1f}" y2="{block_y:.1f}" '
-        f'stroke="{color}" stroke-width="1.0" opacity="0.6"/>'
-      )
-    pieces.append(
-      f'<text x="{min(xs) - 8:.1f}" y="{y + 4:.1f}" text-anchor="end" '
-      f'font-size="10" font-family="Menlo, monospace" fill="#243b53">{html.escape(w.name)} [{w.width}]</text>'
-    )
-  left = 0.0
+  # Per-block bit width: take the widest wire connected to this block, used
+  # for the small number printed under each cell (matches the textbook).
+  bit_width_for: dict[str, int] = {}
+  for name in order:
+    bw = 0
+    for w in wires:
+      if any(ep_name == name for ep_name, _ in w.endpoints):
+        bw = max(bw, w.width)
+    bit_width_for[name] = bw
+
+  # Cell strips. Each is a tall thin rectangle; the buses overlay later.
   for name in order:
     b = block_map[name]
-    size = sizes[name]
-    x = sx(left)
-    w = size * scale
-    fill = colors[b.module_type]
-    pieces.append(
-      f'<rect x="{x:.1f}" y="{block_y:.1f}" rx="6" ry="6" width="{w:.1f}" height="{block_h}" '
-      f'fill="{fill}" opacity="0.92" stroke="#102a43" stroke-width="1.2"/>'
-    )
-    pieces.append(
-      f'<text x="{x + w / 2:.1f}" y="{block_y + 28:.1f}" text-anchor="middle" '
-      f'font-size="12" font-family="Menlo, monospace" fill="#f8f9fa">{html.escape(name)}</text>'
-    )
-    pieces.append(
-      f'<text x="{x + w / 2:.1f}" y="{block_y + 46:.1f}" text-anchor="middle" '
-      f'font-size="10" font-family="Menlo, monospace" fill="#f8f9fa">{html.escape(b.module_type)}</text>'
-    )
-    left += size + 1.0
-  pieces.append("</svg>")
-  path.write_text("\n".join(pieces))
+    cx = centers[name]
+    left, right = sx(cx - 0.5 * b.size), sx(cx + 0.5 * b.size)
+    ax.add_patch(Rectangle(
+      (left, cell_y0), right - left, cell_h,
+      facecolor="white", edgecolor="#1f2933", linewidth=0.9, zorder=1,
+    ))
+    mid = 0.5 * (left + right)
+    ax.text(mid, inst_label_y, name, rotation=90, ha="center", va="bottom",
+            fontsize=8, family="monospace", zorder=4)
+    bw = bit_width_for[name]
+    if bw:
+      ax.text(mid, bit_label_y, str(bw), ha="center", va="top",
+              fontsize=8, family="monospace", zorder=4)
+    ax.text(mid, type_label_y, b.module_type, rotation=90, ha="center", va="top",
+            fontsize=8, family="monospace", color="#243b53", zorder=4)
+
+  # Buses inside the cell area, widest at the top.
+  bus_color = "#2b78c2"
+  bus_label_pad = 6
+  for i, (w, eps, n_off) in enumerate(shown):
+    y = cell_y1 - cell_pad_top - i * bus_step
+    min_x, max_x = min(eps), max(eps)
+    side = off_chip_side(min_x, max_x, layout_w) if n_off else None
+    span_lo, span_hi = min_x, max_x
+    if side == "left":
+      span_lo = 0.0 - (margin_x / scale) * 0.8  # extend past the chip edge
+    elif side == "right":
+      span_hi = layout_w + (margin_x / scale) * 0.8
+    ax.plot([sx(span_lo), sx(span_hi)], [y, y],
+            color=bus_color, linewidth=1.5, solid_capstyle="round", zorder=3)
+    for x in eps:
+      ax.plot([sx(x)], [y], "o", color=bus_color, markersize=5,
+              markeredgewidth=0, zorder=4)
+    label = f"{w.name}[{w.width}]" if w.width > 1 else w.name
+    if side == "left":
+      ax.text(sx(span_lo) - bus_label_pad, y, label,
+              ha="right", va="center", fontsize=8, color=bus_color,
+              family="monospace", zorder=4)
+    elif side == "right":
+      ax.text(sx(span_hi) + bus_label_pad, y, label,
+              ha="left", va="center", fontsize=8, color=bus_color,
+              family="monospace", zorder=4)
+    else:
+      # Internal wire: label at the right end of its segment, just outside
+      # the rightmost dot. Inline so labels don't pile up in a side column.
+      ax.text(sx(max_x) + bus_label_pad, y, label,
+              ha="left", va="center", fontsize=7.5, color=bus_color,
+              family="monospace", zorder=4)
+
+  # Title / stats banner above everything.
+  ax.text(margin_x, inst_label_y + 90,
+          f"{Path(path).stem}   cost={layout.cost:.1f}   max_overlap={layout.max_overlap}",
+          ha="left", va="top", fontsize=9, family="monospace", color="#52606d")
+
+  fig.savefig(path, bbox_inches="tight", facecolor="white")
+  plt.close(fig)
 
 
 def render_report(result: FloorplanResult) -> str:
@@ -90,6 +150,10 @@ def render_report(result: FloorplanResult) -> str:
     f"top:    {result.top}",
     f"seed:   {result.seed}",
     f"steps:  {result.steps}",
+  ]
+  if result.off_chip_ports:
+    lines.append(f"off_chip_ports: {', '.join(result.off_chip_ports)}")
+  lines += [
     "",
     f"initial cost:    {result.initial.cost:.2f}",
     f"initial overlap: {result.initial.max_overlap}",
@@ -117,16 +181,18 @@ def render_report(result: FloorplanResult) -> str:
 
 def write_outputs(result: FloorplanResult, out_dir: Path, stem: str) -> dict[str, Path]:
   out_dir.mkdir(parents=True, exist_ok=True)
-  svg_path = out_dir / f"{stem}.svg"
+  png_path = out_dir / f"{stem}.png"
   txt_path = out_dir / f"{stem}.txt"
   json_path = out_dir / f"{stem}.json"
-  render_svg(svg_path, result.best, result.blocks, result.wires)
+  off_chip = set(result.off_chip_ports)
+  render_png(png_path, result.best, result.blocks, result.wires, off_chip)
   txt_path.write_text(render_report(result))
   json_path.write_text(json.dumps({
     "source": result.source,
     "top": result.top,
     "seed": result.seed,
     "steps": result.steps,
+    "off_chip_ports": list(result.off_chip_ports),
     "initial_order": result.initial.order,
     "best_order": result.best.order,
     "initial_cost": result.initial.cost,
@@ -136,4 +202,4 @@ def write_outputs(result: FloorplanResult, out_dir: Path, stem: str) -> dict[str
     "blocks": [asdict(b) for b in result.blocks],
     "wires": [asdict(w) for w in result.wires],
   }, indent=2))
-  return {"svg": svg_path, "txt": txt_path, "json": json_path}
+  return {"png": png_path, "txt": txt_path, "json": json_path}
