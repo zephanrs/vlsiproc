@@ -1,0 +1,23 @@
+// VerilogA for processor, TestMemory, veriloga
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module TestMemory(mem_rdata, clk, mem_addr, mem_type, mem_val, mem_wdata, rst);
+output [15:0] mem_rdata;
+electrical [15:0] mem_rdata;
+input clk;
+electrical clk;
+input [7:0] mem_addr;
+electrical [7:0] mem_addr;
+input mem_type;
+electrical mem_type;
+input mem_val;
+electrical mem_val;
+input [7:0] mem_wdata;
+electrical [7:0] mem_wdata;
+input rst;
+electrical rst;
+
+
+endmodule
