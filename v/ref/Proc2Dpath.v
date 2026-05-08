@@ -8,6 +8,8 @@
 `include "ref/tinyrv1_v2.v"
 `include "ref/Register_8b.v"
 `include "ref/Register_16b.v"
+`include "ref/RegEn_8b.v"
+`include "ref/RegEn_16b.v"
 `include "ref/Adder_8b.v"
 `include "ref/Regfile.v"
 `include "ref/ALU_8b.v"
@@ -69,10 +71,9 @@ module Proc2Dpath
   );
 
   // Instruction Register
-  Register_16b IR
+  RegEn_16b IR
   (
     .clk (clk),
-    .rst (rst),
     .en  (fetch_en),
     .d   (idmem_rdata),
     .q   (inst)
@@ -110,10 +111,9 @@ module Proc2Dpath
   // A Reg
   logic [7:0] a;
 
-  Register_8b A_reg
+  RegEn_8b A_reg
   (
     .clk (clk),
-    .rst (rst),
     .en  (ab_en),
     .d   (rf_rdata0),
     .q   (a)
@@ -122,10 +122,9 @@ module Proc2Dpath
   // B Reg
   logic [7:0] b;
 
-  Register_8b B_reg
+  RegEn_8b B_reg
   (
     .clk (clk),
-    .rst (rst),
     .en  (ab_en),
     .d   (rf_rdata1),
     .q   (b)
@@ -148,10 +147,9 @@ module Proc2Dpath
   // Old PC Register
   logic [7:0] oldpc;
 
-  Register_8b oldpc_reg
+  RegEn_8b oldpc_reg
   (
     .clk (clk),
-    .rst (rst),
     .en  (fetch_en),
     .d   (pc),
     .q   (oldpc)
@@ -202,10 +200,9 @@ module Proc2Dpath
   );
 
   // Address Register
-  Register_8b addr_reg
+  RegEn_8b addr_reg
   (
     .clk (clk),
-    .rst (rst),
     .en  (addr_en),
     .d   (alu_out),
     .q   (addr)
@@ -235,10 +232,9 @@ module Proc2Dpath
   );
 
   // Writeback Register
-  Register_8b WD
+  RegEn_8b WD
   (
     .clk (clk),
-    .rst (rst),
     .en  (wd_en),
     .d   (wb_val),
     .q   (rf_wdata)

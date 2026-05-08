@@ -41,7 +41,7 @@
 
 | Signal       | Equation                                                                  | Cells per signal |
 |--------------|---------------------------------------------------------------------------|------------------|
-| `op1_sel`    | `~s2 & ~(s0 & s1)`                                                        | AND2 + NOR2 = 2 (or 1 AOI21) |
+| `op1_sel`    | `~((s0 & s1) \| s2)`                                                      | **AOI21 = 1**    |
 | `pc_sel`     | `~s3`                                                                     | INV (free if FF q_n) |
 | `op2_sel[1]` | `s3 \| ~s2`                                                               | OR2 = 1          |
 | `op2_sel[0]` | `s0 & ~s1`                                                                | AND2 = 1         |
@@ -53,9 +53,19 @@
 | `ab_en`      | `s1 & ~s0 & ~s2 & ~s3`                                                    | AND4 = 1         |
 | `pc_en`      | `(s0 & ~s1 & ~s3) \| (s3 & ~s0 & ~s2)`                                    | 2 AND3 + OR2 = 3 |
 | `wd_en`      | `(s0 & s3 & ~s1) \| (s1 & s2 & ~s0)`                                      | 2 AND3 + OR2 = 3 |
-| `idmem_val`  | `(~s0 & ~s1) & (s2 \| ~s3)`                                               | AND2 + OR2 + AND2 = 3 |
+| `idmem_val`  | `~((~s2 & s3) \| (s0 \| s1))` = `AOI21(~s2, s3, OR2(s0,s1))`              | **OR2 + AOI21 = 2** |
 | `ns_sel[0]`  | `(s1 & ~s0) \| (s0 & s2 & s3 & ~s1)`                                      | AND2 + AND4 + OR2 = 3 |
-| `ns_sel[1]`  | `(~s2 & (s0 \| ~s3)) \| (s2 & s3 & ~s0 & ~s1) \| (~s3 & s2 & s1 & s0 & ~eq)` | OR2 + AND2 + AND4 + (AND4+AND2) + OR3 = 6 |
+| `ns_sel[1]`  | `AOI21(~s0, s3, s2) \| AND4(s2, s3, ~s0, ~s1) \| (AND4(~s3, s2, s1, s0) & ~eq)` | **AOI21 + AND4 + AND4 + AND2 + OR3 = 5** |
+
+### AOI21-collapsed signals
+
+Three signals collapse from a multi-cell SOP to a single AOI21 cell:
+
+- **`op1_sel`** = `AOI21(s0, s1, s2)` — was AND2 + NOR2 (2 cells), now 1.
+- **`idmem_val`** = `AOI21(~s2, s3, OR2(s0, s1))` — was AND2 + OR2 + AND2 (3 cells), now 2 (OR2 feeds the c-input).
+- **`ns_sel[1]`** g1 term = `AOI21(~s0, s3, s2)` — was OR2 + AND2 (2 cells), now 1.
+
+Net savings: **3 cells**.
 
 ### Inst-derived signals (in datapath, not ctrl)
 
@@ -91,19 +101,18 @@ Total: **5 INVs** (or as few as 1 if FF q_n outputs are used for state inverters
 
 ### AND gates
 
-- **AND2** — `op1_sel` (s0 & s1), `op2_sel[0]`, `idmem_type`, `idmem_val` (final AND), `wb_sel`.  Total: **5 AND2**.
+- **AND2** — `op2_sel[0]`, `idmem_type`, `wb_sel`, plus `ns_sel[1]` eq-gated AND2.  Total: **4 AND2**.
 - **AND3** — `addr_en`, `pc_en` (2×), `wd_en` (2×).  Total: **5 AND3**.
-- **AND4** — `rf_wen`, `fetch_en`, `ab_en`, `ns_sel[0]` (one term), `ns_sel[1]` (two terms).  Total: **6 AND4**.
-- One extra **AND2** for `ns_sel[1]`'s eq-gated branch term (AND4 result × `~eq`).  Total: **+1 AND2**.
+- **AND4** — `rf_wen`, `fetch_en`, `ab_en`, `ns_sel[0]`, `ns_sel[1]` (2 terms).  Total: **6 AND4**.
 
 ### OR gates
 
-- **OR2** — `op2_sel[1]`, `idmem_val` (s2 | ~s3), `pc_en`, `wd_en`, `ns_sel[0]`, `ns_sel[1]` (s0 | ~s3).  Total: **6 OR2**.
+- **OR2** — `op2_sel[1]`, `idmem_val` (feeds AOI21 c-input), `pc_en`, `wd_en`, `ns_sel[0]`.  Total: **5 OR2**.
 - **OR3** — `ns_sel[1]` (final merge of three groups).  Total: **1 OR3**.
 
-### NOR gates
+### Compound gates (AOI / OAI)
 
-- **NOR2** — `op1_sel` (final stage). Total: **1 NOR2**.
+- **AOI21** — `~((a & b) | c)`. Used by `op1_sel`, `idmem_val`, `ns_sel[1]` (g1 term).  Total: **3 AOI21**.
 
 ### Sequential / structural
 
@@ -114,5 +123,6 @@ Total: **5 INVs** (or as few as 1 if FF q_n outputs are used for state inverters
 ### Notes for schematic translation
 
 - **OR4 / AND4 framing**: equations use ANDn / ORn directly. The implementer maps each ANDn/ORn to a 2-stage NAND/NOR cascade in the schematic (e.g., AND2 = NAND2 + INV, or NAND-NAND in SOP merges).
-- No XOR/XNOR cells are required — the search avoided them.
-- `op1_sel` is the only "compound" candidate: a single **AOI21** would replace its AND2+NOR2 pair (2 cells → 1 cell). Optional.
+- **AOI21** collapses 3 signals (`op1_sel`, `idmem_val`, `ns_sel[1]` g1-term) — saves 3 cells total.
+- No XOR/XNOR cells are required.
+- No NOR2 needed — AOI21 absorbed the only NOR2 use (`op1_sel`).

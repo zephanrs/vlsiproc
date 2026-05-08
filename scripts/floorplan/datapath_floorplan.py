@@ -26,6 +26,9 @@ def main() -> None:
                            "(default: empty -- no off-chip nets drawn)")
   parser.add_argument("--layouts", type=Path, default=None,
                       help="extract-layouts output; uses real widths/pins instead of synthetic estimates")
+  parser.add_argument("--overlap-weight", type=float, default=0.0,
+                      help="quadratic penalty on per-cut signal congestion (sum of cut_overlap^2). "
+                           "0 = HPWL only; try 0.1-1.0 to push the annealer to flatten congested cuts.")
   args = parser.parse_args()
   off_chip_ports = {p.strip() for p in args.off_chip_ports.split(",") if p.strip()}
 
@@ -44,6 +47,7 @@ def main() -> None:
     cell_map=CELL_MAP,
     port_aliases=PORT_ALIAS,
     off_chip_ports=off_chip_ports,
+    overlap_weight=args.overlap_weight,
   )
   paths = write_outputs(result, Path(args.out_dir), args.stem)
   print(f"wrote {paths['png']}")
