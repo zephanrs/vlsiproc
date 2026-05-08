@@ -17,6 +17,18 @@ CELL_MAP: dict[str, tuple[str, str]] = {
   "Register_16b":("processor", "reg_ena_16b"),
 }
 
+# Verilog-port -> Cadence-pin remap for cells whose ref Verilog wrapper renames
+# pins. Only differing names need an entry; matching names resolve directly.
+# Used by build_blocks() to expose pin offsets under their Verilog-port keys
+# so HPWL lookups via instance.port find them.
+PORT_ALIAS: dict[str, dict[str, str]] = {
+  "ALU_8b":      {"sum":  "out"},
+  "ImmGen":      {"imm":  "out"},
+  "Regfile":     {"wen":  "rf_wen"},
+  "Register_8b": {"clk":  "clk_in", "en": "ena", "d": "D", "q": "Y"},
+  "Register_16b":{"clk":  "clk_in", "en": "ena", "d": "D", "q": "Y"},
+}
+
 
 def unique_cells() -> list[tuple[str, str]]:
   return sorted(set(CELL_MAP.values()))
