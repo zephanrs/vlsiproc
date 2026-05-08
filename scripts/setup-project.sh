@@ -37,3 +37,24 @@ alias rmlck='find . -type f -name "*cdslck*" -delete'
 export SETUP_COURSE="project"
 
 export ROOTDIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)
+
+# --- Fix Cadence AMS UNL Spectre/Xcelium environment ---
+# Required so AMS UNL uses Spectre's wrapper tools, not Innovus/IC helper paths.
+
+export SPECTRE_HOME=/opt/cadence/SPECTRE231
+export MMSIM=/opt/cadence/SPECTRE231
+export MMSIMHOME=/opt/cadence/SPECTRE231
+
+export AMSHOME=/opt/cadence/XCELIUM2403
+export IUSHOME=/opt/cadence/XCELIUM2403
+export XCELIUM_HOME=/opt/cadence/XCELIUM2403
+export IUS_HOME=/opt/cadence/XCELIUM2403
+
+unset SPECTRE_FEATURE_FILE
+unset SPECTRE_DEFAULTS
+
+# Put Spectre wrapper paths first so both `spectre` and `cds_plat`
+# resolve from SPECTRE231, not IC231 or Innovus.
+export PATH=/opt/cadence/SPECTRE231/bin:/opt/cadence/SPECTRE231/tools/bin:/opt/cadence/XCELIUM2403/tools.lnx86/bin/64bit:/opt/cadence/XCELIUM2403/tools.lnx86/bin:/opt/cadence/IC231.007/bin:/opt/cadence/IC231.007/tools.lnx86/bin/64bit:/opt/cadence/IC231.007/tools.lnx86/bin:$PATH
+
+hash -r
