@@ -5,7 +5,6 @@
 /* verilator lint_off WIDTHCONCAT */
 /* verilator lint_off WIDTHEXPAND */
 /* verilator lint_off WIDTHTRUNC */
-/* verilator lint_off PROCASSINIT */
 //========================================================================
 // AND2-test
 //========================================================================
@@ -52,7 +51,6 @@ module Top();
   end
 
 endmodule
-/* verilator lint_on PROCASSINIT */
 /* verilator lint_on WIDTHTRUNC */
 /* verilator lint_on WIDTHEXPAND */
 /* verilator lint_on WIDTHCONCAT */
