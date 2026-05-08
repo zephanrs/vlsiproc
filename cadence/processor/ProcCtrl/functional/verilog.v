@@ -1,8 +1,5 @@
 //Verilog HDL for "processor", "ProcCtrl" "functional"
 
-`include ""
-`include ""
-
 module ProcCtrl (
   clk,
   rst,
