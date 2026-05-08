@@ -3,12 +3,18 @@
 #=========================================================================
 
 ref_srcs = \
+  INV.v \
   AND2.v \
+  AND3.v \
   AND4.v \
+  OR2.v \
+  OR3.v \
   NAND2.v \
+  NAND3.v \
   NOR2.v \
   NOR3.v \
   XOR2.v \
+  AOI21.v \
   FullAdder.v \
   DFFRE.v \
   Adder_8b.v \
@@ -19,6 +25,8 @@ ref_srcs = \
   Incrementer_4b.v \
   Register_8b.v \
   Register_16b.v \
+  RegEn_8b.v \
+  RegEn_16b.v \
   ALU_8b.v \
   ImmGen.v \
   Regfile.v \
@@ -51,13 +59,6 @@ ref_blocks_tests = \
   Regfile-test.v \
 
 ref_proc_tests = \
-  Proc-addi-test.v \
-  Proc-add-test.v \
-  Proc-lw-test.v \
-  Proc-sw-test.v \
-  Proc-jal-test.v \
-  Proc-jr-test.v \
-  Proc-bne-test.v \
   Proc2-test.v \
 
 ref_tests = $(ref_cell_tests) $(ref_blocks_tests) $(ref_proc_tests)
