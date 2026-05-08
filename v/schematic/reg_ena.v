@@ -5,7 +5,7 @@
 `ifndef REG_ENA_V
 `define REG_ENA_V
 
-`include "schematic/clk_ena.v"
+`include "ref/clk_ena.v"
 `include "schematic/inv_drive.v"
 `include "schematic/FF_std_2.v"
 
