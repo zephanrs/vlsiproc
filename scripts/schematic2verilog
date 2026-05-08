@@ -658,9 +658,12 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
 
     def remap_drv(net):
         """Rewrite a net reference for the output:
-          1. extra-input pin (e.g. pc_clk) -> mapped ref port (clk)
-          2. real output port -> '<name>_drv' single-driver wire
-        Slice/concat brackets are preserved."""
+          1. extra-input pin (e.g. pc_clk, rf_clk[7:1]) -> mapped ref port (clk).
+             Any slice on the extra pin is dropped: the schematic uses bussed
+             clock-tree fanout (e.g. rf_clk[7:1]) but the ref has a single
+             scalar clk, so all bits collapse to that one wire.
+          2. real output port -> '<name>_drv' single-driver wire (slice kept).
+        """
         if not net:
             return net
         m = re.match(r'^(\w+)(\[.*\])?$', net)
@@ -668,7 +671,7 @@ def generate_verilog(cell_name, ports, nets, insts, noconn_nets, ref_dir, out_di
             base = m.group(1)
             tail = m.group(2) or ""
             if base in extra_remap:
-                return f"{extra_remap[base]}{tail}"
+                return extra_remap[base]
             if base in output_port_widths:
                 return f"{base}_drv{tail}"
         return net
