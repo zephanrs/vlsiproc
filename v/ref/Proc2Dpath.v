@@ -36,7 +36,6 @@ module Proc2Dpath
   input  logic        addr_en,
   input  logic        wd_en,
   input  logic        rf_wen,
-  input  logic        imm_type,
 
   // Status Signals (Datapath -> Control Unit)
   output logic [15:0] inst,
@@ -137,10 +136,13 @@ module Proc2Dpath
   // Immediate Generation
   logic [7:0] immgen_imm;
 
+  // imm_type = inst[15] (I-type when set; S-type when clear). This is a
+  // direct wire — no gate, so we feed it from inst[15] right here rather
+  // than routing it through the control unit.
   ImmGen immgen
   (
     .inst     (inst),
-    .imm_type (imm_type),
+    .imm_type (inst[15]),
     .imm      (immgen_imm)
   );
 
@@ -221,14 +223,15 @@ module Proc2Dpath
     .out (rdata_byte)
   );
 
-  // Writeback Mux — sel comes directly from inst[12]
-  // (LW=1011 uniquely identified among wd-en instructions; ADDI=1000,
-  //  ADD=0000, JAL=1110 all have inst[12]=0)
+  // Writeback Mux — sel = LW detect among wd-en instructions
+  // (NEW opcodes: LW=1011, ADDI=1110, ADD=0110, JAL=1001 — LW is the only
+  //  one with inst[13]=1 AND inst[14]=0)
+  //   wb_sel = inst[13] & ~inst[14]   = NOR2(~inst[13], inst[14])  — 1 cell
   Mux2_8b wb_mux
   (
     .in0 (alu_out),
     .in1 (rdata_byte),
-    .sel (inst[12]),
+    .sel (inst[13] & ~inst[14]),
     .out (wb_val)
   );
 
