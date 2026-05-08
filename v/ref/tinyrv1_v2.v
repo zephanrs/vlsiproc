@@ -2,17 +2,17 @@
 // TinyRV1 v2 — opcodes re-coded for Proc2 dispatch
 //========================================================================
 // Same instruction format as tinyrv1.v, but opcodes are remapped so that
-// the dispatch state value equals the opcode (no decoder needed in
-// Proc2Ctrl). See v/ref/proc2-updates.md for rationale.
+// the dispatch state value equals the first-state slot (no decoder
+// needed in Proc2Ctrl). See v/ref/proc2-updates.md for rationale.
 //
-//   Inst  Old   New
-//   ADD   1000  0000
-//   JR    1001  0010
-//   BNE   0100  0011
-//   ADDI  0010  1000
-//   SW    1100  1001
-//   LW    0011  1011
-//   JAL   1010  1110
+//   Inst  Old   New     First-state slot
+//   ADD   1000  0110    A0  = 6
+//   JR    1001  0101    JR  = 5
+//   BNE   0100  0111    B0  = 7
+//   ADDI  0010  1110    AI  = 14
+//   SW    1100  0011    S0  = 3
+//   LW    0011  1011    L0  = 11
+//   JAL   1010  1001    JA0 = 9
 //
 
 `ifndef TINYRV1_V2_ASM_V
@@ -31,13 +31,13 @@
 `define TINYRV1_INST_RS2_NBITS      3
 `define TINYRV1_INST_IMM_NBITS      3
 
-`define TINYRV1_INST_ADD   16'b0000_???_???_???_???
-`define TINYRV1_INST_JR    16'b0010_???_???_???_???
-`define TINYRV1_INST_BNE   16'b0011_???_???_???_???
-`define TINYRV1_INST_ADDI  16'b1000_???_???_???_???
-`define TINYRV1_INST_SW    16'b1001_???_???_???_???
+`define TINYRV1_INST_ADD   16'b0110_???_???_???_???
+`define TINYRV1_INST_JR    16'b0101_???_???_???_???
+`define TINYRV1_INST_BNE   16'b0111_???_???_???_???
+`define TINYRV1_INST_ADDI  16'b1110_???_???_???_???
+`define TINYRV1_INST_SW    16'b0011_???_???_???_???
 `define TINYRV1_INST_LW    16'b1011_???_???_???_???
-`define TINYRV1_INST_JAL   16'b1110_???_???_???_???
+`define TINYRV1_INST_JAL   16'b1001_???_???_???_???
 
 `ifndef SYNTHESIS
 
@@ -72,7 +72,7 @@ module TinyRV1_v2();
     input logic [`TINYRV1_INST_RS1_NBITS-1:0] rs1,
     input logic [`TINYRV1_INST_RS2_NBITS-1:0] rs2
   );
-    asm_add[`TINYRV1_INST_OPCODE] = 4'b0000;
+    asm_add[`TINYRV1_INST_OPCODE] = 4'b0110;
     asm_add[`TINYRV1_INST_RD]     = rd;
     asm_add[`TINYRV1_INST_RS1]    = rs1;
     asm_add[`TINYRV1_INST_RS2]    = rs2;
@@ -108,7 +108,7 @@ module TinyRV1_v2();
     else
       asm_addi_imm = 'x;
 
-    asm_addi[`TINYRV1_INST_OPCODE] = 4'b1000;
+    asm_addi[`TINYRV1_INST_OPCODE] = 4'b1110;
     asm_addi[`TINYRV1_INST_RD]     = rd;
     asm_addi[`TINYRV1_INST_RS1]    = rs1;
     asm_addi[`TINYRV1_INST_RS2]    = asm_addi_imm[5:3];
@@ -176,7 +176,7 @@ module TinyRV1_v2();
     else
       asm_sw_imm = 'x;
 
-    asm_sw[`TINYRV1_INST_OPCODE] = 4'b1001;
+    asm_sw[`TINYRV1_INST_OPCODE] = 4'b0011;
     asm_sw[`TINYRV1_INST_RD]     = asm_sw_imm[5:3];
     asm_sw[`TINYRV1_INST_RS1]    = asm_sw_rs1;
     asm_sw[`TINYRV1_INST_RS2]    = rs2;
@@ -215,7 +215,7 @@ module TinyRV1_v2();
     else
       asm_jal_imm = 'x;
 
-    asm_jal[`TINYRV1_INST_OPCODE] = 4'b1110;
+    asm_jal[`TINYRV1_INST_OPCODE] = 4'b1001;
     asm_jal[`TINYRV1_INST_RD]     = rd;
     asm_jal[`TINYRV1_INST_RS1]    = 3'b000;
     asm_jal[`TINYRV1_INST_RS2]    = asm_jal_imm[5:3];
@@ -226,7 +226,7 @@ module TinyRV1_v2();
   (
     input logic [`TINYRV1_INST_RS1_NBITS-1:0] rs1
   );
-    asm_jr[`TINYRV1_INST_OPCODE] = 4'b0010;
+    asm_jr[`TINYRV1_INST_OPCODE] = 4'b0101;
     asm_jr[`TINYRV1_INST_RD]     = 3'b000;
     asm_jr[`TINYRV1_INST_RS1]    = rs1;
     asm_jr[`TINYRV1_INST_RS2]    = 3'b000;
@@ -266,7 +266,7 @@ module TinyRV1_v2();
     else
       asm_bne_imm = 'x;
 
-    asm_bne[`TINYRV1_INST_OPCODE] = 4'b0011;
+    asm_bne[`TINYRV1_INST_OPCODE] = 4'b0111;
     asm_bne[`TINYRV1_INST_RD]     = asm_bne_imm[5:3];
     asm_bne[`TINYRV1_INST_RS1]    = rs1;
     asm_bne[`TINYRV1_INST_RS2]    = rs2;
