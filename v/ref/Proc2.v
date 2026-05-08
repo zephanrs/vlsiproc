@@ -32,7 +32,6 @@ module Proc2
   logic       addr_en;
   logic       wd_en;
   logic       rf_wen;
-  logic       imm_type;
 
   // Status Signals (Datapath -> Control Unit)
   logic [15:0] inst;
