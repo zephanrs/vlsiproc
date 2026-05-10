@@ -1,22 +1,33 @@
 
-*** Checking layout cellview 'processor/ProcDpath/layout' against source cellview 'processor/ProcDpath/schematic'. - Thu May  7 23:57:39 2026 ***
+*** Checking layout cellview 'processor/ALU_8b/layout' against source cellview 'processor/ALU_8b/schematic'. - Fri May  8 13:34:58 2026 ***
 
-INFO (LX-1013): Instance terminal 'clk<1>' is missing from layout instance 'rf'.
-INFO (LX-1013): Instance terminal 'clk<2>' is missing from layout instance 'rf'.
-INFO (LX-1013): Instance terminal 'clk<3>' is missing from layout instance 'rf'.
-INFO (LX-1013): Instance terminal 'clk<4>' is missing from layout instance 'rf'.
-INFO (LX-1013): Instance terminal 'clk<5>' is missing from layout instance 'rf'.
-INFO (LX-1013): Instance terminal 'clk<6>' is missing from layout instance 'rf'.
-INFO (LX-1013): Instance terminal 'clk<7>' is missing from layout instance 'rf'.
-INFO (LX-1013): Instance terminal 'sum<0>' is missing from layout instance 'ALU'.
-INFO (LX-1013): Instance terminal 'sum<1>' is missing from layout instance 'ALU'.
-INFO (LX-1013): Instance terminal 'sum<2>' is missing from layout instance 'ALU'.
-INFO (LX-1013): Instance terminal 'sum<3>' is missing from layout instance 'ALU'.
-INFO (LX-1013): Instance terminal 'sum<4>' is missing from layout instance 'ALU'.
-INFO (LX-1013): Instance terminal 'sum<5>' is missing from layout instance 'ALU'.
-INFO (LX-1013): Instance terminal 'sum<6>' is missing from layout instance 'ALU'.
-INFO (LX-1013): Instance terminal 'sum<7>' is missing from layout instance 'ALU'.
-INFO (LX-1013): Instance terminal 'wen' is missing from layout instance 'rf'.
+INFO (LX-1022): Layout pin 'sum<0>' on net 'sum<0>'
+should be connected to net 'out<0>'.
+INFO (LX-1022): Layout pin 'sum<1>' on net 'sum<1>'
+should be connected to net 'out<1>'.
+INFO (LX-1022): Layout pin 'sum<2>' on net 'sum<2>'
+should be connected to net 'out<2>'.
+INFO (LX-1022): Layout pin 'sum<3>' on net 'sum<3>'
+should be connected to net 'out<3>'.
+INFO (LX-1022): Layout pin 'sum<4>' on net 'sum<4>'
+should be connected to net 'out<4>'.
+INFO (LX-1022): Layout pin 'sum<5>' on net 'sum<5>'
+should be connected to net 'out<5>'.
+INFO (LX-1022): Layout pin 'sum<6>' on net 'sum<6>'
+should be connected to net 'out<6>'.
+INFO (LX-1022): Layout pin 'sum<7>' on net 'sum<7>'
+should be connected to net 'out<7>'.
+INFO (LX-1074): Schematic bus terminal 'sum<7:0>' has no corresponding implicit layout bus terminal.
+INFO (LX-1078): Layout terminal 'sum<0>' interface status is set 'true' but should be 'false'.
+INFO (LX-1078): Layout terminal 'sum<1>' interface status is set 'true' but should be 'false'.
+INFO (LX-1078): Layout terminal 'sum<2>' interface status is set 'true' but should be 'false'.
+INFO (LX-1078): Layout terminal 'sum<3>' interface status is set 'true' but should be 'false'.
+INFO (LX-1078): Layout terminal 'sum<4>' interface status is set 'true' but should be 'false'.
+INFO (LX-1078): Layout terminal 'sum<5>' interface status is set 'true' but should be 'false'.
+INFO (LX-1078): Layout terminal 'sum<6>' interface status is set 'true' but should be 'false'.
+INFO (LX-1078): Layout terminal 'sum<7>' interface status is set 'true' but should be 'false'.
+INFO (LX-1080): Layout bus terminal definition 'out' has no corresponding schematic bus terminal definition.
+INFO (LX-1081): Layout bus terminal definition 'sum' has bit order 'none' but should be 'descending'.
 
 *** Check Against Source complete. ***
 

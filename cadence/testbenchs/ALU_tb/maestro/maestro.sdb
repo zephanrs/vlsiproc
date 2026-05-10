@@ -32,7 +32,7 @@
 				</tooloptions>
 				<vars>
 					<var>A_in
-						<value>255</value>
+						<value>127</value>
 					</var>
 					<var>B_in
 						<value>1</value>
@@ -51,10 +51,16 @@
 					<output>/in0&lt;7:0&gt;
 						<evalType>point</evalType>
 					</output>
-					<output>/out&lt;7:0&gt;
+					<output>"/sum&lt;7:0&gt;"
 						<evalType>point</evalType>
 					</output>
 					<output>/eq
+						<evalType>point</evalType>
+					</output>
+					<output>/sum&lt;7:0&gt;
+						<evalType>point</evalType>
+					</output>
+					<output>/out&lt;7:0&gt;
 						<evalType>point</evalType>
 					</output>
 				</outputs>
