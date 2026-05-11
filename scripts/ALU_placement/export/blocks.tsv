@@ -1,59 +1,59 @@
 inst	lib	cell	view	orient	n_input_pins	n_output_pins	origin_x	origin_y	xlo	ylo	xhi	yhi	width	height	cx	cy
-I70	standard_cells	inv_x1	layout	R0	1	1							0.5600	1.6800		
-I77	standard_cells	inv_x1	layout	R0	1	1							0.5600	1.6800		
-I68	standard_cells	inv_x1	layout	R0	1	1							0.5600	1.6800		
-I76	standard_cells	inv_x1	layout	R0	1	1							0.5600	1.6800		
-I69	standard_cells	inv_x1	layout	R0	1	1							0.5600	1.6800		
-I81	standard_cells	inv_x1	layout	R0	1	1							0.5600	1.6800		
-I67	standard_cells	inv_x1	layout	R0	1	1							0.5600	1.6800		
-I80	standard_cells	inv_x1	layout	R0	1	1							0.5600	1.6800		
-I66	standard_cells	inv_x1	layout	R0	1	1							0.5600	1.6800		
-I74	standard_cells	inv_x1	layout	R0	1	1							0.5600	1.6800		
-I79	standard_cells	inv_x1	layout	R0	1	1							0.5600	1.6800		
-I75	standard_cells	inv_x1	layout	R0	1	1							0.5600	1.6800		
-I71	standard_cells	inv_x1	layout	R0	1	1							0.5600	1.6800		
-I73	standard_cells	inv_x1	layout	R0	1	1							0.5600	1.6800		
-I64	standard_cells	inv_x1	layout	R0	1	1							0.5600	1.6800		
-I72	standard_cells	inv_x1	layout	R0	1	1							0.5600	1.6800		
-I138	standard_cells	AND2	layout	R0	2	1							0.8400	1.6800		
-I137	standard_cells	AND2	layout	R0	2	1							0.8400	1.6800		
-I136	standard_cells	AND2	layout	R0	2	1							0.8400	1.6800		
-I135	standard_cells	AND2	layout	R0	2	1							0.8400	1.6800		
-I134	standard_cells	AND2	layout	R0	2	1							0.8400	1.6800		
-I133	standard_cells	AND2	layout	R0	2	1							0.8400	1.6800		
-I132	standard_cells	AND2	layout	R0	2	1							0.8400	1.6800		
-I131	standard_cells	AND2	layout	R0	2	1							0.8400	1.6800		
-I146	standard_cells	XOR2	layout	R0	2	1							1.1200	1.6800		
-I63	standard_cells	XOR2	layout	R0	2	1							1.1200	1.6800		
-I145	standard_cells	XOR2	layout	R0	2	1							1.1200	1.6800		
-I62	standard_cells	XOR2	layout	R0	2	1							1.1200	1.6800		
-I144	standard_cells	XOR2	layout	R0	2	1							1.1200	1.6800		
-I61	standard_cells	XOR2	layout	R0	2	1							1.1200	1.6800		
-I143	standard_cells	XOR2	layout	R0	2	1							1.1200	1.6800		
-I60	standard_cells	XOR2	layout	R0	2	1							1.1200	1.6800		
-I142	standard_cells	XOR2	layout	R0	2	1							1.1200	1.6800		
-I59	standard_cells	XOR2	layout	R0	2	1							1.1200	1.6800		
-I141	standard_cells	XOR2	layout	R0	2	1							1.1200	1.6800		
-I58	standard_cells	XOR2	layout	R0	2	1							1.1200	1.6800		
-I140	standard_cells	XOR2	layout	R0	2	1							1.1200	1.6800		
-I57	standard_cells	XOR2	layout	R0	2	1							1.1200	1.6800		
-I139	standard_cells	XOR2	layout	R0	2	1							1.1200	1.6800		
-I4	standard_cells	NOR2	layout	R0	2	1							0.8400	1.6800		
-I3	standard_cells	NOR2	layout	R0	2	1							0.8400	1.6800		
-I2	standard_cells	NOR2	layout	R0	2	1							0.8400	1.6800		
-I1	standard_cells	NOR2	layout	R0	2	1							0.8400	1.6800		
-I0	standard_cells	NOR2	layout	R0	2	1							0.8400	1.6800		
-I115	standard_cells	adder_white_b	layout	R0	3	1							1.4000	1.6800		
-I111	standard_cells	adder_white_b	layout	R0	3	1							1.4000	1.6800		
-I105	standard_cells	adder_white_b	layout	R0	3	1							1.4000	1.6800		
-I102	standard_cells	adder_white_b	layout	R0	3	1							1.4000	1.6800		
-I96	standard_cells	adder_white_b	layout	R0	3	1							1.4000	1.6800		
-I90	standard_cells	adder_white_b	layout	R0	3	1							1.4000	1.6800		
-I83	standard_cells	adder_white_b	layout	R0	3	1							1.4000	1.6800		
-I106	standard_cells	adder_gray_b	layout	R0	4	2							1.9600	1.6800		
-I97	standard_cells	adder_gray_b	layout	R0	4	2							1.9600	1.6800		
-I91	standard_cells	adder_gray_b	layout	R0	4	2							1.9600	1.6800		
-I85	standard_cells	adder_gray_b	layout	R0	4	2							1.9600	1.6800		
-I84	standard_cells	adder_gray_b	layout	R0	4	2							1.9600	1.6800		
-I6	standard_cells	NAND2	layout	R0	2	1							0.8400	1.6800		
-I5	standard_cells	NAND2	layout	R0	2	1							0.8400	1.6800		
+I70	standard_cells	inv_x1	layout	R0	1	1	2.47	-0.15	2.47	-0.15	3.53	2.65	1.0599999999999996	2.5000	3.0	1.25
+I77	standard_cells	inv_x1	layout	R0	1	1	4.5	5.0	4.47	4.85	5.03	7.65	0.56	2.5000	4.75	6.25
+I68	standard_cells	inv_x1	layout	R0	1	1	3.0	5.0	2.97	4.85	3.53	7.65	0.56	2.5000	3.25	6.25
+I76	standard_cells	inv_x1	layout	R0	1	1	4.47	9.85	4.47	9.85	6.53	12.65	2.0600000000000005	2.5000	5.5	11.25
+I69	standard_cells	inv_x1	layout	R0	1	1	2.5	5.0	2.47	4.85	3.03	7.65	0.56	2.5000	2.75	6.25
+I81	standard_cells	inv_x1	layout	R0	1	1	7.5	15.0	7.47	14.85	8.03	17.65	0.56	2.5000	7.75	16.25
+I67	standard_cells	inv_x1	layout	R0	1	1	3.47	9.85	3.47	9.85	4.53	12.65	1.06	2.5000	4.0	11.25
+I80	standard_cells	inv_x1	layout	R0	1	1	7.0	15.0	6.97	14.85	7.53	17.65	0.56	2.5000	7.25	16.25
+I66	standard_cells	inv_x1	layout	R0	1	1	2.47	9.85	2.47	9.85	3.53	12.65	1.0599999999999996	2.5000	3.0	11.25
+I74	standard_cells	inv_x1	layout	R0	1	1	6.5	15.0	6.47	14.85	7.03	17.65	0.56	2.5000	6.75	16.25
+I79	standard_cells	inv_x1	layout	MX	1	1	7.5	20.0	7.47	17.35	8.03	20.15	0.56	2.5000	7.75	18.75
+I75	standard_cells	inv_x1	layout	R0	1	1	6.0	15.0	5.97	14.85	6.53	17.65	0.56	2.5000	6.25	16.25
+I71	standard_cells	inv_x1	layout	R0	1	1	3.0	15.0	2.97	14.85	3.53	17.65	0.56	2.5000	3.25	16.25
+I73	standard_cells	inv_x1	layout	MX	1	1	6.5	20.0	6.47	17.35	7.03	20.15	0.56	2.5000	6.75	18.75
+I64	standard_cells	inv_x1	layout	R0	1	1	2.5	15.0	2.47	14.85	3.03	17.65	0.56	2.5000	2.75	16.25
+I72	standard_cells	inv_x1	layout	MX	1	1	6.0	20.0	5.97	17.35	6.53	20.15	0.56	2.5000	6.25	18.75
+I138	standard_cells	AND2	layout	R0	2	1	0.0	0.0	-0.03	-0.15	1.03	2.65	1.06	2.5000	0.5	1.25
+I137	standard_cells	AND2	layout	MX	2	1	0.0	5.0	-0.03	2.35	1.03	5.15	1.06	2.5000	0.5	3.75
+I136	standard_cells	AND2	layout	R0	2	1	0.0	5.0	-0.03	4.85	1.03	7.65	1.06	2.5000	0.5	6.25
+I135	standard_cells	AND2	layout	MX	2	1	0.0	10.0	-0.03	7.35	1.03	10.15	1.06	2.5000	0.5	8.75
+I134	standard_cells	AND2	layout	R0	2	1	0.0	10.0	-0.03	9.85	1.03	12.65	1.06	2.5000	0.5	11.25
+I133	standard_cells	AND2	layout	MX	2	1	0.0	15.0	-0.03	12.35	1.03	15.15	1.06	2.5000	0.5	13.75
+I132	standard_cells	AND2	layout	R0	2	1	0.0	15.0	-0.03	14.85	1.03	17.65	1.06	2.5000	0.5	16.25
+I131	standard_cells	AND2	layout	MX	2	1	0.0	20.0	-0.03	17.35	1.03	20.15	1.06	2.5000	0.5	18.75
+I146	standard_cells	XOR2	layout	R0	2	1	1.0	0.0	0.97	-0.15	2.53	2.65	1.56	2.5000	1.75	1.25
+I63	standard_cells	XOR2	layout	MX	2	1	5.0	5.0	4.97	2.35	6.53	5.15	1.56	2.5000	5.75	3.75
+I145	standard_cells	XOR2	layout	MX	2	1	1.0	5.0	0.97	2.35	2.53	5.15	1.56	2.5000	1.75	3.75
+I62	standard_cells	XOR2	layout	R0	2	1	5.0	5.0	4.97	4.85	6.53	7.65	1.56	2.5000	5.75	6.25
+I144	standard_cells	XOR2	layout	R0	2	1	1.0	5.0	0.97	4.85	2.53	7.65	1.56	2.5000	1.75	6.25
+I61	standard_cells	XOR2	layout	MX	2	1	5.0	10.0	4.97	7.35	6.53	10.15	1.56	2.5000	5.75	8.75
+I143	standard_cells	XOR2	layout	MX	2	1	1.0	10.0	0.97	7.35	2.53	10.15	1.56	2.5000	1.75	8.75
+I60	standard_cells	XOR2	layout	MX	2	1	6.5	5.0	6.47	2.35	8.03	5.15	1.56	2.5000	7.25	3.75
+I142	standard_cells	XOR2	layout	R0	2	1	1.0	10.0	0.97	9.85	2.53	12.65	1.56	2.5000	1.75	11.25
+I59	standard_cells	XOR2	layout	R0	2	1	6.5	5.0	6.47	4.85	8.03	7.65	1.56	2.5000	7.25	6.25
+I141	standard_cells	XOR2	layout	MX	2	1	1.0	15.0	0.97	12.35	2.53	15.15	1.56	2.5000	1.75	13.75
+I58	standard_cells	XOR2	layout	MX	2	1	6.5	10.0	6.47	7.35	8.03	10.15	1.56	2.5000	7.25	8.75
+I140	standard_cells	XOR2	layout	R0	2	1	1.0	15.0	0.97	14.85	2.53	17.65	1.56	2.5000	1.75	16.25
+I57	standard_cells	XOR2	layout	R0	2	1	6.5	10.0	6.47	9.85	8.03	12.65	1.56	2.5000	7.25	11.25
+I139	standard_cells	XOR2	layout	MX	2	1	1.0	20.0	0.97	17.35	2.53	20.15	1.56	2.5000	1.75	18.75
+I4	standard_cells	NOR2	layout	R0	2	1	7.25	0.0	7.22	-0.15	8.03	2.65	0.81	2.5000	7.625	1.25
+I3	standard_cells	NOR2	layout	R0	2	1	5.0	0.0	4.97	-0.15	5.78	2.65	0.81	2.5000	5.375	1.25
+I2	standard_cells	NOR2	layout	R0	2	1	4.25	0.0	4.22	-0.15	5.03	2.65	0.81	2.5000	4.625	1.25
+I1	standard_cells	NOR2	layout	MX	2	1	4.25	5.0	4.22	2.35	5.03	5.15	0.81	2.5000	4.625	3.75
+I0	standard_cells	NOR2	layout	MX	2	1	3.5	5.0	3.47	2.35	4.28	5.15	0.81	2.5000	3.875	3.75
+I115	standard_cells	adder_white_b	layout	MX	3	1	2.5	5.0	2.47	2.35	3.53	5.15	1.06	2.5000	3.0	3.75
+I111	standard_cells	adder_white_b	layout	R0	3	1	3.5	5.0	3.47	4.85	4.53	7.65	1.06	2.5000	4.0	6.25
+I105	standard_cells	adder_white_b	layout	MX	3	1	4.0	10.0	3.97	7.35	5.03	10.15	1.06	2.5000	4.5	8.75
+I102	standard_cells	adder_white_b	layout	MX	3	1	7.0	15.0	6.97	12.35	8.03	15.15	1.06	2.5000	7.5	13.75
+I96	standard_cells	adder_white_b	layout	MX	3	1	6.0	15.0	5.97	12.35	7.03	15.15	1.06	2.5000	6.5	13.75
+I90	standard_cells	adder_white_b	layout	MX	3	1	5.0	15.0	4.97	12.35	6.03	15.15	1.06	2.5000	5.5	13.75
+I83	standard_cells	adder_white_b	layout	MX	3	1	4.0	15.0	3.97	12.35	5.03	15.15	1.06	2.5000	4.5	13.75
+I106	standard_cells	adder_gray_b	layout	MX	4	2	2.5	10.0	2.47	7.35	4.03	10.15	1.56	2.5000	3.25	8.75
+I97	standard_cells	adder_gray_b	layout	MX	4	2	2.5	15.0	2.47	12.35	4.03	15.15	1.56	2.5000	3.25	13.75
+I91	standard_cells	adder_gray_b	layout	R0	4	2	4.5	15.0	4.47	14.85	6.03	17.65	1.56	2.5000	5.25	16.25
+I85	standard_cells	adder_gray_b	layout	MX	4	2	2.5	20.0	2.47	17.35	4.03	20.15	1.56	2.5000	3.25	18.75
+I84	standard_cells	adder_gray_b	layout	MX	4	2	4.5	20.0	4.47	17.35	6.03	20.15	1.56	2.5000	5.25	18.75
+I6	standard_cells	NAND2	layout	R0	2	1	6.5	0.0	6.47	-0.15	7.28	2.65	0.81	2.5000	6.875	1.25
+I5	standard_cells	NAND2	layout	R0	2	1	5.75	0.0	5.72	-0.15	6.53	2.65	0.81	2.5000	6.125	1.25

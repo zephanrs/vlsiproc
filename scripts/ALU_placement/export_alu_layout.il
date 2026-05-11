@@ -10,6 +10,9 @@
 ;; These get merged with the Python-parsed netlist (parse_alu_netlist.py)
 ;; to produce the full blocks.tsv needed by alu_anneal.py.
 ;;
+;; NOTE: inst~>bBox and inst~>xy return user units (microns) directly.
+;;       Do NOT divide by DBUPerUU — that would double-convert.
+;;
 ;; Usage in CIW (with ALU_8b layout open):
 ;;
 ;;   load("/path/to/export_alu_layout.il")
@@ -17,15 +20,8 @@
 ;;
 ;; =========================================================================
 
-procedure(aluLDbuPerUU(cv)
-  let((d)
-    d = cv~>DBUPerUU
-    if(d then d else 1.0)
-  )
-)
-
 procedure(aluLayoutExport(outDir)
-  let((layCv dbu f fDim instTab cellTab
+  let((layCv f fDim cellTab
        inst bb ox oy w h cell orient)
 
     layCv = geGetEditCellView()
@@ -33,7 +29,6 @@ procedure(aluLayoutExport(outDir)
       error("Open the ALU_8b layout first.\n")
     )
 
-    dbu = aluLDbuPerUU(layCv)
     system(strcat("mkdir -p " outDir))
 
     ;; ----- inst_positions.tsv -----
@@ -45,10 +40,10 @@ procedure(aluLayoutExport(outDir)
     foreach(inst layCv~>instances
       bb = inst~>bBox
       when(bb
-        ox = car(inst~>xy) / dbu
-        oy = cadr(inst~>xy) / dbu
-        w  = (car(cadr(bb)) - car(car(bb))) / dbu
-        h  = (cadr(cadr(bb)) - cadr(car(bb))) / dbu
+        ox = car(inst~>xy)
+        oy = cadr(inst~>xy)
+        w  = car(cadr(bb)) - car(car(bb))
+        h  = cadr(cadr(bb)) - cadr(car(bb))
 
         cell = if(inst~>master then inst~>master~>cellName else "")
         orient = if(inst~>orient then inst~>orient else "R0")
@@ -60,13 +55,13 @@ procedure(aluLayoutExport(outDir)
           if(inst~>master then inst~>master~>viewName else "")
           orient
           ox oy
-          car(car(bb)) / dbu     ;; xlo
-          cadr(car(bb)) / dbu    ;; ylo
-          car(cadr(bb)) / dbu    ;; xhi
-          cadr(cadr(bb)) / dbu   ;; yhi
+          car(car(bb))      ;; xlo
+          cadr(car(bb))     ;; ylo
+          car(cadr(bb))     ;; xhi
+          cadr(cadr(bb))    ;; yhi
           w h
-          (car(car(bb)) + car(cadr(bb))) / 2.0 / dbu    ;; cx
-          (cadr(car(bb)) + cadr(cadr(bb))) / 2.0 / dbu  ;; cy
+          (car(car(bb)) + car(cadr(bb))) / 2.0    ;; cx
+          (cadr(car(bb)) + cadr(cadr(bb))) / 2.0  ;; cy
         )
 
         ;; Track unique cell dimensions.
@@ -92,5 +87,6 @@ procedure(aluLayoutExport(outDir)
       layCv~>libName layCv~>cellName outDir)
     printf("  inst_positions.tsv  (%d instances)\n" length(layCv~>instances))
     printf("  cell_dimensions.tsv\n")
+    printf("  Units: microns (user units)\n")
   )
 )
