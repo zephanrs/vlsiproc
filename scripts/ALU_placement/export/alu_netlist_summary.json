@@ -1,0 +1,546 @@
+{
+  "module": "ALU_8b",
+  "n_instances": 58,
+  "n_nets": 79,
+  "n_ports": 25,
+  "n_edges": 154,
+  "cell_counts": {
+    "inv_x1": 16,
+    "AND2": 8,
+    "XOR2": 15,
+    "NOR2": 5,
+    "adder_white_b": 7,
+    "adder_gray_b": 5,
+    "NAND2": 2
+  },
+  "instances": [
+    {
+      "name": "I70",
+      "cell": "inv_x1",
+      "connections": {
+        "out": "G10",
+        "in": "net10"
+      }
+    },
+    {
+      "name": "I77",
+      "cell": "inv_x1",
+      "connections": {
+        "out": "G20",
+        "in": "net9"
+      }
+    },
+    {
+      "name": "I68",
+      "cell": "inv_x1",
+      "connections": {
+        "out": "net3",
+        "in": "net6"
+      }
+    },
+    {
+      "name": "I76",
+      "cell": "inv_x1",
+      "connections": {
+        "out": "G30",
+        "in": "net4"
+      }
+    },
+    {
+      "name": "I69",
+      "cell": "inv_x1",
+      "connections": {
+        "out": "net1",
+        "in": "net2"
+      }
+    },
+    {
+      "name": "I81",
+      "cell": "inv_x1",
+      "connections": {
+        "out": "G40",
+        "in": "net20"
+      }
+    },
+    {
+      "name": "I67",
+      "cell": "inv_x1",
+      "connections": {
+        "out": "net16",
+        "in": "net17"
+      }
+    },
+    {
+      "name": "I80",
+      "cell": "inv_x1",
+      "connections": {
+        "out": "G50",
+        "in": "net15"
+      }
+    },
+    {
+      "name": "I66",
+      "cell": "inv_x1",
+      "connections": {
+        "out": "net11",
+        "in": "net13"
+      }
+    },
+    {
+      "name": "I74",
+      "cell": "inv_x1",
+      "connections": {
+        "out": "net36",
+        "in": "net35"
+      }
+    },
+    {
+      "name": "I79",
+      "cell": "inv_x1",
+      "connections": {
+        "out": "G60",
+        "in": "net34"
+      }
+    },
+    {
+      "name": "I75",
+      "cell": "inv_x1",
+      "connections": {
+        "out": "net32",
+        "in": "net31"
+      }
+    },
+    {
+      "name": "I71",
+      "cell": "inv_x1",
+      "connections": {
+        "out": "net30",
+        "in": "net29"
+      }
+    },
+    {
+      "name": "I73",
+      "cell": "inv_x1",
+      "connections": {
+        "out": "net28",
+        "in": "net27"
+      }
+    },
+    {
+      "name": "I64",
+      "cell": "inv_x1",
+      "connections": {
+        "out": "net24",
+        "in": "net23"
+      }
+    },
+    {
+      "name": "I72",
+      "cell": "inv_x1",
+      "connections": {
+        "out": "net22",
+        "in": "net21"
+      }
+    },
+    {
+      "name": "I138",
+      "cell": "AND2",
+      "connections": {
+        "out": "G[0]",
+        "in0": "in0[0]",
+        "in1": "in1[0]"
+      }
+    },
+    {
+      "name": "I137",
+      "cell": "AND2",
+      "connections": {
+        "out": "G[1]",
+        "in0": "in0[1]",
+        "in1": "in1[1]"
+      }
+    },
+    {
+      "name": "I136",
+      "cell": "AND2",
+      "connections": {
+        "out": "G[2]",
+        "in0": "in0[2]",
+        "in1": "in1[2]"
+      }
+    },
+    {
+      "name": "I135",
+      "cell": "AND2",
+      "connections": {
+        "out": "G[3]",
+        "in0": "in0[3]",
+        "in1": "in1[3]"
+      }
+    },
+    {
+      "name": "I134",
+      "cell": "AND2",
+      "connections": {
+        "out": "G[4]",
+        "in0": "in0[4]",
+        "in1": "in1[4]"
+      }
+    },
+    {
+      "name": "I133",
+      "cell": "AND2",
+      "connections": {
+        "out": "G[5]",
+        "in0": "in0[5]",
+        "in1": "in1[5]"
+      }
+    },
+    {
+      "name": "I132",
+      "cell": "AND2",
+      "connections": {
+        "out": "G[6]",
+        "in0": "in0[6]",
+        "in1": "in1[6]"
+      }
+    },
+    {
+      "name": "I131",
+      "cell": "AND2",
+      "connections": {
+        "out": "G[7]",
+        "in0": "in0[7]",
+        "in1": "in1[7]"
+      }
+    },
+    {
+      "name": "I146",
+      "cell": "XOR2",
+      "connections": {
+        "out": "sum_drv[0]",
+        "in0": "in0[0]",
+        "in1": "in1[0]"
+      }
+    },
+    {
+      "name": "I63",
+      "cell": "XOR2",
+      "connections": {
+        "out": "sum_drv[1]",
+        "in0": "P[1]",
+        "in1": "G[0]"
+      }
+    },
+    {
+      "name": "I145",
+      "cell": "XOR2",
+      "connections": {
+        "out": "P[1]",
+        "in0": "in0[1]",
+        "in1": "in1[1]"
+      }
+    },
+    {
+      "name": "I62",
+      "cell": "XOR2",
+      "connections": {
+        "out": "sum_drv[2]",
+        "in0": "P[2]",
+        "in1": "G10"
+      }
+    },
+    {
+      "name": "I144",
+      "cell": "XOR2",
+      "connections": {
+        "out": "P[2]",
+        "in0": "in0[2]",
+        "in1": "in1[2]"
+      }
+    },
+    {
+      "name": "I61",
+      "cell": "XOR2",
+      "connections": {
+        "out": "sum_drv[3]",
+        "in0": "P[3]",
+        "in1": "G20"
+      }
+    },
+    {
+      "name": "I143",
+      "cell": "XOR2",
+      "connections": {
+        "out": "P[3]",
+        "in0": "in0[3]",
+        "in1": "in1[3]"
+      }
+    },
+    {
+      "name": "I60",
+      "cell": "XOR2",
+      "connections": {
+        "out": "sum_drv[4]",
+        "in0": "P[4]",
+        "in1": "G30"
+      }
+    },
+    {
+      "name": "I142",
+      "cell": "XOR2",
+      "connections": {
+        "out": "P[4]",
+        "in0": "in0[4]",
+        "in1": "in1[4]"
+      }
+    },
+    {
+      "name": "I59",
+      "cell": "XOR2",
+      "connections": {
+        "out": "sum_drv[5]",
+        "in0": "P[5]",
+        "in1": "G40"
+      }
+    },
+    {
+      "name": "I141",
+      "cell": "XOR2",
+      "connections": {
+        "out": "P[5]",
+        "in0": "in0[5]",
+        "in1": "in1[5]"
+      }
+    },
+    {
+      "name": "I58",
+      "cell": "XOR2",
+      "connections": {
+        "out": "sum_drv[6]",
+        "in0": "P[6]",
+        "in1": "G50"
+      }
+    },
+    {
+      "name": "I140",
+      "cell": "XOR2",
+      "connections": {
+        "out": "P[6]",
+        "in0": "in0[6]",
+        "in1": "in1[6]"
+      }
+    },
+    {
+      "name": "I57",
+      "cell": "XOR2",
+      "connections": {
+        "out": "sum_drv[7]",
+        "in0": "P[7]",
+        "in1": "G60"
+      }
+    },
+    {
+      "name": "I139",
+      "cell": "XOR2",
+      "connections": {
+        "out": "P[7]",
+        "in0": "in0[7]",
+        "in1": "in1[7]"
+      }
+    },
+    {
+      "name": "I4",
+      "cell": "NOR2",
+      "connections": {
+        "out": "eq_drv",
+        "in0": "net33",
+        "in1": "net19"
+      }
+    },
+    {
+      "name": "I3",
+      "cell": "NOR2",
+      "connections": {
+        "out": "net49",
+        "in0": "P[1]",
+        "in1": "sum_drv[0]"
+      }
+    },
+    {
+      "name": "I2",
+      "cell": "NOR2",
+      "connections": {
+        "out": "net46",
+        "in0": "P[3]",
+        "in1": "P[2]"
+      }
+    },
+    {
+      "name": "I1",
+      "cell": "NOR2",
+      "connections": {
+        "out": "net43",
+        "in0": "P[5]",
+        "in1": "P[4]"
+      }
+    },
+    {
+      "name": "I0",
+      "cell": "NOR2",
+      "connections": {
+        "out": "net40",
+        "in0": "P[7]",
+        "in1": "P[6]"
+      }
+    },
+    {
+      "name": "I115",
+      "cell": "adder_white_b",
+      "connections": {
+        "G_m_n_b": "net10",
+        "P_m_k": "P[1]",
+        "G_m_k": "G[1]",
+        "G_kmin1_n": "G[0]"
+      }
+    },
+    {
+      "name": "I111",
+      "cell": "adder_white_b",
+      "connections": {
+        "G_m_n_b": "net9",
+        "P_m_k": "P[2]",
+        "G_m_k": "G[2]",
+        "G_kmin1_n": "G10"
+      }
+    },
+    {
+      "name": "I105",
+      "cell": "adder_white_b",
+      "connections": {
+        "G_m_n_b": "net4",
+        "P_m_k": "net3",
+        "G_m_k": "net1",
+        "G_kmin1_n": "G10"
+      }
+    },
+    {
+      "name": "I102",
+      "cell": "adder_white_b",
+      "connections": {
+        "G_m_n_b": "net20",
+        "P_m_k": "P[4]",
+        "G_m_k": "G[4]",
+        "G_kmin1_n": "G30"
+      }
+    },
+    {
+      "name": "I96",
+      "cell": "adder_white_b",
+      "connections": {
+        "G_m_n_b": "net15",
+        "P_m_k": "net16",
+        "G_m_k": "net11",
+        "G_kmin1_n": "G30"
+      }
+    },
+    {
+      "name": "I90",
+      "cell": "adder_white_b",
+      "connections": {
+        "G_m_n_b": "net34",
+        "P_m_k": "net36",
+        "G_m_k": "net32",
+        "G_kmin1_n": "G30"
+      }
+    },
+    {
+      "name": "I83",
+      "cell": "adder_white_b",
+      "connections": {
+        "G_m_n_b": "net26",
+        "P_m_k": "net28",
+        "G_m_k": "net22",
+        "G_kmin1_n": "G30"
+      }
+    },
+    {
+      "name": "I106",
+      "cell": "adder_gray_b",
+      "connections": {
+        "G_m_n_b": "net2",
+        "P_m_n_b": "net6",
+        "P_m_k": "P[3]",
+        "P_kmin1_n": "P[2]",
+        "G_m_k": "G[3]",
+        "G_kmin1_n": "G[2]"
+      }
+    },
+    {
+      "name": "I97",
+      "cell": "adder_gray_b",
+      "connections": {
+        "G_m_n_b": "net13",
+        "P_m_n_b": "net17",
+        "P_m_k": "P[5]",
+        "P_kmin1_n": "P[4]",
+        "G_m_k": "G[5]",
+        "G_kmin1_n": "G[4]"
+      }
+    },
+    {
+      "name": "I91",
+      "cell": "adder_gray_b",
+      "connections": {
+        "G_m_n_b": "net31",
+        "P_m_n_b": "net35",
+        "P_m_k": "P[6]",
+        "P_kmin1_n": "net16",
+        "G_m_k": "G[6]",
+        "G_kmin1_n": "net11"
+      }
+    },
+    {
+      "name": "I85",
+      "cell": "adder_gray_b",
+      "connections": {
+        "G_m_n_b": "net23",
+        "P_m_n_b": "net29",
+        "P_m_k": "P[7]",
+        "P_kmin1_n": "P[6]",
+        "G_m_k": "G[7]",
+        "G_kmin1_n": "G[6]"
+      }
+    },
+    {
+      "name": "I84",
+      "cell": "adder_gray_b",
+      "connections": {
+        "G_m_n_b": "net21",
+        "P_m_n_b": "net27",
+        "P_m_k": "net30",
+        "P_kmin1_n": "net16",
+        "G_m_k": "net24",
+        "G_kmin1_n": "net11"
+      }
+    },
+    {
+      "name": "I6",
+      "cell": "NAND2",
+      "connections": {
+        "out": "net19",
+        "in0": "net46",
+        "in1": "net49"
+      }
+    },
+    {
+      "name": "I5",
+      "cell": "NAND2",
+      "connections": {
+        "out": "net33",
+        "in0": "net40",
+        "in1": "net43"
+      }
+    }
+  ]
+}

@@ -1,14 +1,8 @@
-#e1(08May2026:08:51:26): source ./xcelium.d/env.d/env.history.08May2026_08_51_26
-s1(08May2026:08:51:26):  xrun -64bit -sv /tmp/emit_addi_basic.sv 
-#e2(08May2026:08:55:03): source ./xcelium.d/env.d/env.history.08May2026_08_55_03
-s2(08May2026:08:55:03):  /opt/cadence/XCELIUM2403/tools.lnx86/bin/64bit/xrun -64bit -sv /tmp/tmpismehur8.sv 
-#e3(08May2026:08:56:44): source ./xcelium.d/env.d/env.history.08May2026_08_56_44
-s3(08May2026:08:56:44):  /opt/cadence/XCELIUM2403/tools.lnx86/bin/64bit/xrun -64bit -sv /tmp/tmpzcfgti7f.sv 
-#e4(08May2026:12:22:51): source ./xcelium.d/env.d/env.history.08May2026_12_22_51
-s4(08May2026:12:22:51):  /opt/cadence/XCELIUM2403/tools.lnx86/bin/64bit/xrun -64bit -sv /tmp/emit_add_addi_seq.sv 
-#e5(08May2026:12:37:38): source ./xcelium.d/env.d/env.history.08May2026_12_37_38
-s5(08May2026:12:37:38):  /opt/cadence/XCELIUM2403/tools.lnx86/bin/64bit/xrun -64bit -sv /tmp/tmp5ll3sxko.sv 
-#e6(08May2026:12:37:47): source ./xcelium.d/env.d/env.history.08May2026_12_37_47
-s6(08May2026:12:37:47):  /opt/cadence/XCELIUM2403/tools.lnx86/bin/64bit/xrun -64bit -sv /tmp/tmp02d7lu5h.sv 
-#e7(08May2026:13:00:23): source ./xcelium.d/env.d/env.history.08May2026_13_00_23
-s7(08May2026:13:00:23):  /opt/cadence/XCELIUM2403/tools.lnx86/bin/64bit/xrun -64bit -sv /tmp/tmpm7_c8xyt.sv 
+#e1(08May2026:15:26:33): source ./xcelium.d/env.d/env.history.08May2026_15_26_33
+s1(08May2026:15:26:33):  /opt/cadence/XCELIUM2403/tools.lnx86/bin/64bit/xrun -64bit -sv /tmp/tmp93i6v7mu.sv 
+#e2(08May2026:15:29:55): source ./xcelium.d/env.d/env.history.08May2026_15_29_55
+s2(08May2026:15:29:55):  /opt/cadence/XCELIUM2403/tools.lnx86/bin/64bit/xrun -64bit -sv /tmp/tmpgyflu2af.sv 
+#e3(08May2026:15:30:17): source ./xcelium.d/env.d/env.history.08May2026_15_30_17
+s3(08May2026:15:30:17):  /opt/cadence/XCELIUM2403/tools.lnx86/bin/64bit/xrun -64bit -sv /tmp/tmpk1u6b_6n.sv 
+#e4(08May2026:15:32:08): source ./xcelium.d/env.d/env.history.08May2026_15_32_08
+s4(08May2026:15:32:08):  /opt/cadence/XCELIUM2403/tools.lnx86/bin/64bit/xrun -64bit -sv /tmp/tmpb561ahry.sv 

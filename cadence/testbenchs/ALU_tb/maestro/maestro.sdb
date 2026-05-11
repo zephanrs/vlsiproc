@@ -32,7 +32,7 @@
 				</tooloptions>
 				<vars>
 					<var>A_in
-						<value>255</value>
+						<value>127</value>
 					</var>
 					<var>B_in
 						<value>1</value>
@@ -51,10 +51,19 @@
 					<output>/in0&lt;7:0&gt;
 						<evalType>point</evalType>
 					</output>
-					<output>/out&lt;7:0&gt;
+					<output>"/"
 						<evalType>point</evalType>
 					</output>
 					<output>/eq
+						<evalType>point</evalType>
+					</output>
+					<output>/pwr_mon
+						<evalType>point</evalType>
+					</output>
+					<output>/
+						<evalType>point</evalType>
+					</output>
+					<output>/out&lt;7:0&gt;
 						<evalType>point</evalType>
 					</output>
 				</outputs>
@@ -97,7 +106,7 @@
 				<value>no</value>
 			</plottingoption>
 			<plottingoption>autoplotmode
-				<value>New SubWin</value>
+				<value>Append</value>
 			</plottingoption>
 		</plottingoptions>
 		<exploreroptions>
@@ -105,7 +114,7 @@
 				<value>(None)</value>
 			</exploreroption>
 			<exploreroption>autoplotmode
-				<value>New SubWin</value>
+				<value>Append</value>
 			</exploreroption>
 		</exploreroptions>
 		<incrementalsimsetup>

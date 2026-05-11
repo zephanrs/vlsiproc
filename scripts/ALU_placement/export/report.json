@@ -1,0 +1,12 @@
+{
+  "cost": 671.5306859023663,
+  "hpwl_um": 524.08,
+  "tcrit_ps": 0.0,
+  "target_violation_ps": 0,
+  "overlap_area_um2": 3.144151605738443e-15,
+  "height_penalty": 0.0,
+  "width_penalty": 24.945,
+  "x_extent_um": 24.945,
+  "congestion_penalty": 67.48909295116738,
+  "critical_path": []
+}
