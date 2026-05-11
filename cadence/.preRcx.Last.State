@@ -1,9 +1,9 @@
 
 
 vuipreRcxFormTable = '(
-	runName  "reg_ena"
-	runDir  "/home/ljl97/processor/cadence/lvs/svdb"
-	assuraTech  "/home/ljl97/processor/cadence/pvtech.lib"
+	runName  "ALU_8b"
+	runDir  "/home/dnb68/processor/cadence/lvs/svdb"
+	assuraTech  "/home/dnb68/processor/cadence/pvtech.lib"
 	tech  "gpdk045_pvs"
 	mapFile  ""
 	netProp  5

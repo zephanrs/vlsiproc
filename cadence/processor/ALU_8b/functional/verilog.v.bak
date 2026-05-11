@@ -1,0 +1,10 @@
+//Verilog HDL for "processor", "ALU_8b" "functional"
+
+
+module ALU_8b ( eq, sum, in0, in1 );
+
+  output eq;
+  input  [7:0] in1;
+  input  [7:0] in0;
+  output  [7:0] sum;
+endmodule

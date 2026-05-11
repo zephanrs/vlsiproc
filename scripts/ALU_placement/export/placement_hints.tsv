@@ -1,0 +1,59 @@
+inst	stage	bit	x	y	fixed	group
+I70					false	prefix_buf
+I77					false	prefix_buf
+I68					false	prefix_buf
+I76					false	prefix_buf
+I69					false	prefix_buf
+I81					false	prefix_buf
+I67					false	prefix_buf
+I80					false	prefix_buf
+I66					false	prefix_buf
+I74					false	prefix_buf
+I79					false	prefix_buf
+I75					false	prefix_buf
+I71					false	prefix_buf
+I73					false	prefix_buf
+I64					false	prefix_buf
+I72					false	prefix_buf
+I138	0	0			false	generate
+I137	0	1			false	generate
+I136	0	2			false	generate
+I135	0	3			false	generate
+I134	0	4			false	generate
+I133	0	5			false	generate
+I132	0	6			false	generate
+I131	0	7			false	generate
+I146	4	0			false	sum
+I63	4	1			false	sum
+I145	0	1			false	propagate
+I62	4	2			false	sum
+I144	0	2			false	propagate
+I61	4	3			false	sum
+I143	0	3			false	propagate
+I60	4	4			false	sum
+I142	0	4			false	propagate
+I59	4	5			false	sum
+I141	0	5			false	propagate
+I58	4	6			false	sum
+I140	0	6			false	propagate
+I57	4	7			false	sum
+I139	0	7			false	propagate
+I4	5				false	eq_cmp
+I3	5				false	eq_cmp
+I2	5				false	eq_cmp
+I1	5				false	eq_cmp
+I0	5				false	eq_cmp
+I115	1				false	prefix
+I111	2				false	prefix
+I105	2				false	prefix
+I102	3				false	prefix
+I96	3				false	prefix
+I90	3				false	prefix
+I83	3				false	prefix
+I106	1				false	prefix
+I97	1				false	prefix
+I91	1				false	prefix
+I85	1				false	prefix
+I84	1				false	prefix
+I6	5				false	eq_cmp
+I5	5				false	eq_cmp
