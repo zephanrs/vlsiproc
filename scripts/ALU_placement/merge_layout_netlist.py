@@ -93,21 +93,111 @@ def write_tsv(path: str, rows: List[dict], fieldnames: List[str]) -> None:
             w.writerow(r)
 
 
-def load_layout_dims(layout_dir: str) -> Dict[str, Dict]:
-    """Load inst_positions.tsv if available."""
-    rows = read_tsv(os.path.join(layout_dir, "inst_positions.tsv"))
-    by_inst: Dict[str, Dict] = {}
+def _detect_unit_scale(rows: List[dict]) -> float:
+    """Auto-detect layout units and return scale factor to convert to microns.
+
+    Virtuoso user-units vary by PDK:
+      - If values are O(0.001), data is in millimeters  → scale ×1e3 → μm
+      - If values are O(1),     data is already in microns → scale ×1
+      - If values are O(1000),  data might be in nm       → scale ×1e-3
+    """
+    vals = []
     for r in rows:
-        by_inst[r["inst"]] = r
-    return by_inst
+        for col in ("width", "height"):
+            v = r.get(col, "")
+            if v:
+                try:
+                    vals.append(abs(float(v)))
+                except ValueError:
+                    pass
+    if not vals:
+        return 1.0
+    median = sorted(vals)[len(vals) // 2]
+    if median < 0.1:
+        return 1e3    # millimeters → microns
+    if median > 100:
+        return 1e-3   # nanometers → microns
+    return 1.0        # already microns
+
+
+def _base_inst_name(name: str) -> str:
+    """Map split-layout names like 'I70.1' back to schematic name 'I70'."""
+    dot = name.find(".")
+    return name[:dot] if dot >= 0 else name
+
+
+def load_layout_dims(layout_dir: str) -> Dict[str, Dict]:
+    """Load inst_positions.tsv if available.
+
+    Handles:
+      - Unit conversion (meters → microns) via auto-detection.
+      - Sub-instances (I70.1, I70.2) merged into a single bbox for I70.
+    """
+    rows = read_tsv(os.path.join(layout_dir, "inst_positions.tsv"))
+    if not rows:
+        return {}
+
+    scale = _detect_unit_scale(rows)
+    if scale != 1.0:
+        print(f"  Auto-detected layout units: meters (scaling ×{scale:.0f} → μm)")
+
+    COORD_COLS = ("origin_x", "origin_y", "xlo", "ylo", "xhi", "yhi",
+                  "width", "height", "cx", "cy")
+
+    # Scale all coordinate columns.
+    for r in rows:
+        for col in COORD_COLS:
+            v = r.get(col, "")
+            if v:
+                try:
+                    r[col] = str(float(v) * scale)
+                except ValueError:
+                    pass
+
+    # Group sub-instances (I70.1 → I70) by taking the first exact match
+    # or computing the bounding-box union of all sub-instances.
+    by_base: Dict[str, List[dict]] = defaultdict(list)
+    for r in rows:
+        by_base[_base_inst_name(r["inst"])].append(r)
+
+    merged: Dict[str, Dict] = {}
+    for base, subs in by_base.items():
+        if len(subs) == 1:
+            merged[base] = subs[0]
+        else:
+            # Union bounding box of all sub-instances.
+            xlo = min(float(s["xlo"]) for s in subs)
+            ylo = min(float(s["ylo"]) for s in subs)
+            xhi = max(float(s["xhi"]) for s in subs)
+            yhi = max(float(s["yhi"]) for s in subs)
+            ref = dict(subs[0])
+            ref["inst"] = base
+            ref["xlo"] = str(xlo)
+            ref["ylo"] = str(ylo)
+            ref["xhi"] = str(xhi)
+            ref["yhi"] = str(yhi)
+            ref["width"] = str(xhi - xlo)
+            ref["height"] = str(yhi - ylo)
+            ref["cx"] = str((xlo + xhi) / 2.0)
+            ref["cy"] = str((ylo + yhi) / 2.0)
+            ref["origin_x"] = str(xlo)
+            ref["origin_y"] = str(ylo)
+            merged[base] = ref
+            print(f"  Merged {len(subs)} sub-instances into {base} "
+                  f"({float(ref['width']):.4f} × {float(ref['height']):.4f} μm)")
+    return merged
 
 
 def load_cell_dims(layout_dir: str) -> Dict[str, Tuple[float, float]]:
     """Load cell_dimensions.tsv if available, else fallback."""
     rows = read_tsv(os.path.join(layout_dir, "cell_dimensions.tsv"))
+    if not rows:
+        return {}
+    scale = _detect_unit_scale(rows)
     dims: Dict[str, Tuple[float, float]] = {}
     for r in rows:
-        dims[r["cell"]] = (float(r["width"]), float(r["height"]))
+        dims[r["cell"]] = (float(r["width"]) * scale,
+                           float(r["height"]) * scale)
     return dims
 
 
@@ -126,11 +216,16 @@ def merge(netlist_dir: str, layout_dir: str, out_dir: str) -> None:
     have_layout = len(inst_pos) > 0
 
     if have_layout:
-        print(f"Layout data: {len(inst_pos)} instances from inst_positions.tsv")
+        print(f"Layout data: {len(inst_pos)} instances matched to netlist")
+        # Show real cell dimensions.
+        print("  Real cell dimensions (μm):")
+        for cell, (w, h) in sorted(cell_dims.items()):
+            print(f"    {cell:20s}  {w:8.4f} × {h:.4f}")
     else:
         print("No layout data found — using estimated dimensions.")
 
     # Merge.
+    matched = 0
     for b in blocks:
         cell = b["cell"]
         inst = b["inst"]
@@ -141,11 +236,23 @@ def merge(netlist_dir: str, layout_dir: str, out_dir: str) -> None:
                          "xlo", "ylo", "xhi", "yhi",
                          "width", "height", "cx", "cy"]:
                 b[col] = lp.get(col, b.get(col, ""))
+            matched += 1
         else:
-            # Use cell dimension estimates.
+            # Use cell dimension table (from layout or estimates).
             w, h = cell_dims.get(cell, EST_CELL_DIM.get(cell, (1.0, 1.68)))
             b["width"] = f"{w:.4f}"
             b["height"] = f"{h:.4f}"
+
+    # Override height with PR boundary height.  The bBox from SKILL
+    # includes shared VDD/GND rail overlap (0.15 μm per side), but for
+    # placement the effective cell pitch is the PR boundary = 2.5 μm.
+    PR_BOUNDARY_HEIGHT = 2.5  # μm
+    for b in blocks:
+        b["height"] = f"{PR_BOUNDARY_HEIGHT:.4f}"
+
+    if have_layout:
+        print(f"  Matched {matched}/{len(blocks)} netlist instances to layout")
+        print(f"  Using PR boundary height: {PR_BOUNDARY_HEIGHT} μm")
 
     write_tsv(
         os.path.join(out_dir, "blocks.tsv"),
