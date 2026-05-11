@@ -134,7 +134,7 @@ inst	B	reg_ena	Y<7:0>	idmem_wdata<7:0>	D<7:0>	rdata1_out<7:0>	clk_in	b_clk	ena	a
 inst	PC_old	reg_ena	Y<7:0>	pc_old_out<7:0>	D<7:0>	PC_out<7:0>	clk_in	pc_old_clk	ena	fetch_en
 inst	IR	Register_16b_ena	d<15:0>	idmem_rdata<15:0>	q<15:0>	inst<15:0>	en	fetch_en	clk	ir_clk
 inst	Op2_sel	Mux4_8b	out<7:0>	mux4_out<7:0>	in0<7:0>	idmem_wdata<7:0>	in1<7:0>	<*8>gnd!	in2<7:0>	net54<0:7>	in3<7:0>	<*6>gnd!,vdd!,gnd!	sel<1:0>	op2_sel<1:0>
-inst	rf	Regfile	clk<7:1>	rf_clk<7:1>	wen	rf_wen	rdata0<7:0>	rdata0_out<7:0>	rdata1<7:0>	rdata1_out<7:0>	raddr0<2:0>	inst<8:6>	raddr1<2:0>	inst<11:9>	waddr<2:0>	inst<5:3>	wdata<7:0>	net25<0:7>
+inst	rf	Regfile	clk<7:1>	rf_clk<7:1>	wen	rf_wen	rdata0<7:0>	rdata0_out<7:0>	rdata1<7:0>	rdata1_out<7:0>	raddr0<2:0>	inst<8:6>	raddr1<2:0>	inst<5:3>	waddr<2:0>	inst<11:9>	wdata<7:0>	net25<0:7>
 inst	ALU	ALU_8b	sum<7:0>	alu_out<7:0>	eq	eq	in0<7:0>	op1_sel_out<7:0>	in1<7:0>	mux4_out<7:0>
 inst	I20	Imm_Gen	imm<7:0>	net54<0:7>	inst<15:0>	inst<15:0>
 inst	PC	Register_8b	d<7:0>	alu_out<7:0>	en	pc_en	rst	pc_rst	q<7:0>	PC_out<7:0>	clk	pc_cllk
