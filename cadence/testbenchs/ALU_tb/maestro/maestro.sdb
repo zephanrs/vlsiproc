@@ -51,16 +51,13 @@
 					<output>/in0&lt;7:0&gt;
 						<evalType>point</evalType>
 					</output>
-					<output>"/"
+					<output>"/sum&lt;7:0&gt;"
 						<evalType>point</evalType>
 					</output>
 					<output>/eq
 						<evalType>point</evalType>
 					</output>
-					<output>/pwr_mon
-						<evalType>point</evalType>
-					</output>
-					<output>/
+					<output>/sum&lt;7:0&gt;
 						<evalType>point</evalType>
 					</output>
 					<output>/out&lt;7:0&gt;
@@ -106,7 +103,7 @@
 				<value>no</value>
 			</plottingoption>
 			<plottingoption>autoplotmode
-				<value>Append</value>
+				<value>New SubWin</value>
 			</plottingoption>
 		</plottingoptions>
 		<exploreroptions>
@@ -114,7 +111,7 @@
 				<value>(None)</value>
 			</exploreroption>
 			<exploreroption>autoplotmode
-				<value>Append</value>
+				<value>New SubWin</value>
 			</exploreroption>
 		</exploreroptions>
 		<incrementalsimsetup>
