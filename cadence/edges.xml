@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!--StateFileType saveLoadState-->
-<topLevel>
-    <Object Class="edgeData">
-        <IndexedProp Name="traceList" />
-    </Object>
-</topLevel>
