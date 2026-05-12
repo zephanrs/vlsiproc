@@ -1,8 +1,0 @@
-#e1(08May2026:15:26:33): source ./xcelium.d/env.d/env.history.08May2026_15_26_33
-s1(08May2026:15:26:33):  /opt/cadence/XCELIUM2403/tools.lnx86/bin/64bit/xrun -64bit -sv /tmp/tmp93i6v7mu.sv 
-#e2(08May2026:15:29:55): source ./xcelium.d/env.d/env.history.08May2026_15_29_55
-s2(08May2026:15:29:55):  /opt/cadence/XCELIUM2403/tools.lnx86/bin/64bit/xrun -64bit -sv /tmp/tmpgyflu2af.sv 
-#e3(08May2026:15:30:17): source ./xcelium.d/env.d/env.history.08May2026_15_30_17
-s3(08May2026:15:30:17):  /opt/cadence/XCELIUM2403/tools.lnx86/bin/64bit/xrun -64bit -sv /tmp/tmpk1u6b_6n.sv 
-#e4(08May2026:15:32:08): source ./xcelium.d/env.d/env.history.08May2026_15_32_08
-s4(08May2026:15:32:08):  /opt/cadence/XCELIUM2403/tools.lnx86/bin/64bit/xrun -64bit -sv /tmp/tmpb561ahry.sv 

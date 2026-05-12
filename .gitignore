@@ -6,6 +6,11 @@ cadence/.cadence/
 cadence/perf/
 cadence/drc/
 cadence/lvs/
+cadence/.QRC.run
+cadence/.preRcx.Last.State
+cadence/.qrc.Last.state
+cadence/edges.xml
+cadence/mux4.png
 cadence/xcelium.d
 .cadence/perf/
 
