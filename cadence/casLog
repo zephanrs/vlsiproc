@@ -1,10 +1,8 @@
 
-*** Checking layout cellview 'processor/ProcDpath/layout' against source cellview 'processor/ProcDpath/schematic'. - Wed May 13 01:10:49 2026 ***
+*** Checking layout cellview 'processor/ProcDpath/layout_extract' against source cellview 'processor/ProcDpath/schematic'. - Wed May 13 17:30:51 2026 ***
 
 INFO (LX-1013): Instance terminal 'clk' is missing from layout instance 'IR'.
-INFO (LX-1013): Instance terminal 'clk' is missing from layout instance 'PC'.
 INFO (LX-1013): Instance terminal 'd<0>' is missing from layout instance 'IR'.
-INFO (LX-1013): Instance terminal 'd<0>' is missing from layout instance 'PC'.
 INFO (LX-1013): Instance terminal 'd<10>' is missing from layout instance 'IR'.
 INFO (LX-1013): Instance terminal 'd<11>' is missing from layout instance 'IR'.
 INFO (LX-1013): Instance terminal 'd<12>' is missing from layout instance 'IR'.
@@ -12,23 +10,15 @@ INFO (LX-1013): Instance terminal 'd<13>' is missing from layout instance 'IR'.
 INFO (LX-1013): Instance terminal 'd<14>' is missing from layout instance 'IR'.
 INFO (LX-1013): Instance terminal 'd<15>' is missing from layout instance 'IR'.
 INFO (LX-1013): Instance terminal 'd<1>' is missing from layout instance 'IR'.
-INFO (LX-1013): Instance terminal 'd<1>' is missing from layout instance 'PC'.
 INFO (LX-1013): Instance terminal 'd<2>' is missing from layout instance 'IR'.
-INFO (LX-1013): Instance terminal 'd<2>' is missing from layout instance 'PC'.
 INFO (LX-1013): Instance terminal 'd<3>' is missing from layout instance 'IR'.
-INFO (LX-1013): Instance terminal 'd<3>' is missing from layout instance 'PC'.
 INFO (LX-1013): Instance terminal 'd<4>' is missing from layout instance 'IR'.
-INFO (LX-1013): Instance terminal 'd<4>' is missing from layout instance 'PC'.
 INFO (LX-1013): Instance terminal 'd<5>' is missing from layout instance 'IR'.
-INFO (LX-1013): Instance terminal 'd<5>' is missing from layout instance 'PC'.
 INFO (LX-1013): Instance terminal 'd<6>' is missing from layout instance 'IR'.
-INFO (LX-1013): Instance terminal 'd<6>' is missing from layout instance 'PC'.
 INFO (LX-1013): Instance terminal 'd<7>' is missing from layout instance 'IR'.
-INFO (LX-1013): Instance terminal 'd<7>' is missing from layout instance 'PC'.
 INFO (LX-1013): Instance terminal 'd<8>' is missing from layout instance 'IR'.
 INFO (LX-1013): Instance terminal 'd<9>' is missing from layout instance 'IR'.
 INFO (LX-1013): Instance terminal 'en' is missing from layout instance 'IR'.
-INFO (LX-1013): Instance terminal 'en' is missing from layout instance 'PC'.
 INFO (LX-1013): Instance terminal 'inst<12>' is missing from layout instance 'I20'.
 INFO (LX-1013): Instance terminal 'inst<13>' is missing from layout instance 'I20'.
 INFO (LX-1013): Instance terminal 'inst<14>' is missing from layout instance 'I20'.
@@ -36,7 +26,6 @@ INFO (LX-1013): Instance terminal 'inst<6>' is missing from layout instance 'I20
 INFO (LX-1013): Instance terminal 'inst<7>' is missing from layout instance 'I20'.
 INFO (LX-1013): Instance terminal 'inst<8>' is missing from layout instance 'I20'.
 INFO (LX-1013): Instance terminal 'q<0>' is missing from layout instance 'IR'.
-INFO (LX-1013): Instance terminal 'q<0>' is missing from layout instance 'PC'.
 INFO (LX-1013): Instance terminal 'q<10>' is missing from layout instance 'IR'.
 INFO (LX-1013): Instance terminal 'q<11>' is missing from layout instance 'IR'.
 INFO (LX-1013): Instance terminal 'q<12>' is missing from layout instance 'IR'.
@@ -44,40 +33,14 @@ INFO (LX-1013): Instance terminal 'q<13>' is missing from layout instance 'IR'.
 INFO (LX-1013): Instance terminal 'q<14>' is missing from layout instance 'IR'.
 INFO (LX-1013): Instance terminal 'q<15>' is missing from layout instance 'IR'.
 INFO (LX-1013): Instance terminal 'q<1>' is missing from layout instance 'IR'.
-INFO (LX-1013): Instance terminal 'q<1>' is missing from layout instance 'PC'.
 INFO (LX-1013): Instance terminal 'q<2>' is missing from layout instance 'IR'.
-INFO (LX-1013): Instance terminal 'q<2>' is missing from layout instance 'PC'.
 INFO (LX-1013): Instance terminal 'q<3>' is missing from layout instance 'IR'.
-INFO (LX-1013): Instance terminal 'q<3>' is missing from layout instance 'PC'.
 INFO (LX-1013): Instance terminal 'q<4>' is missing from layout instance 'IR'.
-INFO (LX-1013): Instance terminal 'q<4>' is missing from layout instance 'PC'.
 INFO (LX-1013): Instance terminal 'q<5>' is missing from layout instance 'IR'.
-INFO (LX-1013): Instance terminal 'q<5>' is missing from layout instance 'PC'.
 INFO (LX-1013): Instance terminal 'q<6>' is missing from layout instance 'IR'.
-INFO (LX-1013): Instance terminal 'q<6>' is missing from layout instance 'PC'.
 INFO (LX-1013): Instance terminal 'q<7>' is missing from layout instance 'IR'.
-INFO (LX-1013): Instance terminal 'q<7>' is missing from layout instance 'PC'.
 INFO (LX-1013): Instance terminal 'q<8>' is missing from layout instance 'IR'.
 INFO (LX-1013): Instance terminal 'q<9>' is missing from layout instance 'IR'.
-INFO (LX-1013): Instance terminal 'rst' is missing from layout instance 'PC'.
-INFO (LX-1014): Instance terminal 'imm<0>' on layout instance 'I20' is either dangling or missing
-but should be connected to net 'net54<7>'.
-INFO (LX-1014): Instance terminal 'imm<1>' on layout instance 'I20' is either dangling or missing
-but should be connected to net 'net54<6>'.
-INFO (LX-1014): Instance terminal 'imm<2>' on layout instance 'I20' is either dangling or missing
-but should be connected to net 'net54<5>'.
-INFO (LX-1014): Instance terminal 'imm<3>' on layout instance 'I20' is either dangling or missing
-but should be connected to net 'net54<4>'.
-INFO (LX-1014): Instance terminal 'imm<4>' on layout instance 'I20' is either dangling or missing
-but should be connected to net 'net54<3>'.
-INFO (LX-1014): Instance terminal 'imm<5>' on layout instance 'I20' is either dangling or missing
-but should be connected to net 'net54<2>'.
-INFO (LX-1014): Instance terminal 'imm<6>' on layout instance 'I20' is either dangling or missing
-but should be connected to net 'net54<1>'.
-INFO (LX-1014): Instance terminal 'imm<7>' on layout instance 'I20' is either dangling or missing
-but should be connected to net 'net54<0>'.
-INFO (LX-1014): Instance terminal 'inst<15>' on layout instance 'I20' is either dangling or missing
-but should be connected to net 'inst<15>'.
 
 *** Check Against Source complete. ***
 
