@@ -32,10 +32,10 @@
 				</tooloptions>
 				<vars>
 					<var>A_in
-						<value>127</value>
+						<value>255</value>
 					</var>
 					<var>B_in
-						<value>1</value>
+						<value>255</value>
 					</var>
 				</vars>
 				<outputs>
@@ -79,7 +79,7 @@
 		</checksasserts>
 		<plottingoptions>
 			<plottingoption>waveformtemplate
-				<value>(None)</value>
+				<value></value>
 			</plottingoption>
 			<plottingoption>plottingmode
 				<value>New SubWin</value>
@@ -91,7 +91,7 @@
 				<value>no</value>
 			</plottingoption>
 			<plottingoption>useMaestroPlottingTemplate
-				<value>yes</value>
+				<value>no</value>
 			</plottingoption>
 			<plottingoption>allplottingtemplates
 				<value></value>
