@@ -30,6 +30,8 @@ def render_png(path: Path, layout: Layout, blocks: list[Block], wires: list[Wire
   # buses sit at the top of the cell, like the textbook figure.
   shown: list[tuple[Wire, list[float], int]] = []
   for w in wires:
+    if w.width < 2:
+      continue
     eps: list[float] = []
     n_off = 0
     for name, pin in w.endpoints:
@@ -134,6 +136,31 @@ def render_png(path: Path, layout: Layout, blocks: list[Block], wires: list[Wire
       ax.text(sx(max_x) + bus_label_pad, y, label,
               ha="left", va="center", fontsize=7.5, color=bus_color,
               family="monospace", zorder=4)
+
+  # Micron ruler below the cell strips. Ticks every 5um, labels every 10um.
+  import math as _math
+  ruler_y = type_label_y - 40
+  tick_minor = 5
+  tick_major = 10
+  tick_h_minor = 4
+  tick_h_major = 8
+  ax.plot([sx(0.0), sx(layout_w)], [ruler_y, ruler_y],
+          color="#52606d", linewidth=0.8, zorder=2)
+  end = int(_math.floor(layout_w))
+  for u in range(0, end + 1):
+    if u % tick_minor:
+      continue
+    h = tick_h_major if u % tick_major == 0 else tick_h_minor
+    ax.plot([sx(u), sx(u)], [ruler_y, ruler_y - h],
+            color="#52606d", linewidth=0.8, zorder=2)
+    if u % tick_major == 0:
+      ax.text(sx(u), ruler_y - h - 4, f"{u}",
+              ha="center", va="top", fontsize=7,
+              family="monospace", color="#52606d", zorder=2)
+  ax.text(sx(layout_w) + 6, ruler_y, "um",
+          ha="left", va="center", fontsize=7,
+          family="monospace", color="#52606d", zorder=2)
+  ax.set_ylim(ruler_y - 25, inst_label_y + 100)
 
   # Title / stats banner above everything.
   ax.text(margin_x, inst_label_y + 90,

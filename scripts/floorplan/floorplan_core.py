@@ -10,6 +10,7 @@ from pathlib import Path
 
 COMMENT_RE = re.compile(r"/\*.*?\*/|//.*?$", re.S | re.M)
 BUS_BIT_RE = re.compile(r"<[^>]*>$")  # strip Cadence bit suffix: in0<7> -> in0
+SLICE_RE = re.compile(r"^([A-Za-z_]\w*)\s*\[\s*(\d+)(?:\s*:\s*(\d+))?\s*\]$")
 SUPPLY_PINS = {"gnd!", "vdd!", "gnd", "vdd"}
 MODULE_RE = re.compile(
   r"module\s+(?P<name>\w+)\s*\((?P<header>.*?)\)\s*;\s*(?P<body>.*?)endmodule",
@@ -391,6 +392,21 @@ def _closure(start: str, graph: dict[str, set[str]], base: dict[str, set[str]], 
   return result
 
 
+def _parse_slice(expr: str) -> tuple[str, int, int] | None:
+  """Return (base, hi, lo) for a bit-slice expression like 'addr[0]' or
+  'inst[15:12]'; None for anything else (full bus refs, concatenations, etc.).
+  Used to keep narrow bit-taps off the parent bus's HPWL."""
+  m = SLICE_RE.match(expr.strip())
+  if not m:
+    return None
+  base = m.group(1)
+  hi = int(m.group(2))
+  lo = int(m.group(3)) if m.group(3) is not None else hi
+  if lo > hi:
+    hi, lo = lo, hi
+  return base, hi, lo
+
+
 def build_wires(
   top: TopModule,
   modules: dict[str, Module],
@@ -406,6 +422,34 @@ def build_wires(
       continue
     ep = (f"port:{port.name}", "")
     (raw_drv if port.direction == "input" else raw_snk)[port.name].add(ep)
+  # Narrow bit-slices off a wider bus (e.g. .sel(addr[0])) get their own
+  # synthetic net so they don't inflate the parent bus's overlap. Skip
+  # extraction when it would leave the parent with <2 endpoints (e.g. a bus
+  # that's only used through slices like idmem_rdata[7:0]/[15:8]).
+  anchored: dict[str, int] = defaultdict(int)
+  for port_name in raw_drv:
+    anchored[port_name] += len(raw_drv[port_name])
+  for port_name in raw_snk:
+    anchored[port_name] += len(raw_snk[port_name])
+  for inst in top.instances:
+    m = modules.get(inst.module_type)
+    if not m:
+      continue
+    for port_name, expr in inst.connections.items():
+      port = m.ports.get(port_name)
+      if not port:
+        continue
+      si = _parse_slice(expr) if port.direction == "input" else None
+      if si is not None:
+        base, hi, lo = si
+        slice_w = hi - lo + 1
+        parent_w = top.net_widths.get(base, 0)
+        if 0 < slice_w < parent_w:
+          continue
+      for net in expr_ids(expr):
+        anchored[net] += 1
+  extra_widths: dict[str, int] = {}
+  slice_parent: dict[str, str] = {}
   for inst in top.instances:
     m = modules.get(inst.module_type)
     if not m:
@@ -415,6 +459,17 @@ def build_wires(
       if not port:
         continue
       target = raw_drv if port.direction == "output" else raw_snk
+      si = _parse_slice(expr) if port.direction == "input" else None
+      if si is not None:
+        base, hi, lo = si
+        slice_w = hi - lo + 1
+        parent_w = top.net_widths.get(base, 0)
+        if 0 < slice_w < parent_w and anchored.get(base, 0) >= 2:
+          syn = f"{base}[{hi}]" if hi == lo else f"{base}[{hi}:{lo}]"
+          target[syn].add((inst.name, port_name))
+          extra_widths[syn] = slice_w
+          slice_parent[syn] = base
+          continue
       for net in expr_ids(expr):
         target[net].add((inst.name, port_name))
   fwd: dict[str, set[str]] = defaultdict(set)
@@ -423,10 +478,15 @@ def build_wires(
     for r in rhs_nets:
       fwd[r].add(lhs)
       rev[lhs].add(r)
+  # Slice taps inherit drivers from their parent bus (one-way: parent's sinks
+  # do NOT include the tap, so the parent's HPWL stays unaffected).
+  for syn, base in slice_parent.items():
+    rev[syn].add(base)
   drv_memo: dict[str, set[tuple[str, str]]] = {}
   snk_memo: dict[str, set[tuple[str, str]]] = {}
   wires: list[Wire] = []
-  for net in sorted(top.net_widths):
+  all_widths = {**top.net_widths, **extra_widths}
+  for net in sorted(all_widths):
     if net in ignore:
       continue
     drivers = _closure(net, rev, raw_drv, drv_memo, set())
@@ -436,7 +496,7 @@ def build_wires(
       continue
     if not include_ports and sum(not name.startswith("port:") for name, _ in endpoints) < 2:
       continue
-    wires.append(Wire(name=net, width=top.net_widths.get(net, 1), endpoints=endpoints))
+    wires.append(Wire(name=net, width=all_widths.get(net, 1), endpoints=endpoints))
 
   # Drop slice-redundant wires: when an `assign rs1 = inst[2:0]` etc. unifies a
   # narrow net into a wider parent, the closure produces wires whose endpoint
@@ -499,12 +559,15 @@ def evaluate(
   gap: float = 1.0,
   off_chip_ports: set[str] | None = None,
   overlap_weight: float = 0.0,
+  wire_weights: dict[str, float] | None = None,
 ) -> Layout:
   off_chip_ports = off_chip_ports or set()
+  wire_weights = wire_weights or {}
   centers = positions(order, blocks, gap=gap)
   _, layout_w = layout_extent(order, blocks, gap=gap)
   index = {name: i for i, name in enumerate(order)}
   cut_overlaps = [0] * max(0, len(order) - 1)
+  spans: list[tuple[float, float, int]] = []  # (x_lo, x_hi, width) per wire for sweep-line
   cost = 0.0
   for w in wires:
     xs: list[float] = []
@@ -534,18 +597,44 @@ def evaluate(
         max_x = layout_w
     if len(xs) + n_off_chip < 2:
       continue
-    cost += w.width * (max_x - min_x)
-    if len(block_indices) >= 2:
-      ips = sorted(set(block_indices))
-      for c in range(ips[0], ips[-1]):
-        cut_overlaps[c] += w.width
+    mult = wire_weights.get(w.name, 1.0)
+    cost += mult * w.width * (max_x - min_x)
+    # 1-bit control signals route on separate channels (margins/spare tracks),
+    # so they don't contribute to bus-channel overlap accounting.
+    if w.width >= 2:
+      if max_x > min_x:
+        spans.append((min_x, max_x, w.width))
+      if len(block_indices) >= 2:
+        ips = sorted(set(block_indices))
+        for c in range(ips[0], ips[-1]):
+          cut_overlaps[c] += w.width
+  # Continuous-x sweep: peak track count anywhere along the row (catches
+  # within-cell overlap that the cut-boundary metric misses). End events fire
+  # before start events at the same x so wires meeting at a shared pin don't
+  # double-count.
+  events: list[tuple[float, int, int]] = []
+  for x_lo, x_hi, ww in spans:
+    events.append((x_lo, 0, ww))
+    events.append((x_hi, -1, -ww))
+  events.sort()
+  active = 0
+  peak_overlap = 0
+  sample_sumsq = 0.0
+  last_x = events[0][0] if events else 0.0
+  for x, _, dw in events:
+    if x > last_x and active > 0:
+      sample_sumsq += active * active * (x - last_x)
+    active += dw
+    if active > peak_overlap:
+      peak_overlap = active
+    last_x = x
   if overlap_weight:
-    cost += overlap_weight * sum(c * c for c in cut_overlaps)
+    cost += overlap_weight * sample_sumsq
   return Layout(
     order=list(order),
     centers=centers,
     cost=cost,
-    max_overlap=max(cut_overlaps) if cut_overlaps else 0,
+    max_overlap=peak_overlap,
     cut_overlaps=tuple(cut_overlaps),
   )
 
@@ -557,29 +646,55 @@ def anneal(
   steps: int,
   off_chip_ports: set[str] | None = None,
   overlap_weight: float = 0.0,
+  wire_weights: dict[str, float] | None = None,
+  pinned: dict[str, int] | None = None,
 ) -> tuple[Layout, Layout]:
   rng = random.Random(seed)
   block_map = {b.name: b for b in blocks}
-  cur = evaluate([b.name for b in blocks], block_map, wires,
-                 off_chip_ports=off_chip_ports, overlap_weight=overlap_weight)
+  pinned = pinned or {}
+  n = len(blocks)
+  for blk, idx in pinned.items():
+    if not 0 <= idx < n:
+      raise ValueError(f"pin index {idx} for {blk!r} out of range [0,{n})")
+  if len(set(pinned.values())) != len(pinned):
+    raise ValueError(f"pin index collision in {pinned!r}")
+  all_names = [b.name for b in blocks]
+  pinned_set = set(pinned)
+  free_init = [name for name in all_names if name not in pinned_set]
+  if len(free_init) < 2:
+    raise ValueError("need at least two non-pinned blocks to anneal")
+  # Pinned slots stay fixed; reconstruct() splices the free permutation around them.
+  sorted_pins = sorted(pinned.items(), key=lambda kv: kv[1])
+
+  def reconstruct(free_order: list[str]) -> list[str]:
+    out: list[str] = list(free_order)
+    for blk, idx in sorted_pins:
+      out.insert(idx, blk)
+    return out
+
+  cur_free = free_init
+  cur = evaluate(reconstruct(cur_free), block_map, wires,
+                 off_chip_ports=off_chip_ports, overlap_weight=overlap_weight,
+                 wire_weights=wire_weights)
   initial = cur
   best = cur
   t0 = max(1.0, cur.cost * 0.1)
   tf = max(1e-3, t0 * 1e-3)
-  n = max(1, steps)
-  for step in range(n):
-    t = t0 * (tf / t0) ** (step / max(1, n - 1))
-    cand = list(cur.order)
+  steps = max(1, steps)
+  for step in range(steps):
+    t = t0 * (tf / t0) ** (step / max(1, steps - 1))
+    cand_free = list(cur_free)
+    a, b = rng.sample(range(len(cand_free)), 2)
     if rng.random() < 0.5:
-      a, b = rng.sample(range(len(cand)), 2)
-      cand[a], cand[b] = cand[b], cand[a]
+      cand_free[a], cand_free[b] = cand_free[b], cand_free[a]
     else:
-      a, b = rng.sample(range(len(cand)), 2)
-      cand.insert(b, cand.pop(a))
-    new = evaluate(cand, block_map, wires,
-                   off_chip_ports=off_chip_ports, overlap_weight=overlap_weight)
+      cand_free.insert(b, cand_free.pop(a))
+    new = evaluate(reconstruct(cand_free), block_map, wires,
+                   off_chip_ports=off_chip_ports, overlap_weight=overlap_weight,
+                   wire_weights=wire_weights)
     delta = new.cost - cur.cost
     if delta <= 0 or rng.random() < math.exp(-delta / max(t, 1e-9)):
+      cur_free = cand_free
       cur = new
       if cur.cost < best.cost:
         best = cur
@@ -598,6 +713,9 @@ def build_floorplan(
   port_aliases: dict[str, dict[str, str]] | None = None,
   off_chip_ports: set[str] | None = None,
   overlap_weight: float = 0.0,
+  wire_weights: dict[str, float] | None = None,
+  pin_left: list[str] | None = None,
+  pin_right: list[str] | None = None,
 ) -> FloorplanResult:
   modules, defines = load_modules(module_dir)
   top = load_top(verilog_path, top_name, defines)
@@ -605,9 +723,19 @@ def build_floorplan(
                         port_aliases=port_aliases)
   wires = build_wires(top, modules, include_ports=include_ports,
                       off_chip_ports=off_chip_ports)
+  pin_left = pin_left or []
+  pin_right = pin_right or []
+  n = len(blocks)
+  pinned: dict[str, int] = {}
+  for i, name in enumerate(pin_left):
+    pinned[name] = i
+  for j, name in enumerate(pin_right):
+    pinned[name] = n - len(pin_right) + j
   initial, best = anneal(blocks, wires, seed, steps,
                          off_chip_ports=off_chip_ports,
-                         overlap_weight=overlap_weight)
+                         overlap_weight=overlap_weight,
+                         wire_weights=wire_weights,
+                         pinned=pinned)
   return FloorplanResult(
     source=str(verilog_path),
     top=top.name,
