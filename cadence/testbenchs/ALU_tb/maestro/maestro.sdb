@@ -32,10 +32,10 @@
 				</tooloptions>
 				<vars>
 					<var>A_in
-						<value>127</value>
+						<value>255</value>
 					</var>
 					<var>B_in
-						<value>1</value>
+						<value>255</value>
 					</var>
 				</vars>
 				<outputs>
@@ -121,6 +121,14 @@
 			<copyreferenceresults>1</copyreferenceresults>
 		</incrementalsimsetup>
 		<overwritehistoryname>ExplorerRun.0</overwritehistoryname>
+		<vars>
+			<var>CONFIG/processor/ALU_8b
+				<value>av_extracted av_extracted_v2 av_extracted_v2_C</value>
+			</var>
+		</vars>
+		<incrementalsimulationoptions>
+			<incrementalSimulation>0</incrementalSimulation>
+		</incrementalsimulationoptions>
 	</active>
 	<history>History
 	</history>
