@@ -29,8 +29,21 @@ def main() -> None:
   parser.add_argument("--overlap-weight", type=float, default=0.0,
                       help="quadratic penalty on per-cut signal congestion (sum of cut_overlap^2). "
                            "0 = HPWL only; try 0.1-1.0 to push the annealer to flatten congested cuts.")
+  parser.add_argument("--critical-nets", default="",
+                      help="comma-separated net names whose HPWL is multiplied by --critical-weight "
+                           "during annealing (prioritize timing-critical paths).")
+  parser.add_argument("--critical-weight", type=float, default=4.0,
+                      help="HPWL multiplier applied to nets listed in --critical-nets (default: 4.0).")
+  parser.add_argument("--pin-left", default="",
+                      help="comma-separated block names pinned to the left edge in order.")
+  parser.add_argument("--pin-right", default="",
+                      help="comma-separated block names pinned to the right edge in order.")
   args = parser.parse_args()
   off_chip_ports = {p.strip() for p in args.off_chip_ports.split(",") if p.strip()}
+  critical_nets = {p.strip() for p in args.critical_nets.split(",") if p.strip()}
+  wire_weights = {n: args.critical_weight for n in critical_nets} if critical_nets else None
+  pin_left = [p.strip() for p in args.pin_left.split(",") if p.strip()]
+  pin_right = [p.strip() for p in args.pin_right.split(",") if p.strip()]
 
   layouts = load_layouts(args.layouts) if args.layouts else None
   if layouts:
@@ -48,7 +61,14 @@ def main() -> None:
     port_aliases=PORT_ALIAS,
     off_chip_ports=off_chip_ports,
     overlap_weight=args.overlap_weight,
+    wire_weights=wire_weights,
+    pin_left=pin_left,
+    pin_right=pin_right,
   )
+  if critical_nets:
+    print(f"critical nets ({args.critical_weight}x weight): {', '.join(sorted(critical_nets))}")
+  if pin_left or pin_right:
+    print(f"pinned: left={pin_left} right={pin_right}")
   paths = write_outputs(result, Path(args.out_dir), args.stem)
   print(f"wrote {paths['png']}")
   print(f"wrote {paths['txt']}")
