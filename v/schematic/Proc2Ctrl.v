@@ -18,6 +18,8 @@
 `include "ref/NAND3.v"
 `include "ref/NAND2.v"
 `include "ref/OR3.v"
+`include "schematic/inv_x4.v"
+`include "ref/NOR2.v"
 
 /* verilator lint_off UNUSED */
 /* verilator lint_off UNUSEDSIGNAL */
@@ -50,20 +52,25 @@ module Proc2Ctrl
   supply1 vdd;
   supply0 gnd;
 
+  wire net1;
   wire net10;
   wire net11;
   wire net12;
   wire net13;
+  wire net15;
   wire net16;
   wire net17;
   wire net2;
+  wire net20;
   wire net21;
   wire net25;
   wire net3;
   wire net4;
+  wire net6;
   wire net7;
+  wire net9;
   wire [3:0] fast;
-  wire [2:1] fast_b;
+  wire [3:1] fast_b;
   wire [3:0] net5;
   wire [3:0] net8;
   wire [1:0] ns_sel;
@@ -124,7 +131,7 @@ module Proc2Ctrl
 
   AOI21 I18
   (
-    .out (op1_sel_drv),
+    .out (net1),
     .in0 (fast[0]),
     .in1 (fast[1]),
     .in2 (fast[2])
@@ -158,6 +165,12 @@ module Proc2Ctrl
     .out_b (state_b[0])
   );
 
+  inv_x1 I34_2
+  (
+    .out (fast_b[3]),
+    .in  (fast[3])
+  );
+
   inv_x1 I34_1
   (
     .out (fast_b[2]),
@@ -170,16 +183,22 @@ module Proc2Ctrl
     .in  (fast[1])
   );
 
+  inv_x1 I54
+  (
+    .out (net15),
+    .in  (fast_b[3])
+  );
+
+  inv_x1 I50
+  (
+    .out (net6),
+    .in  (net1)
+  );
+
   inv_x1 I22
   (
     .out (addr_sel_drv),
     .in  (state_b[2])
-  );
-
-  inv_x1 I19
-  (
-    .out (pc_sel_drv),
-    .in  (fast[3])
   );
 
   inv_x1 I49
@@ -202,13 +221,6 @@ module Proc2Ctrl
     .in1 (state[1])
   );
 
-  OR2 I20
-  (
-    .out (op2_sel_drv[1]),
-    .in0 (fast[3]),
-    .in1 (fast_b[2])
-  );
-
   AND2 I45
   (
     .out (net12),
@@ -221,13 +233,6 @@ module Proc2Ctrl
     .out (net25),
     .in0 (net7),
     .in1 (net21)
-  );
-
-  AND2 I21
-  (
-    .out (op2_sel_drv[0]),
-    .in0 (fast[0]),
-    .in1 (fast_b[1])
   );
 
   AND2 I23
@@ -345,12 +350,50 @@ module Proc2Ctrl
     .in1 (net10)
   );
 
+  NAND2 I21
+  (
+    .out (net20),
+    .in0 (fast[0]),
+    .in1 (fast_b[1])
+  );
+
   OR3 I44
   (
     .out (ns_sel[1]),
     .in2 (net25),
     .in0 (net13),
     .in1 (net16)
+  );
+
+  inv_x4 I53
+  (
+    .out (op2_sel_drv[0]),
+    .in  (net20)
+  );
+
+  inv_x4 I52
+  (
+    .out (op2_sel_drv[1]),
+    .in  (net9)
+  );
+
+  inv_x4 I51
+  (
+    .out (op1_sel_drv),
+    .in  (net6)
+  );
+
+  inv_x4 I19
+  (
+    .out (pc_sel_drv),
+    .in  (net15)
+  );
+
+  NOR2 I20
+  (
+    .out (net9),
+    .in0 (fast[3]),
+    .in1 (fast_b[2])
   );
 
   assign ab_en = ab_en_drv;

@@ -15,6 +15,8 @@
 `include "schematic/Imm_Gen.v"
 `include "ref/Register_8b.v"
 `include "schematic/inv_x1.v"
+`include "schematic/Inv4x_8b.v"
+`include "schematic/Inv1x_8b.v"
 
 /* verilator lint_off UNUSED */
 /* verilator lint_off UNUSEDSIGNAL */
@@ -57,6 +59,8 @@ module Proc2Dpath
   wire [7:0] alu_out;
   wire [7:0] mux4_out;
   wire [7:0] net25;
+  wire [7:0] net3;
+  wire [7:0] net5;
   wire [7:0] net54;
   wire [7:0] op1_sel_out;
   wire [7:0] pc_old_out;
@@ -166,7 +170,7 @@ module Proc2Dpath
 
   Mux4_8b Op2_sel
   (
-    .out (mux4_out[7:0]),
+    .out (net5[7:0]),
     .in0 (idmem_wdata_drv[7:0]),
     .in1 ({8{gnd}}),
     .in2 (net54[7:0]),
@@ -213,6 +217,18 @@ module Proc2Dpath
   (
     .out (net2),
     .in  (inst_drv[14])
+  );
+
+  Inv4x_8b I23
+  (
+    .out (mux4_out[7:0]),
+    .in  (net3[7:0])
+  );
+
+  Inv1x_8b I24
+  (
+    .out (net3[7:0]),
+    .in  (net5[7:0])
   );
 
   assign eq = eq_drv;

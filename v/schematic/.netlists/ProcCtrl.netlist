@@ -43,11 +43,12 @@ net	<*4>vdd!
 net	state<0>
 net	state<1>
 net	state<2>
-net	fast<2:1>
-net	fast_b<2:1>
+net	fast_b<3:1>
+net	fast_b<3>
 net	<*4>gnd!
 net	state<3>
 net	eq
+net	net9
 net	state_b<0>
 net	state_b<1>
 net	state_b<2>
@@ -59,11 +60,15 @@ net	net21
 net	net7
 net	fast<0>
 net	net4
+net	net20
+net	net15
 net	fast<1>
 net	fast<2>
 net	fast<3>
 net	fast_b<1>
 net	fast<3:0>
+net	fast<3:1>
+net	net6
 net	net11
 net	net17
 net	state_b<3:0>
@@ -71,6 +76,7 @@ net	inst<11:0>
 net	net13
 net	net16
 net	fast_b<2>
+net	net1
 net	net12
 net	net25
 inst	PIN15	ipin
@@ -94,18 +100,17 @@ inst	PIN3	opin
 inst	PIN2	opin
 inst	I40	AOI21	out	net13	in0	state_b<0>	in1	state<3>	in2	state<2>
 inst	I38	AOI21	out	idmem_val	in0	state<3>	in1	state_b<2>	in2	net11
-inst	I18	AOI21	out	op1_sel	in0	fast<0>	in1	fast<1>	in2	fast<2>
+inst	I18	AOI21	out	net1	in0	fast<0>	in1	fast<1>	in2	fast<2>
 inst	I36<3:0>	inv_drive	in	fast<3:0>	out	state<3:0>	out_b	state_b<3:0>
-inst	I34<1:0>	inv_x1	out	fast_b<2:1>	in	fast<2:1>
+inst	I34<2:0>	inv_x1	out	fast_b<3:1>	in	fast<3:1>
+inst	I54	inv_x1	out	net15	in	fast_b<3>
+inst	I50	inv_x1	out	net6	in	net1
 inst	I22	inv_x1	out	addr_sel	in	state_b<2>
-inst	I19	inv_x1	out	pc_sel	in	fast<3>
 inst	I49	inv_x1	out	net7	in	eq
 inst	I47	OR2	out	ns_sel<0>	in0	net12	in1	net17
 inst	I37	OR2	out	net11	in0	state<0>	in1	state<1>
-inst	I20	OR2	out	op2_sel<1>	in0	fast<3>	in1	fast_b<2>
 inst	I45	AND2	out	net12	in0	state<1>	in1	state_b<0>
 inst	I43	AND2	out	net25	in0	net7	in1	net21
-inst	I21	AND2	out	op2_sel<0>	in0	fast<0>	in1	fast_b<1>
 inst	I23	AND2	out	idmem_type	in0	state<2>	in1	state_b<3>
 inst	I24	AND3	out	addr_en	in0	state<0>	in1	state<1>	in2	state_b<2>
 inst	I46	AND4	in1	state<2>	out	net17	in3	state_b<1>	in0	state<0>	in2	state<3>
@@ -120,5 +125,11 @@ inst	I28	NAND3	in2	state_b<2>	out	net10	in0	state<3>	in1	state_b<0>
 inst	I27	NAND3	in2	state_b<3>	out	net4	in0	state<0>	in1	state_b<1>
 inst	I32	NAND2	out	wd_en	in0	net3	in1	net2
 inst	I29	NAND2	out	pc_en	in0	net4	in1	net10
+inst	I21	NAND2	out	net20	in0	fast<0>	in1	fast_b<1>
 inst	I44	OR3	out	ns_sel<1>	in2	net25	in0	net13	in1	net16
 noconn	inst<11:0>
+inst	I53	inv_x4	out	op2_sel<0>	in	net20
+inst	I52	inv_x4	out	op2_sel<1>	in	net9
+inst	I51	inv_x4	out	op1_sel	in	net6
+inst	I19	inv_x4	out	pc_sel	in	net15
+inst	I20	NOR2	out	net9	in0	fast<3>	in1	fast_b<2>

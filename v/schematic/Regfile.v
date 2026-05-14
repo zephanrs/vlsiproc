@@ -19,7 +19,7 @@
 
 module Regfile
 (
-  input  wire [7:1] clk,
+  input  wire       clk,
   input  wire       wen,
   input  wire [2:0] waddr,
   input  wire [7:0] wdata,
@@ -158,7 +158,7 @@ module Regfile
 
   write_decoder I3
   (
-    .clk    (clk[7:1]),
+    .clk    (clk),
     .wen    (rwen[7:1]),
     .rf_wen (wen),
     .wen_b  (rwen_b[7:1]),
