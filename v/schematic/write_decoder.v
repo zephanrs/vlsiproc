@@ -23,7 +23,7 @@ module write_decoder
 (
   input  wire [2:0] waddr,
   output wire [7:1] wen_b,
-  input  wire [7:1] clk,
+  input  wire       clk,
   input  wire       rf_wen,
   output wire [7:1] wen
 );
@@ -173,49 +173,49 @@ module write_decoder
   clk_ena I2_7
   (
     .ena_clk_b (net1[0]),
-    .clk       (clk[7]),
+    .clk       (clk),
     .ena       (net3[0])
   );
 
   clk_ena I2_6
   (
     .ena_clk_b (net1[1]),
-    .clk       (clk[6]),
+    .clk       (clk),
     .ena       (net3[1])
   );
 
   clk_ena I2_5
   (
     .ena_clk_b (net1[2]),
-    .clk       (clk[5]),
+    .clk       (clk),
     .ena       (net3[2])
   );
 
   clk_ena I2_4
   (
     .ena_clk_b (net1[3]),
-    .clk       (clk[4]),
+    .clk       (clk),
     .ena       (net3[3])
   );
 
   clk_ena I2_3
   (
     .ena_clk_b (net1[4]),
-    .clk       (clk[3]),
+    .clk       (clk),
     .ena       (net3[4])
   );
 
   clk_ena I2_2
   (
     .ena_clk_b (net1[5]),
-    .clk       (clk[2]),
+    .clk       (clk),
     .ena       (net3[5])
   );
 
   clk_ena I2_1
   (
     .ena_clk_b (net1[6]),
-    .clk       (clk[1]),
+    .clk       (clk),
     .ena       (net3[6])
   );
 

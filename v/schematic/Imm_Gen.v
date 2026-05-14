@@ -26,8 +26,8 @@ module Imm_Gen
   Mux2_8b I0
   (
     .out (imm_drv[7:0]),
-    .in0 ({{3{inst[11]}}, inst[10:9], inst[2:0]}),
-    .in1 ({{3{inst[5]}}, inst[4:3], inst[2:0]}),
+    .in0 ({{2{inst[11]}}, inst[11:9], inst[2:0]}),
+    .in1 ({{2{inst[5]}}, inst[5:3], inst[2:0]}),
     .sel (inst[15])
   );
 
