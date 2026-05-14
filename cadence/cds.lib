@@ -1,6 +1,9 @@
+# File Created by Zephan Roan Sanghani at Wed May 13 22:26:02 2026
+# assisted by CdsLibEditor
 INCLUDE /opt/cadence-designkits/gpdk045_v_6_0/cds.lib
 
 DEFINE standard_cells $ROOTDIR/cadence/standard_cells
 DEFINE processor $ROOTDIR/cadence/processor
 DEFINE testbenchs $ROOTDIR/cadence/testbenchs
 DEFINE avTech /opt/cadence/ASSURA41/tools.lnx86/assura/etc/avtech/avTech
+DEFINE fanout $ROOTDIR/cadence/fanout
