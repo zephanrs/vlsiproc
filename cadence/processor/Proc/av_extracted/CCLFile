@@ -1,0 +1,45 @@
+#
+# OPTION COMMAND FILE created byCadence Quantus Extraction Version 23.1.1-p051 from CCL
+#
+capacitance \
+	 -decoupling_factor 1.0 \
+	 -ground_net "gnd!"
+extract \
+	 -selection "all" \
+	 -type "c_only_coupled"
+extraction_setup \
+	 -net_name_space "SCHEMATIC" \
+	 -split_via_by_unit_area false
+filter_coupling_cap \
+	 -coupling_cap_threshold_absolute 0.01 \
+	 -coupling_cap_threshold_relative 0.001
+input_db -type pegasus \
+	 -design_cell_name "Proc layout processor" \
+	 -directory_name "/home/dnb68/processor/cadence/lvs/svdb" \
+	 -format "DFII" \
+	 -library_definitions_file "/home/dnb68/processor/cadence/cds.lib" \
+	 -run_name "Proc"
+log_file \
+	 -file_name "/home/dnb68/processor/cadence/lvs/svdb/qrc.Proc.log"
+output_db -type extracted_view \
+	 -cap_component "pcapacitor" \
+	 -cap_property_name "c" \
+	 -cdl_out_map_directory \
+		"/home/dnb68/processor/cadence/lvs" \
+	 -device_finger_delimiter "@" \
+	 -enable_cellview_check false \
+	 -include_cap_model "false" \
+	 -include_parasitic_cap_model "false" \
+	 -include_res_model "false" \
+	 -transfer_net_expression true \
+	 -view_name "av_extracted"
+output_setup \
+	 -directory_name "/home/dnb68/processor/cadence/lvs/svdb" \
+	 -temporary_directory_name "Proc"
+process_technology \
+	 -technology_corner \
+		"rcx_typical" \
+	 -technology_library_file "/home/dnb68/processor/cadence/pvtech.lib" \
+	 -technology_name "gpdk045_pvs"
+
+
