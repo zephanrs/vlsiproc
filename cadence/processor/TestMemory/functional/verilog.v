@@ -75,7 +75,7 @@ module TestMemory
       mem_rdata_reg <= m[mem_addr_idx];
     end
     else begin
-      mem_rdata_reg <= 16'hxxxx;
+      mem_rdata_reg <= mem_rdata_reg;
     end
   end
 
