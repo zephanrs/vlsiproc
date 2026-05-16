@@ -54,9 +54,6 @@
 					<output>/I0/proc_b_clk
 						<evalType>point</evalType>
 					</output>
-					<output>/I0/proc_ir_clk
-						<evalType>point</evalType>
-					</output>
 					<output>/I0/proc_pc_clk
 						<evalType>point</evalType>
 					</output>
@@ -130,10 +127,10 @@
 		</checksasserts>
 		<plottingoptions>
 			<plottingoption>waveformtemplate
-				<value>(None)</value>
+				<value>digital_signals</value>
 			</plottingoption>
 			<plottingoption>plottingmode
-				<value>Append</value>
+				<value>Replace</value>
 			</plottingoption>
 			<plottingoption>plottype
 				<value>None</value>
@@ -163,15 +160,15 @@
 				<value>no</value>
 			</plottingoption>
 			<plottingoption>autoplotmode
-				<value>Append</value>
+				<value>Replace</value>
 			</plottingoption>
 		</plottingoptions>
 		<exploreroptions>
 			<exploreroption>waveformtemplate
-				<value>(None)</value>
+				<value>digital_signals</value>
 			</exploreroption>
 			<exploreroption>autoplotmode
-				<value>Append</value>
+				<value>Replace</value>
 			</exploreroption>
 		</exploreroptions>
 		<overwritehistoryname>ExplorerRun.0</overwritehistoryname>
