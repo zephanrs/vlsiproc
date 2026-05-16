@@ -1,0 +1,9 @@
+# This Pegasus GUI forms presets file is created automatically.
+# Do not edit it unless you 100% sure what you do!
+
+# Pegasus Version 23.23-s012
+
+[ virtuoso6.BatchTriggers.RunLVS ]
+BatchPostTrigger ""
+BatchPreTrigger  ""
+EnableTriggers   "FALSE"

@@ -24,7 +24,7 @@
 						<value>spectre</value>
 					</option>
 					<option>view
-						<value>schematic</value>
+						<value>config</value>
 					</option>
 					<option>state
 						<value>active</value>
@@ -51,6 +51,9 @@
 					</var>
 					<var>delay
 						<value>0, 0.2n</value>
+					</var>
+					<var>tclk
+						<value>1</value>
 					</var>
 				</vars>
 			</test>

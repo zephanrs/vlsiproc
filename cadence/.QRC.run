@@ -3,4 +3,4 @@
 # THE RUN FILE created by Cadence Extraction Quantus UI Version 23.1.1-p051
 #--------------------------------------------------------------------------------------
 
-qrc  -log_file /home/dnb68/processor/cadence/lvs/svdb/qrc.ProcDpath.log -cmd /home/dnb68/processor/cadence/lvs/svdb/qrc.ProcDpath.ccl 
+qrc  -log_file /home/dnb68/processor/cadence/lvs/svdb/qrc.Register_16b_ena.log -cmd /home/dnb68/processor/cadence/lvs/svdb/qrc.Register_16b_ena.ccl 

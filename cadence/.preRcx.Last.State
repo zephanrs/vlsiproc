@@ -1,7 +1,7 @@
 
 
 vuipreRcxFormTable = '(
-	runName  "ProcDpath"
+	runName  "Register_16b_ena"
 	runDir  "/home/dnb68/processor/cadence/lvs/svdb"
 	assuraTech  "/home/dnb68/processor/cadence/pvtech.lib"
 	tech  "gpdk045_pvs"

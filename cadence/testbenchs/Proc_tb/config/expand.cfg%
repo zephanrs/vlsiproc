@@ -1,4 +1,4 @@
-//Revision 4
+//Revision 11
 //NOTE
 // Default config view template for AMS netlister(s) in ADE.
 // Note:
@@ -15,6 +15,7 @@ stoplist spectre;
 
 
 cell processor.ProcCtrl binding :schematic;
+cell processor.ProcDpath binding :av_extracted;
 
 
 endconfig
