@@ -6,28 +6,14 @@ capacitance \
 	 -ground_net "gnd!"
 extract \
 	 -selection "all" \
-	 -type "rc_decoupled"
+	 -type "c_only_coupled"
 extraction_setup \
-	 -array_vias_spacing "auto" \
-	 -max_fracture_length infinite \
-	 -max_fracture_length_unit "MICRONS" \
-	 -max_via_array_size \
-		"auto" \
 	 -net_name_space "SCHEMATIC" \
 	 -split_via_by_unit_area false
-filter_res \
-	 -merge_parallel_res false \
-	 -min_res 0.001
+filter_coupling_cap \
+	 -coupling_cap_threshold_absolute 0.01 \
+	 -coupling_cap_threshold_relative 0.001
 input_db -type pegasus \
-<<<<<<< HEAD
-	 -design_cell_name "ALU_8b layout_extracted processor" \
-	 -directory_name "/home/dnb68/processor/cadence/lvs/svdb" \
-	 -format "DFII" \
-	 -library_definitions_file "/home/dnb68/processor/cadence/cds.lib" \
-	 -run_name "ALU_8b"
-log_file \
-	 -file_name "/home/dnb68/processor/cadence/lvs/svdb/qrc.ALU_8b.log"
-=======
 	 -design_cell_name "ALU_8b layout processor" \
 	 -directory_name "/home/jyh42/processor/cadence/lvs/svdb" \
 	 -format "DFII" \
@@ -35,40 +21,23 @@ log_file \
 	 -run_name "ALU_8b"
 log_file \
 	 -file_name "/home/jyh42/processor/cadence/lvs/svdb/qrc.ALU_8b.log"
->>>>>>> 5781eda (alu layout_v2 lvs and drc clean, ~100ps faster than original... RC and C extractions are similar?)
 output_db -type extracted_view \
 	 -cap_component "pcapacitor" \
 	 -cap_property_name "c" \
-	 -cdl_out_map_directory \
-<<<<<<< HEAD
-		"/home/dnb68/processor/cadence/lvs" \
-=======
-		"/home/jyh42/processor/cadence/lvs" \
->>>>>>> 5781eda (alu layout_v2 lvs and drc clean, ~100ps faster than original... RC and C extractions are similar?)
 	 -device_finger_delimiter "@" \
-	 -enable_cellview_check true \
+	 -enable_cellview_check false \
 	 -include_cap_model "false" \
 	 -include_parasitic_cap_model "false" \
-	 -include_parasitic_res_model "comment" \
-	 -include_parasitic_res_width true \
 	 -include_res_model "false" \
-	 -res_component "presistor" \
-	 -res_property_name "r" \
 	 -transfer_net_expression true \
 	 -view_name "av_extracted"
 output_setup \
-<<<<<<< HEAD
-	 -directory_name "/home/dnb68/processor/cadence/lvs/svdb" \
-=======
 	 -directory_name "/home/jyh42/processor/cadence/lvs/svdb" \
->>>>>>> 5781eda (alu layout_v2 lvs and drc clean, ~100ps faster than original... RC and C extractions are similar?)
 	 -temporary_directory_name "ALU_8b"
 process_technology \
 	 -technology_corner \
 		"rcx_typical" \
-	 -technology_library_file "/home/dnb68/processor/cadence/pvtech.lib" \
-	 -technology_name "gpdk045_pvs" \
-	 -temperature \
-		"25.0"
+	 -technology_library_file "/home/jyh42/processor/cadence/pvtech.lib" \
+	 -technology_name "gpdk045_pvs"
 
 

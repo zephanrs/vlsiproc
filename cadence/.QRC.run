@@ -3,8 +3,4 @@
 # THE RUN FILE created by Cadence Extraction Quantus UI Version 23.1.1-p051
 #--------------------------------------------------------------------------------------
 
-<<<<<<< HEAD
-qrc  -log_file /home/dnb68/processor/cadence/lvs/svdb/qrc.Register_16b_ena.log -cmd /home/dnb68/processor/cadence/lvs/svdb/qrc.Register_16b_ena.ccl 
-=======
-qrc  -log_file /home/jyh42/processor/cadence/lvs/svdb/qrc.ProcCtrl.log -cmd /home/jyh42/processor/cadence/lvs/svdb/qrc.ProcCtrl.ccl 
->>>>>>> fe14a15 (almost)
+qrc  -log_file /home/jyh42/processor/cadence/lvs/svdb/qrc.ALU_8b.log -cmd /home/jyh42/processor/cadence/lvs/svdb/qrc.ALU_8b.ccl 
