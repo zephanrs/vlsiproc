@@ -45,27 +45,6 @@
 					<output>"/idmem_rdata&lt;15:0&gt;"
 						<evalType>point</evalType>
 					</output>
-					<output>/I0/proc_a_clk
-						<evalType>point</evalType>
-					</output>
-					<output>/I0/proc_addr_clk
-						<evalType>point</evalType>
-					</output>
-					<output>/I0/proc_b_clk
-						<evalType>point</evalType>
-					</output>
-					<output>/I0/proc_pc_clk
-						<evalType>point</evalType>
-					</output>
-					<output>/I0/proc_pc_old_clk
-						<evalType>point</evalType>
-					</output>
-					<output>/I0/proc_rf_clk&lt;7:1&gt;
-						<evalType>point</evalType>
-					</output>
-					<output>/I0/proc_wd_clk
-						<evalType>point</evalType>
-					</output>
 					<output>/I0/A/net1
 						<evalType>point</evalType>
 					</output>
@@ -127,10 +106,10 @@
 		</checksasserts>
 		<plottingoptions>
 			<plottingoption>waveformtemplate
-				<value>digital_signals</value>
+				<value>(None)</value>
 			</plottingoption>
 			<plottingoption>plottingmode
-				<value>Replace</value>
+				<value>Append</value>
 			</plottingoption>
 			<plottingoption>plottype
 				<value>None</value>
@@ -160,15 +139,15 @@
 				<value>no</value>
 			</plottingoption>
 			<plottingoption>autoplotmode
-				<value>Replace</value>
+				<value>Append</value>
 			</plottingoption>
 		</plottingoptions>
 		<exploreroptions>
 			<exploreroption>waveformtemplate
-				<value>digital_signals</value>
+				<value>(None)</value>
 			</exploreroption>
 			<exploreroption>autoplotmode
-				<value>Replace</value>
+				<value>Append</value>
 			</exploreroption>
 		</exploreroptions>
 		<overwritehistoryname>ExplorerRun.0</overwritehistoryname>
