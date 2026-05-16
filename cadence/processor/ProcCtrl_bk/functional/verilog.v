@@ -1,6 +1,6 @@
 //Verilog HDL for "processor", "ProcCtrl" "functional"
 
-module ProcCtrl (
+module ProcCtrl_bk (
   clk,
   rst,
 
