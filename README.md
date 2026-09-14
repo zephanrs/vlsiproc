@@ -73,21 +73,9 @@ cd ~/processor/cadence
 virtuoso &
 ```
 
-### Running the Verilog tests
+### Verilog tests
 
-```bash
-cd ~/processor
-mkdir -p build
-cd build
-../configure
-make check-ref
-```
-
-If you want more detailed test output:
-
-```bash
-make check-ref-verbose
-```
+The Verilog tests are not included because they overlap with Cornell ECE 2300 course materials. See [the test directory note](v/test/README.md) and [the schematic test directory note](v/schematic-test/README.md).
 
 ### Running the processor flow
 
