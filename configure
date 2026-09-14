@@ -67,8 +67,4 @@ sed \
   -e "s|@IVERILOG@|${IVERILOG}|g" \
   "${srcdir}/Makefile.in" > Makefile
 
-echo "Generating flow build scripts..."
-make -B flow >/dev/null
-
-echo "Configuration complete. You can now run 'make check-ref'."
-echo "Flow scripts are in '${PWD}/flow'."
+echo "Configuration complete."
