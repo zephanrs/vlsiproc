@@ -1,165 +1,45 @@
-# VLSI Processor Project
+# 8-bit Processor
 
-This repository contains the processor project files, including Verilog, testbenches, scripts, and the Cadence workspace.
+Dennis Bui, Irwin Wang, Jodi Hahn, Liam Lahar, and Zephan Sanghani
 
-## Setup
+[Download the project report (PDF)](docs/4740-final-project-report.pdf)
 
-### 1. Set up GitHub SSH access
+The report pages below are 600 DPI lossless renders. Appendix K's Verilog listing is omitted because it overlaps with Cornell ECE 2300 course test materials. Open the PDF for searchable text and vector diagrams.
 
-1. Make sure you have a GitHub account and that your full name is set in your GitHub profile.
-2. Create your own SSH key:
+![Project report page 1](docs/report-pages/page-01.png)
 
-```bash
-ssh-keygen -t ed25519 -C "netid@cornell.edu"
-```
+![Project report page 2](docs/report-pages/page-02.png)
 
-When prompted for a passphrase, just press Enter twice to leave it empty.
+![Project report page 3](docs/report-pages/page-03.png)
 
-3. Display your public SSH key:
+![Project report page 4](docs/report-pages/page-04.png)
 
-```bash
-cat ~/.ssh/id_ed25519.pub
-```
+![Project report page 5](docs/report-pages/page-05.png)
 
-4. Copy that key and add it to GitHub here:
+![Project report page 6](docs/report-pages/page-06.png)
 
-- [GitHub SSH keys settings](https://github.com/settings/ssh)
+![Project report page 7](docs/report-pages/page-07.png)
 
-5. Click `New SSH key`, paste in the key, and give it a name such as `VLSI Final Project`.
-6. Test that GitHub recognizes your key:
+![Project report page 8](docs/report-pages/page-08.png)
 
-```bash
-ssh -T git@github.com
-```
+![Project report page 9](docs/report-pages/page-09.png)
 
-The first time, type `yes` if GitHub asks you to confirm the host.
+![Project report page 10](docs/report-pages/page-10.png)
 
-### 2. Configure Git
+![Project report page 11](docs/report-pages/page-11.png)
 
-Set your name and Cornell email once:
+![Project report page 12](docs/report-pages/page-12.png)
 
-```bash
-git config --global user.name "Your Name"
-git config --global user.email "netid@cornell.edu"
-```
+![Project report page 13](docs/report-pages/page-13.png)
 
-### 3. Clone this repository
+![Project report page 14](docs/report-pages/page-14.png)
 
-Clone the repo in your home directory and name the local folder `processor`:
+![Project report page 15](docs/report-pages/page-15.png)
 
-```bash
-cd ~
-git clone git@github.com:zephanrs/vlsiproc.git processor
-cd ~/processor
-```
+![Project report page 16](docs/report-pages/page-16.png)
 
-## Using The Project
+![Project report page 17](docs/report-pages/page-17.png)
 
-Each time you start working, go to the repo and source the project setup script:
+![Project report page 18](docs/report-pages/page-18.png)
 
-```bash
-cd ~/processor
-source scripts/setup-project.sh
-```
-
-This loads the tool environment used by the project, including the Verilog tools and Cadence tools.
-
-### Starting Cadence Virtuoso
-
-Most VLSI work should start from the `cadence/` directory so Virtuoso picks up the project library setup correctly.
-
-```bash
-cd ~/processor/cadence
-virtuoso &
-```
-
-### Verilog tests
-
-The Verilog tests are not included because they overlap with Cornell ECE 2300 course materials. See [the test directory note](v/test/README.md) and [the schematic test directory note](v/schematic-test/README.md).
-
-### Running the processor flow
-
-Run the processor flow from a disposable build directory so generated
-pickles, logs, netlists, and simulator output do not land in source `flow/`.
-
-```bash
-cd ~/processor
-mkdir -p build-flow
-cd build-flow
-../configure
-cd flow
-./run-01-verilator
-./run-02-synopsys-vcs
-./run-03-dc-synth
-./run-04-ffglsim
-```
-
-## Working With Git
-
-If you are new to git, use this as the default workflow for this repo.
-
-### 1. Pull before you start working
-
-Every time you log in and start working, update your copy first:
-
-```bash
-cd ~/processor
-git pull
-```
-
-This helps you avoid working on an outdated copy of the repo.
-
-### 2. Check what changed
-
-```bash
-git status
-```
-
-Use this often. It tells you which files you modified and what git is tracking.
-
-### 3. Add and commit your work
-
-After editing files, it is usually easiest to stage everything at once:
-
-```bash
-git add .
-git status
-```
-
-Always run `git status` right after `git add .` and check that you did not stage extra generated files by accident.
-
-If you staged something you do not want to commit, remove it from the staged list with:
-
-```bash
-git restore --staged path/to/file
-```
-
-If you want to remove many staged files and start over:
-
-```bash
-git restore --staged .
-git status
-```
-
-Once `git status` looks correct, make the commit:
-
-```bash
-git commit -m "brief description of your changes"
-```
-
-Cadence can generate lots of extra files, so do not skip the `git status` check before committing.
-
-### 4. Push your commits
-
-```bash
-git push
-```
-
-If `git push` is rejected because the remote has new commits, update your branch and rebase if git asks you to:
-
-```bash
-git pull --rebase
-git push
-```
-
-If you get a merge conflict during a pull, rebase, or push workflow, stop and ask Irwin for help before trying random commands. If Irwin is not available, then ask an LLM.
+![Project report page 19](docs/report-pages/page-19.png)
